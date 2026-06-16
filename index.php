@@ -1,0 +1,1228 @@
+<?php
+/**
+ * Plan Aid Academy - School Management System
+ * Main Application Entry Point
+ * @version 1.0.0
+ * @author Backend Development Team
+ */
+
+// Start session for backend integration
+session_start();
+
+// Set headers
+header('Content-Type: text/html; charset=UTF-8');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+
+// Configuration
+define('API_BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/aidstudent/api');
+define('APP_NAME', 'Plan Aid Academy');
+define('APP_VERSION', '1.0.0');
+
+// Optional: Check if backend is initialized (can be removed if not needed)
+$backendReady = true;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plan Aid Academy - Jos | School Management Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--green:#1a5c38;--gold:#c8960c;--cream:#faf7f0;--dark:#0d1f17;--white:#fff;--red:#b03232;--blue:#1a3a5c;--light:#e8f5ee;--border:#d4e0d8;--shadow:0 4px 24px rgba(26,92,56,.13)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  .hidden{display:none!important}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
+  .page{display:none;min-height:100vh;animation:fadeIn .35s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  nav{background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+  .nav-brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .nav-logo{width:42px;height:42px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:18px;color:var(--dark)}
+  .nav-title{font-family:'Playfair Display',serif;font-size:17px;line-height:1.2}
+  .nav-title small{display:block;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:300;opacity:.8;letter-spacing:.5px}
+  .nav-links{display:flex;gap:4px}
+  .nav-links button{background:none;border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:background .2s}
+  .nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.18)}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .btn-login{background:var(--gold);color:var(--dark);border:none;padding:9px 20px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .2s}
+  .btn-login:hover{opacity:.85}
+  .hero{background:linear-gradient(135deg,var(--green) 0%,#0d3d22 100%);color:#fff;padding:80px 32px 60px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .hero-badge{display:inline-block;background:rgba(200,150,12,.25);border:1px solid var(--gold);color:var(--gold);padding:6px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,60px);font-weight:900;line-height:1.1;margin-bottom:16px}
+  .hero h1 span{color:var(--gold)}
+  .hero p{font-size:17px;opacity:.85;max-width:560px;margin:0 auto 36px;line-height:1.6}
+  .hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .btn-primary{background:var(--gold);color:var(--dark);border:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+  .btn-primary:hover{background:#e0a80e;transform:translateY(-2px)}
+  .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);padding:13px 28px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+  .btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+  .units-strip{display:flex;gap:0;overflow-x:auto}
+  .unit-card{flex:1;min-width:160px;padding:20px 16px;text-align:center;border-right:1px solid var(--border);cursor:pointer;transition:background .2s;background:#fff}
+  .unit-card:last-child{border-right:none}
+  .unit-card:hover{background:var(--light)}
+  .unit-icon{font-size:28px;margin-bottom:8px}
+  .unit-card h4{font-size:13px;font-weight:600;color:var(--green)}
+  .unit-card p{font-size:11px;color:#666;margin-top:4px}
+  .section{padding:56px 32px}
+  .section-alt{background:#fff}
+  .container{max-width:1100px;margin:0 auto}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .section-title{font-family:'Playfair Display',serif;font-size:clamp(24px,3.5vw,38px);font-weight:700;color:var(--dark);margin-bottom:12px}
+  .section-sub{font-size:15px;color:#555;max-width:560px;line-height:1.6;margin-bottom:36px}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+  .card{background:#fff;border-radius:12px;padding:28px 24px;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(26,92,56,.18)}
+  .card-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+  .card h3{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:8px}
+  .card p{font-size:13px;color:#666;line-height:1.5}
+  .card-link{display:inline-block;margin-top:14px;font-size:13px;font-weight:600;color:var(--green);cursor:pointer}
+  .card-link:hover{color:var(--gold)}
+  .stats-row{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+  .stat{flex:1;min-width:140px;background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);border-left:4px solid var(--green);text-align:center}
+  .stat .val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--green)}
+  .stat .lbl{font-size:12px;color:#666;margin-top:4px}
+  .form-page{max-width:700px;margin:0 auto;background:#fff;border-radius:16px;padding:40px;box-shadow:var(--shadow)}
+  .form-page h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px;color:var(--dark)}
+  .form-page .sub{font-size:14px;color:#666;margin-bottom:28px}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:6px}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);transition:border-color .2s;background:var(--cream)}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green)}
+  .form-group textarea{resize:vertical;min-height:90px}
+  .btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;margin-top:8px}
+  .btn-submit:hover{background:#14472b}
+  .dash-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
+  .dash-sidebar{background:var(--dark);color:#fff;padding:24px 0}
+  .dash-sidebar .user-info{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px}
+  .dash-sidebar .user-info .avatar{width:44px;height:44px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:10px}
+  .dash-sidebar .user-info h4{font-size:14px;font-weight:600}
+  .dash-sidebar .user-info span{font-size:12px;color:rgba(255,255,255,.55)}
+  .dash-nav a{display:flex;align-items:center;gap:12px;padding:11px 20px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;border-left:3px solid transparent}
+  .dash-nav a:hover,.dash-nav a.active{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--gold)}
+  .dash-nav a .ico{font-size:16px;width:20px;text-align:center}
+  .dash-content{padding:32px;background:var(--cream);overflow-y:auto}
+  .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+  .dash-header h2{font-family:'Playfair Display',serif;font-size:24px;color:var(--dark)}
+  .dash-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-bottom:28px}
+  .dash-card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);border-bottom:3px solid var(--green)}
+  .dash-card .dc-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--green)}
+  .dash-card .dc-lbl{font-size:12px;color:#888;margin-top:4px}
+  .dash-card .dc-sub{font-size:12px;color:var(--gold);margin-top:2px;font-weight:600}
+  .table-wrap{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+  .table-head{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .table-head h3{font-size:15px;font-weight:700;color:var(--dark)}
+  table{width:100%;border-collapse:collapse}
+  thead{background:var(--light)}
+  th{padding:12px 16px;text-align:left;font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px}
+  td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);color:var(--dark)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f7fcf9}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+  .badge-green{background:#d4f0e2;color:#1a5c38}
+  .badge-gold{background:#fef3cd;color:#856404}
+  .badge-red{background:#fde8e8;color:#b03232}
+  .badge-blue{background:#dbeafe;color:#1e40af}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:#fff;border-radius:16px;padding:40px;width:90%;max-width:420px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal-wide{max-width:620px}
+  .modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888}
+  .modal h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px}
+  .modal .sub{font-size:13px;color:#666;margin-bottom:24px}
+  .role-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .role-tab{padding:7px 14px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:none;font-family:'DM Sans',sans-serif}
+  .role-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+  .slip{background:#fff;border:2px solid var(--green);border-radius:12px;padding:32px;max-width:640px;margin:0 auto}
+  .slip-header{display:flex;align-items:center;gap:16px;border-bottom:2px solid var(--green);padding-bottom:16px;margin-bottom:20px}
+  .slip-logo{width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Playfair Display',serif;font-weight:900;font-size:22px;flex-shrink:0}
+  .slip-school{flex:1}
+  .slip-school h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--green)}
+  .slip-school p{font-size:12px;color:#666}
+  .slip-no{background:var(--green);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;white-space:nowrap}
+  .slip-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .slip-field{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
+  .slip-field .lbl{font-size:10px;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:2px}
+  .slip-field .val{font-size:14px;font-weight:600;color:var(--dark)}
+  .slip-footer{border-top:1px solid var(--border);padding-top:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#666;flex-wrap:wrap;gap:10px}
+  .btn-print{background:var(--green);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .arabic-text{font-family:'Amiri',serif;direction:rtl;font-size:16px;line-height:1.8;color:var(--dark)}
+  .finance-row{display:grid;grid-template-columns:2fr 1fr;gap:24px}
+  .chart-box{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow)}
+  .chart-box h3{font-size:14px;font-weight:700;margin-bottom:20px;color:var(--dark)}
+  .bar-chart{display:flex;align-items:flex-end;gap:8px;height:130px;padding-bottom:24px;position:relative}
+  .bar{flex:1;background:var(--green);border-radius:4px 4px 0 0;position:relative;min-width:24px;transition:opacity .2s}
+  .bar:hover{opacity:.75}
+  .bar .bar-lbl{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:#888;white-space:nowrap}
+  .bar .bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--green);white-space:nowrap}
+  .pie-wrap{display:flex;flex-direction:column;gap:12px}
+  .pie-item{display:flex;align-items:center;gap:10px}
+  .pie-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .pie-item span{font-size:13px;color:var(--dark);flex:1}
+  .pie-item b{font-size:13px;font-weight:700}
+  .alert{padding:14px 18px;border-radius:8px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .alert-success{background:#d4f0e2;color:#1a5c38;border-left:4px solid var(--green)}
+  .alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--blue)}
+  footer{background:var(--dark);color:rgba(255,255,255,.7);text-align:center;padding:24px 32px;font-size:13px}
+  footer strong{color:var(--gold)}
+  .hidden{display:none}
+  .divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+  @media(max-width:768px){nav{padding:0 16px}.nav-links{display:none}.dash-layout{grid-template-columns:1fr}.dash-sidebar{display:none}.form-row{grid-template-columns:1fr}.finance-row{grid-template-columns:1fr}.hero{padding:50px 20px 40px}.section{padding:40px 20px}.slip-row{grid-template-columns:1fr}}
+</style>
+<script>
+  // Set API configuration from PHP
+  const API_CONFIG = {
+    baseUrl: '<?php echo API_BASE_URL; ?>',
+    appName: '<?php echo APP_NAME; ?>'
+  };
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand" onclick="showPage('home')">
+    <div class="nav-logo">P</div>
+    <div class="nav-title">Plan Aid Academy<small>Jos, Plateau State</small></div>
+  </div>
+  <div class="nav-links">
+    <button onclick="showPage('home')" id="nav-home" class="active">Home</button>
+    <button onclick="showPage('admission')" id="nav-admission">Admissions</button>
+    <button onclick="showPage('results')" id="nav-results">Results</button>
+    <button onclick="showPage('arabic')" id="nav-arabic">Arabic Unit</button>
+    <button onclick="showPage('about')" id="nav-about">About</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login" onclick="openModal()">Portal Login</button>
+  </div>
+</nav>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Portal Login</h2>
+    <p class="sub" id="loginHelp">Principal and Head Teacher approve portal access. Staff and students sign in with the generated approval code.</p>
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole(this,'principal')">Principal</button>
+      <button class="role-tab" onclick="setRole(this,'unithead')">Head Teacher</button>
+      <button class="role-tab" onclick="setRole(this,'staff')">Staff</button>
+      <button class="role-tab" onclick="setRole(this,'student')">Student</button>
+    </div>
+    <div class="form-group"><label id="loginUsernameLabel">Staff ID / Email</label><input id="loginUsername" type="text" placeholder="e.g. PAA-PRINCIPAL" autocomplete="off"/></div>
+    <div class="form-group"><label id="loginSecretLabel">Password</label><input id="loginPassword" type="password" placeholder="Enter password" autocomplete="new-password"/></div>
+    <button class="btn-submit" onclick="doLogin()">Sign In</button>
+    <div style="text-align:center;margin-top:12px"><button id="showLoginDetailsBtn" type="button" onclick="showRoleLoginDetails()" style="background:none;border:none;color:var(--green);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Show Principal / Head Teacher Login Details</button></div>
+
+  </div>
+</div>
+<!-- CREDENTIALS MODAL -->
+<div class="modal-overlay" id="credModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCredModal()">✕</button>
+    <h2>Generated Login Credentials</h2>
+    <p class="sub">Share these credentials securely. Staff and students can only sign in after approval with this generated code.</p>
+    <div class="form-group"><label>Name</label><div id="credName" style="font-weight:700;margin-top:6px"></div></div>
+    <div class="form-group"><label>Role / Unit</label><div id="credRole" style="margin-top:6px"></div></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label style="min-width:110px">Username</label><div id="credUsername" style="font-family:monospace"></div><button onclick="copyCred('credUsername')" class="btn-primary" style="padding:6px 10px;font-size:12px">Copy</button></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label id="credSecretLabel" style="min-width:110px">Approval Code</label><div id="credPassword" style="font-family:monospace"></div><button onclick="copyCred('credPassword')" class="btn-primary" style="padding:6px 10px;font-size:12px">Copy</button></div>
+    <div style="text-align:right;margin-top:12px"><button class="btn-submit" onclick="closeCredModal()">Done</button></div>
+  </div>
+</div>
+<!-- ADD STAFF MODAL -->
+<div class="modal-overlay" id="addStaffModal">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeAddStaffModal()">✕</button>
+    <h2>Approve Staff Login</h2>
+    <p class="sub">Approve a staff record and generate the portal code they will use to sign in.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name</label><input id="staffName" type="text" placeholder="e.g. Mr. John Danjuma"/></div>
+      <div class="form-group"><label>Role</label>
+        <select id="staffRole">
+          <option value="">— Select Role —</option>
+          <option>Finance Officer</option>
+          <option>Teacher</option>
+          <option>Head of Secondary</option>
+          <option>Head of Primary</option>
+          <option>Head of Nursery</option>
+          <option>Head of Arabic</option>
+          <option>Class Teacher</option>
+          <option>Subject Teacher</option>
+          <option>Admin Officer</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Unit</label>
+        <select id="staffUnit">
+          <option value="">— Select Unit —</option>
+          <option>Secondary</option>
+          <option>Primary</option>
+          <option>Nursery</option>
+          <option>Arabic</option>
+          <option>Administration</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Subject / Department</label><input id="staffSubject" type="text" placeholder="e.g. Chemistry"/></div>
+    </div>
+    <button class="btn-submit" onclick="addStaffMember()">Approve &amp; Generate Code</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">📍 Jos, Plateau State · Est. 2005</div>
+    <h1>Welcome to<br/><span>Plan Aid Academy</span></h1>
+    <p>A centre of excellence — Nursery, Primary, Secondary &amp; Arabic studies — shaping futures in the heart of Jos.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('admission')">Apply for Admission</button>
+      <button class="btn-outline" onclick="showPage('results')">Check Results</button>
+    </div>
+  </div>
+  <div class="units-strip">
+    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">🌱</div><h4>Nursery School</h4><p>Ages 2–5 · Foundation years</p></div>
+    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">✏️</div><h4>Primary School</h4><p>Primary 1–6 · Core education</p></div>
+    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">📚</div><h4>Secondary School</h4><p>JSS 1–3 · SSS 1–3 · WAEC/NECO</p></div>
+    <div class="unit-card" onclick="showPage('arabic')"><div class="unit-icon">☪️</div><h4>Arabic / Islamic</h4><p>Qur'an, Arabic &amp; Islamic Studies</p></div>
+    <div class="unit-card" onclick="openModal()"><div class="unit-icon">💻</div><h4>Staff Portal</h4><p>Admin, Finance &amp; Management</p></div>
+  </div>
+  <div class="section section-alt">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat"><div class="val">1,240+</div><div class="lbl">Total Students</div></div>
+        <div class="stat"><div class="val">68</div><div class="lbl">Teaching Staff</div></div>
+        <div class="stat"><div class="val">4</div><div class="lbl">School Units</div></div>
+        <div class="stat"><div class="val">18+</div><div class="lbl">Years of Excellence</div></div>
+        <div class="stat"><div class="val">96%</div><div class="lbl">WAEC Pass Rate</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div class="section-label">Key Features</div>
+      <div class="section-title">Everything in One Portal</div>
+      <div class="cards-grid">
+        <div class="card"><div class="card-icon" style="background:#d4f0e2">📝</div><h3>Online Admissions</h3><p>Apply online, get an application number instantly and print your admission slip.</p><span class="card-link" onclick="showPage('admission')">Apply Now →</span></div>
+        <div class="card"><div class="card-icon" style="background:#fef3cd">📊</div><h3>Result Portal</h3><p>Students and parents check results, download progress reports and track performance each term.</p><span class="card-link" onclick="showPage('results')">Check Results →</span></div>
+        <div class="card"><div class="card-icon" style="background:#fde8e8">☪️</div><h3>Arabic Programme</h3><p>Qur'anic recitation, Arabic language and Islamic Studies with bilingual report cards.</p><span class="card-link" onclick="showPage('arabic')">Learn More →</span></div>
+        <div class="card"><div class="card-icon" style="background:#e8d5f5">🎓</div><h3>Principal Dashboard</h3><p>Oversee all units, monitor staff, approve admissions and access whole-school analytics.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
+        <div class="card"><div class="card-icon" style="background:#d4f0e2">👩‍🏫</div><h3>Unit Head Management</h3><p>Each unit head manages their own teachers, attendance and unit-specific reports.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
+      </div>
+    </div>
+  </div>
+  <footer><strong>Plan Aid Academy</strong> · Jos, Plateau State, Nigeria · planaidacademy@email.com · +234 800 000 0000<br/><small style="opacity:.6;font-size:11px;margin-top:6px;display:block">© 2025 Plan Aid Academy. All rights reserved.</small></footer>
+</div>
+
+<!-- ADMISSION -->
+<div class="page" id="page-admission">
+  <div class="section">
+    <div class="container">
+      <div class="section-label">Enrolment</div>
+      <div class="section-title">Admission Application</div>
+      <p class="section-sub">Complete the form to apply for a place at Plan Aid Academy. You will receive an application number instantly and can print your admission slip.</p>
+      <div id="admissionForm">
+        <div class="form-page">
+          <h2>Student Admission Form</h2>
+          <p class="sub">Plan Aid Academy, Jos · 2025/2026 Academic Session</p>
+          <div class="form-group"><label>School Unit Applying For</label>
+            <select id="admUnit"><option value="">— Select Unit —</option><option>Nursery School (Creche / Pre-Nursery / Nursery 1-2)</option><option>Primary School (Primary 1 – 6)</option><option>Junior Secondary School (JSS 1 – 3)</option><option>Senior Secondary School (SSS 1 – 3)</option><option>Arabic / Islamic Studies Unit</option></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Surname</label><input id="admSurname" type="text" placeholder="Student's surname"/></div>
+            <div class="form-group"><label>First Name</label><input id="admFirst" type="text" placeholder="First name"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Date of Birth</label><input id="admDob" type="date"/></div>
+            <div class="form-group"><label>Gender</label><select id="admGender"><option>Male</option><option>Female</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>State of Origin</label><input id="admState" type="text" placeholder="e.g. Plateau"/></div>
+            <div class="form-group"><label>Religion</label><select id="admReligion"><option>Christianity</option><option>Islam</option><option>Other</option></select></div>
+          </div>
+          <div class="divider"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Parent / Guardian Name</label><input id="admParent" type="text" placeholder="Full name"/></div>
+            <div class="form-group"><label>Phone Number</label><input id="admPhone" type="tel" placeholder="+234 800 000 0000"/></div>
+          </div>
+          <div class="form-group"><label>Home Address</label><textarea id="admAddress" placeholder="Street, Area, Jos"></textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label>Previous School (if any)</label><input id="admPrev" type="text" placeholder="Previous school name"/></div>
+            <div class="form-group"><label>Class Last Attended</label><input id="admClass" type="text" placeholder="e.g. Primary 3"/></div>
+          </div>
+          <button class="btn-submit" onclick="submitAdmission()">Submit Application &amp; Get Admission Number</button>
+        </div>
+      </div>
+      <div id="admissionSlip" class="hidden" style="margin-top:32px">
+        <div class="alert alert-success">✅ Application submitted! Print or save your admission slip below.</div>
+        <div class="slip">
+          <div class="slip-header">
+            <div class="slip-logo">P</div>
+            <div class="slip-school"><h2>Plan Aid Academy</h2><p>Jos, Plateau State</p><p style="font-size:11px;color:#888">2025/2026 Academic Session – Admission Slip</p></div>
+            <div class="slip-no" id="slipNo">PAA-2025-0001</div>
+          </div>
+          <div class="slip-row">
+            <div class="slip-field"><div class="lbl">Full Name</div><div class="val" id="slipName">—</div></div>
+            <div class="slip-field"><div class="lbl">Unit Applied</div><div class="val" id="slipUnit">—</div></div>
+          </div>
+          <div class="slip-row">
+            <div class="slip-field"><div class="lbl">Date of Birth</div><div class="val" id="slipDob">—</div></div>
+            <div class="slip-field"><div class="lbl">Gender</div><div class="val" id="slipGender">—</div></div>
+          </div>
+          <div class="slip-row">
+            <div class="slip-field"><div class="lbl">Parent / Guardian</div><div class="val" id="slipParent">—</div></div>
+            <div class="slip-field"><div class="lbl">Phone</div><div class="val" id="slipPhone">—</div></div>
+          </div>
+          <div class="slip-footer">
+            <div>Application Date: <b id="slipDate"></b></div>
+            <div>Status: <span class="badge badge-gold">Pending Review</span></div>
+            <button class="btn-print" onclick="window.print()">🖨️ Print Slip</button>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:20px">
+          <button onclick="newApplication()" style="background:none;border:2px solid var(--green);color:var(--green);padding:11px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Submit Another Application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="page" id="page-results">
+  <div class="section">
+    <div class="container">
+      <div class="section-label">Academic Records</div>
+      <div class="section-title">Student Result Portal</div>
+      <p class="section-sub">Enter your student ID and select the term to view and print your academic progress report.</p>
+      <div class="form-page" style="margin-bottom:28px">
+        <h2>Check Results</h2>
+        <p class="sub">Enter your admission number to view your report card</p>
+        <div class="form-row">
+          <div class="form-group"><label>Student ID / Admission Number</label><input id="resId" type="text" placeholder="e.g. PAA-2023-0047"/></div>
+          <div class="form-group"><label>Academic Session</label><select><option>2024/2025</option><option>2023/2024</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Term</label><select><option>1st Term</option><option>2nd Term</option><option>3rd Term</option></select></div>
+          <div class="form-group"><label>School Unit</label><select><option>Secondary School</option><option>Primary School</option><option>Nursery School</option><option>Arabic Unit</option></select></div>
+        </div>
+        <button class="btn-submit" onclick="checkResults()">View Result Card</button>
+      </div>
+      <div id="resultCard" class="hidden">
+        <div class="alert alert-info">📄 Showing result for <b>Aisha Mohammed</b> · JSS 2A · 1st Term 2024/2025</div>
+        <div class="slip" style="max-width:740px">
+          <div class="slip-header">
+            <div class="slip-logo">P</div>
+            <div class="slip-school"><h2>Plan Aid Academy</h2><p>Student Academic Report Card · 1st Term 2024/2025</p></div>
+            <div class="slip-no">JSS 2A</div>
+          </div>
+          <div class="slip-row" style="grid-template-columns:1fr 1fr 1fr">
+            <div class="slip-field"><div class="lbl">Student Name</div><div class="val">Aisha Mohammed</div></div>
+            <div class="slip-field"><div class="lbl">Admission No.</div><div class="val">PAA-2023-0047</div></div>
+            <div class="slip-field"><div class="lbl">Class</div><div class="val">JSS 2A</div></div>
+          </div>
+          <div class="table-wrap" style="margin:16px 0">
+            <table>
+              <thead><tr><th>Subject</th><th>CA (40)</th><th>Exam (60)</th><th>Total</th><th>Grade</th><th>Remark</th></tr></thead>
+              <tbody>
+                <tr><td>Mathematics</td><td>34</td><td>52</td><td>86</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
+                <tr><td>English Language</td><td>30</td><td>48</td><td>78</td><td><span class="badge badge-green">B</span></td><td>Good</td></tr>
+                <tr><td>Basic Science</td><td>32</td><td>50</td><td>82</td><td><span class="badge badge-green">A</span></td><td>Very Good</td></tr>
+                <tr><td>Social Studies</td><td>28</td><td>44</td><td>72</td><td><span class="badge badge-gold">C</span></td><td>Average</td></tr>
+                <tr><td>Agric Science</td><td>35</td><td>55</td><td>90</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
+                <tr><td>Civic Education</td><td>29</td><td>46</td><td>75</td><td><span class="badge badge-gold">C</span></td><td>Average</td></tr>
+                <tr><td>Arabic Language</td><td>38</td><td>57</td><td>95</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="slip-row">
+            <div class="slip-field"><div class="lbl">Total Score</div><div class="val" style="color:var(--green)">578 / 700</div></div>
+            <div class="slip-field"><div class="lbl">Average</div><div class="val" style="color:var(--green)">82.6%</div></div>
+            <div class="slip-field"><div class="lbl">Position</div><div class="val">3rd / 42</div></div>
+            <div class="slip-field"><div class="lbl">Next Term</div><div class="val">Jan 13, 2025</div></div>
+          </div>
+          <div style="padding:14px;background:var(--light);border-radius:8px;font-size:13px;margin-top:12px"><b>Class Teacher's Remark:</b> Aisha is a diligent student who has shown remarkable improvement in Mathematics. We encourage her to put in more effort in Social Studies. Keep it up!</div>
+          <div class="slip-footer">
+            <div>Principal: <b>Mr. Samuel Dung</b></div>
+            <div>Class Teacher: <b>Mrs. Fatima Sani</b></div>
+            <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ARABIC -->
+<div class="page" id="page-arabic">
+  <div class="hero" style="padding:50px 32px 40px">
+    <div class="hero-badge">☪️ Arabic &amp; Islamic Studies Unit</div>
+    <h1>Arabic &amp; <span>Islamic Education</span></h1>
+    <p>A dedicated programme integrating Qur'anic studies, Arabic language and Islamic knowledge alongside the national curriculum.</p>
+  </div>
+  <div class="section section-alt">
+    <div class="container">
+      <div class="cards-grid">
+        <div class="card"><div class="card-icon" style="background:#fef3cd;font-size:28px">📖</div><h3>Qur'anic Studies</h3><p class="arabic-text">تحفيظ القرآن الكريم وتجويده</p><p style="margin-top:8px;font-size:13px;color:#666">Hifz (memorisation), Tajweed (recitation) and Tafseer (interpretation) from beginner to advanced.</p></div>
+        <div class="card"><div class="card-icon" style="background:#d4f0e2;font-size:28px">✍️</div><h3>Arabic Language</h3><p class="arabic-text">اللغة العربية – قراءة وكتابة ومحادثة</p><p style="margin-top:8px;font-size:13px;color:#666">Reading, writing, grammar and spoken Arabic across Foundation, Intermediate and Advanced levels.</p></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe;font-size:28px">🕌</div><h3>Islamic Studies</h3><p class="arabic-text">الفقه والعقيدة والسيرة النبوية</p><p style="margin-top:8px;font-size:13px;color:#666">Fiqh, Aqeedah, Seerah (Prophet's biography) and Islamic ethics integrated into the weekly timetable.</p></div>
+        <div class="card"><div class="card-icon" style="background:#fde8e8;font-size:28px">📜</div><h3>Bilingual Reports</h3><p class="arabic-text">كشف الدرجات – عربي وإنجليزي</p><p style="margin-top:8px;font-size:13px;color:#666">Arabic Unit students receive bilingual report cards in both English and Arabic, certified by the Unit Head.</p></div>
+      </div>
+      <div style="margin-top:32px;text-align:center"><button class="btn-primary" onclick="showPage('admission')">Apply to Arabic Unit</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="section">
+    <div class="container">
+      <div class="section-label">Our School</div>
+      <div class="section-title">About Plan Aid Academy</div>
+      <p style="font-size:15px;color:#555;line-height:1.8;max-width:760px;margin-bottom:36px">Plan Aid Academy, Jos, is a private co-educational school founded to provide quality, affordable and holistic education to children and youth of Jos, Plateau State. We operate four distinct units — Nursery, Primary, Secondary and Arabic/Islamic Studies — under one administration, ensuring continuity of education from early childhood to senior secondary.</p>
+      <div class="cards-grid">
+        <div class="card"><div class="card-icon" style="background:#d4f0e2">🎯</div><h3>Our Mission</h3><p>To equip every student with academic excellence, sound moral values and the practical skills needed to thrive in a modern, diverse world.</p></div>
+        <div class="card"><div class="card-icon" style="background:#fef3cd">👁️</div><h3>Our Vision</h3><p>To be the leading institution of learning in Plateau State, producing well-rounded graduates who serve Nigeria and the global community.</p></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe">📍</div><h3>Location</h3><p>Jos, Plateau State, Nigeria. Easily accessible, in a serene environment conducive to learning and holistic development.</p></div>
+        <div class="card"><div class="card-icon" style="background:#fde8e8">📞</div><h3>Contact Us</h3><p>Phone: +234 800 000 0000<br/>Email: planaidacademy@email.com<br/>Office Hours: Mon–Fri, 8am–4pm</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dash-layout">
+    <div class="dash-sidebar">
+      <div class="user-info">
+        <div class="avatar" id="dashAvatar">P</div>
+        <h4 id="dashName">Mr. Samuel Dung</h4>
+        <span id="dashRole">Principal</span>
+      </div>
+      <div class="dash-nav">
+        <a class="active" onclick="showDashSection('overview')"><span class="ico">🏠</span> Overview</a>
+        <a onclick="showDashSection('students')"><span class="ico">👥</span> Students</a>
+        <a onclick="showDashSection('staff')"><span class="ico">👩‍🏫</span> Staff</a>
+        <a onclick="showDashSection('admissions')"><span class="ico">📝</span> Admissions</a>
+        <a onclick="showDashSection('results')"><span class="ico">📊</span> Results</a>
+        <a onclick="showDashSection('finance')"><span class="ico">💰</span> Finance</a>
+        <a onclick="showDashSection('timetable')"><span class="ico">📅</span> Timetable</a>
+        <a onclick="showDashSection('reports')"><span class="ico">📄</span> Reports</a>
+        <a onclick="logOut()"><span class="ico">🚪</span> Log Out</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="dash-header">
+        <h2 id="dashSectionTitle">School Overview</h2>
+        <span class="badge badge-green" id="dashUnitBadge">All Units</span>
+      </div>
+
+      <div id="ds-overview">
+        <div class="dash-cards">
+          <div class="dash-card"><div class="dc-val">1,240</div><div class="dc-lbl">Total Students</div><div class="dc-sub">All 4 units</div></div>
+          <div class="dash-card"><div class="dc-val">68</div><div class="dc-lbl">Teaching Staff</div><div class="dc-sub">Across all units</div></div>
+          <div class="dash-card"><div class="dc-val">42</div><div class="dc-lbl">New Admissions</div><div class="dc-sub">2025/2026 session</div></div>
+          <div class="dash-card"><div class="dc-val">96%</div><div class="dc-lbl">Attendance Rate</div><div class="dc-sub">This week</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head"><h3>Unit Overview</h3></div>
+          <table>
+            <thead><tr><th>Unit</th><th>Head</th><th>Students</th><th>Staff</th><th>Fee Collection</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>🌱 Nursery School</td><td>Mrs. Grace Longs</td><td>180</td><td>12</td><td>88%</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>✏️ Primary School</td><td>Mr. Elisha Pwol</td><td>420</td><td>22</td><td>81%</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>📚 Secondary School</td><td>Mrs. Amaka Uche</td><td>510</td><td>28</td><td>74%</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>☪️ Arabic Unit</td><td>Mallam Umar Sani</td><td>130</td><td>6</td><td>92%</td><td><span class="badge badge-green">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert-info">📢 <b>Reminder:</b> 2nd Term examination timetable should be uploaded by Friday. 3 staff leave requests pending approval.</div>
+      </div>
+
+      <div id="ds-students" class="hidden">
+        <div class="table-wrap">
+          <div class="table-head"><h3>Student Register</h3><button class="btn-primary" style="font-size:12px;padding:7px 14px" onclick="showPage('admission')">+ New Admission</button></div>
+          <table>
+            <thead><tr><th>Adm. No.</th><th>Name</th><th>Class</th><th>Unit</th><th>Gender</th><th>Fee Status</th></tr></thead>
+            <tbody>
+              <tr><td>PAA-2023-0047</td><td>Aisha Mohammed</td><td>JSS 2A</td><td>Secondary</td><td>F</td><td><span class="badge badge-green">Paid</span></td></tr>
+              <tr><td>PAA-2024-0112</td><td>Ibrahim Hassan</td><td>SSS 2</td><td>Secondary</td><td>M</td><td><span class="badge badge-green">Paid</span></td></tr>
+              <tr><td>PAA-2024-0201</td><td>Blessing Musa</td><td>JSS 1A</td><td>Secondary</td><td>F</td><td><span class="badge badge-gold">Part</span></td></tr>
+              <tr><td>PAA-2022-0089</td><td>Fatima Yusuf</td><td>Primary 5</td><td>Primary</td><td>F</td><td><span class="badge badge-green">Paid</span></td></tr>
+              <tr><td>PAA-2025-0004</td><td>John Dakyen</td><td>Nursery 2</td><td>Nursery</td><td>M</td><td><span class="badge badge-green">Paid</span></td></tr>
+              <tr><td>PAA-2024-0315</td><td>Amina Abdullahi</td><td>Arabic Adv.</td><td>Arabic</td><td>F</td><td><span class="badge badge-red">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="studentLoginInfoPanel" class="table-wrap" style="margin-top:20px;display:none">
+          <div class="table-head" style="background:#f0faf4">
+            <h3>🔐 Student Portal Login Info</h3>
+            <span class="badge badge-green" style="font-size:11px">Visible to Admin only</span>
+          </div>
+          <table>
+            <thead><tr><th>Name</th><th>Username</th><th>Approval Code</th><th>Approved By</th><th>Action</th></tr></thead>
+            <tbody id="studentLoginInfoBody"><tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No student portal accounts generated yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-staff" class="hidden">
+        <div class="table-wrap">
+          <div class="table-head"><h3>Staff Directory</h3><button class="btn-primary" style="font-size:12px;padding:7px 14px" onclick="openAddStaff()">+ Add Staff</button></div>
+          <table>
+            <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Unit</th><th>Subject</th><th>Status</th></tr></thead>
+            <tbody id="staffTableBody">
+              <tr><td>PAA-ST-001</td><td>Mrs. Amaka Uche</td><td>Head of Secondary</td><td>Secondary</td><td>English Language</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-ST-002</td><td>Mr. Elisha Pwol</td><td>Head of Primary</td><td>Primary</td><td>Mathematics</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-ST-003</td><td>Mrs. Grace Longs</td><td>Head of Nursery</td><td>Nursery</td><td>Early Childhood</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-ST-004</td><td>Mallam Umar Sani</td><td>Head of Arabic</td><td>Arabic</td><td>Arabic Language</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-ST-005</td><td>Mrs. Fatima Sani</td><td>Class Teacher</td><td>Secondary</td><td>Biology</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-ST-006</td><td>Mr. James Lar</td><td>Class Teacher</td><td>Secondary</td><td>Physics</td><td><span class="badge badge-gold">On Leave</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="staffLoginInfoPanel" class="table-wrap" style="margin-top:20px;display:none">
+          <div class="table-head" style="background:#f0faf4">
+            <h3>🔐 Staff Portal Login Info</h3>
+            <span class="badge badge-green" style="font-size:11px">Visible to Admin only</span>
+          </div>
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Username</th><th>Approval Code</th><th>Approved By</th><th>Action</th></tr></thead>
+            <tbody id="staffLoginInfoBody"><tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No staff portal accounts generated yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-admissions" class="hidden">
+        <div class="table-wrap">
+          <div class="table-head"><h3>Admission Applications – 2025/2026</h3></div>
+          <table>
+            <thead><tr><th>App. No.</th><th>Name</th><th>Unit Applied</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="admissionsTableBody">
+              <tr><td>PAA-2025-0041</td><td>Daniel Gyang</td><td>JSS 1</td><td>12 May 2025</td><td><span class="badge badge-gold">Pending</span></td><td><button onclick="approveApplication('PAA-2025-0041','Daniel Gyang','JSS 1')" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button></td></tr>
+              <tr><td>PAA-2025-0042</td><td>Hauwa Suleiman</td><td>Arabic Unit</td><td>13 May 2025</td><td><span class="badge badge-gold">Pending</span></td><td><button onclick="approveApplication('PAA-2025-0042','Hauwa Suleiman','Arabic Unit')" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button></td></tr>
+              <tr><td>PAA-2025-0039</td><td>Ruth Pam</td><td>Primary 1</td><td>10 May 2025</td><td><span class="badge badge-green">Approved</span></td><td>—</td></tr>
+              <tr><td>PAA-2025-0040</td><td>Ali Musa</td><td>Nursery 1</td><td>11 May 2025</td><td><span class="badge badge-green">Approved</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-results" class="hidden">
+        <div class="alert alert-info">📊 Enter results for 1st Term 2024/2025. Deadline: 20th May 2025.</div>
+        <div class="table-wrap">
+          <div class="table-head"><h3>Result Entry Status by Class</h3></div>
+          <table>
+            <thead><tr><th>Class</th><th>Teacher</th><th>Students</th><th>Results Entered</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>SSS 3A</td><td>Mr. James Lar</td><td>38</td><td>38</td><td><span class="badge badge-green">Complete</span></td></tr>
+              <tr><td>SSS 2</td><td>Mrs. Amaka Uche</td><td>42</td><td>42</td><td><span class="badge badge-green">Complete</span></td></tr>
+              <tr><td>JSS 2A</td><td>Mrs. Fatima Sani</td><td>40</td><td>35</td><td><span class="badge badge-gold">In Progress</span></td></tr>
+              <tr><td>JSS 1A</td><td>Mr. Yakubu Ali</td><td>44</td><td>0</td><td><span class="badge badge-red">Not Started</span></td></tr>
+              <tr><td>Primary 6</td><td>Mrs. Helen Gom</td><td>36</td><td>36</td><td><span class="badge badge-green">Complete</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-finance" class="hidden">
+        <div class="dash-cards">
+          <div class="dash-card"><div class="dc-val">₦18.4M</div><div class="dc-lbl">Total Revenue</div></div>
+          <div class="dash-card"><div class="dc-val">₦14.1M</div><div class="dc-lbl">Fees Collected</div></div>
+          <div class="dash-card"><div class="dc-val">₦4.3M</div><div class="dc-lbl">Outstanding</div></div>
+          <div class="dash-card"><div class="dc-val">₦2.1M</div><div class="dc-lbl">Staff Salaries (Oct)</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head"><h3>Outstanding Fee Defaulters</h3></div>
+          <table>
+            <thead><tr><th>Student</th><th>Class</th><th>Fee</th><th>Paid</th><th>Balance</th><th>Duration</th></tr></thead>
+            <tbody>
+              <tr><td>Amina Abdullahi</td><td>Arabic Adv.</td><td>₦25,000</td><td>₦0</td><td>₦25,000</td><td><span class="badge badge-red">6 wks</span></td></tr>
+              <tr><td>Blessing Musa</td><td>JSS 1A</td><td>₦45,000</td><td>₦20,000</td><td>₦25,000</td><td><span class="badge badge-gold">3 wks</span></td></tr>
+              <tr><td>Peter Nda</td><td>SSS 1</td><td>₦65,000</td><td>₦40,000</td><td>₦25,000</td><td><span class="badge badge-gold">2 wks</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-timetable" class="hidden">
+        <div class="alert alert-info">📅 Weekly timetable for JSS 2A — 2024/2025 Session</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr></thead>
+            <tbody>
+              <tr><td>8:00–9:00</td><td>Mathematics</td><td>English</td><td>Basic Science</td><td>Mathematics</td><td>Assembly / Islamiyya</td></tr>
+              <tr><td>9:00–10:00</td><td>English</td><td>Social Studies</td><td>Arabic</td><td>Civic Education</td><td>Agric Science</td></tr>
+              <tr><td>10:00–10:30</td><td colspan="5" style="text-align:center;color:#888;font-style:italic">— BREAK —</td></tr>
+              <tr><td>10:30–11:30</td><td>Basic Science</td><td>Mathematics</td><td>English</td><td>Arabic</td><td>Computer Studies</td></tr>
+              <tr><td>11:30–12:30</td><td>Agric Science</td><td>Arabic</td><td>Social Studies</td><td>Basic Science</td><td>Cultural / Creative</td></tr>
+              <tr><td>12:30–1:30</td><td colspan="5" style="text-align:center;color:#888;font-style:italic">— LUNCH —</td></tr>
+              <tr><td>1:30–2:30</td><td>Civic Education</td><td>Computer</td><td>Mathematics</td><td>English</td><td>Sports / P.E.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ds-reports" class="hidden">
+        <div class="cards-grid">
+          <div class="card"><div class="card-icon" style="background:#d4f0e2">📄</div><h3>End-of-Term Report</h3><p>Generate and print end-of-term academic reports for any class or entire unit.</p><span class="card-link">Generate →</span></div>
+          <div class="card"><div class="card-icon" style="background:#fef3cd">💰</div><h3>Finance Report</h3><p>Monthly and termly fee collection, outstanding balances and expense summary.</p><span class="card-link">Download PDF →</span></div>
+          <div class="card"><div class="card-icon" style="background:#dbeafe">📊</div><h3>Attendance Report</h3><p>Class-by-class attendance statistics across all units for the selected period.</p><span class="card-link">View Report →</span></div>
+          <div class="card"><div class="card-icon" style="background:#fde8e8">👩‍🏫</div><h3>Staff Report</h3><p>Staff performance, leave records, qualifications and unit allocation summary.</p><span class="card-link">View Report →</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRole='principal';
+let appCounter=42;
+let staffCounter=6;
+const SUBMITTED_APPS_KEY='paaSubmittedApplications';
+let submittedApplications=loadSubmittedApplications();
+
+function loadSubmittedApplications(){
+  try{
+    const stored=localStorage.getItem(SUBMITTED_APPS_KEY);
+    const apps=stored ? JSON.parse(stored) : [];
+    // Update appCounter to avoid duplicates
+    if(apps.length>0){
+      const maxNum=Math.max(...apps.map(a=>parseInt(a.appNo.split('-').pop())||0));
+      if(maxNum>=appCounter) appCounter=maxNum;
+    }
+    return apps;
+  }catch(e){
+    return [];
+  }
+}
+
+function saveSubmittedApplications(){
+  localStorage.setItem(SUBMITTED_APPS_KEY, JSON.stringify(submittedApplications));
+}
+
+function addApplicationToTable(app){
+  const tbody=document.getElementById('admissionsTableBody');
+  if(!tbody) return;
+  const row=document.createElement('tr');
+  row.id='app-row-'+app.appNo;
+  const isApproved=app.status==='approved';
+  const approveBtn='<button onclick="approveApplication(\x27'+escapeHtml(app.appNo)+'\x27,\x27'+escapeHtml(app.name)+'\x27,\x27'+escapeHtml(app.unit)+'\x27)" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button>';
+  row.innerHTML='<td>'+escapeHtml(app.appNo)+'</td>'
+    +'<td>'+escapeHtml(app.name)+'</td>'
+    +'<td>'+escapeHtml(app.unit)+'</td>'
+    +'<td>'+escapeHtml(app.date)+'</td>'
+    +'<td><span class="badge '+(isApproved?'badge-green':'badge-gold')+'">'+(isApproved?'Approved':'Pending')+'</span></td>'
+    +'<td>'+(isApproved?'<span style="font-weight:700;color:var(--green)">Approved</span>':approveBtn)+'</td>';
+  // Insert at the top (before existing rows)
+  const firstRow=tbody.querySelector('tr');
+  if(firstRow){
+    tbody.insertBefore(row, firstRow);
+  } else {
+    tbody.appendChild(row);
+  }
+}
+
+function renderSavedApplications(){
+  submittedApplications.forEach(app=>addApplicationToTable(app));
+}
+const adminRoles=['principal','unithead'];
+const portalRoles={
+  principal:{
+    username:'PAA-PRINCIPAL',
+    secret:'PAA@Principal2026',
+    name:'Mr. Samuel Dung',
+    roleLabel:'Principal',
+    unit:'All Units',
+    avatar:'P',
+    userType:'admin',
+    defaultSection:'overview'
+  },
+  unithead:{
+    username:'PAA-UH-001',
+    secret:'PAA@UnitHead2026',
+    name:'Head Teacher',
+    roleLabel:'Head Teacher',
+    unit:'All Units',
+    avatar:'H',
+    userType:'admin',
+    defaultSection:'overview'
+  },
+  staff:{
+    roleLabel:'Staff',
+    userType:'staff',
+    defaultSection:'overview'
+  },
+  student:{
+    roleLabel:'Student',
+    userType:'student',
+    defaultSection:'results'
+  }
+};
+const portalAccess={
+  admin:['overview','students','staff','admissions','results','finance','timetable','reports'],
+  staff:['overview','students','results','timetable','reports'],
+  student:['overview','results','finance','timetable']
+};
+const GENERATED_USERS_KEY='paaGeneratedPortalUsers';
+let generatedPortalUsers=loadGeneratedPortalUsers();
+let activePortalUserType='admin';
+let activeAllowedSections=portalAccess.admin.slice();
+let activeUser=null;
+
+function loadGeneratedPortalUsers(){
+  try{
+    const stored=localStorage.getItem(GENERATED_USERS_KEY);
+    return stored ? JSON.parse(stored) : {};
+  }catch(e){
+    return {};
+  }
+}
+
+function saveGeneratedPortalUsers(){
+  localStorage.setItem(GENERATED_USERS_KEY, JSON.stringify(generatedPortalUsers));
+}
+
+function normalizeUsername(username){
+  return String(username||'').trim().toUpperCase();
+}
+
+function generateApprovalCode(length=8){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
+  for(let i=0;i<length;i++){
+    code+=chars[Math.floor(Math.random()*chars.length)];
+  }
+  return 'PAA-'+code;
+}
+
+function getInitials(name){
+  const parts=String(name||'').trim().split(/\s+/).filter(Boolean);
+  if(parts.length===0) return '?';
+  if(parts.length===1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0)+parts[parts.length-1].charAt(0)).toUpperCase();
+}
+
+function getApproverName(){
+  return activeUser ? activeUser.name : (portalRoles[currentRole] ? portalRoles[currentRole].name : 'Approver');
+}
+
+function updateLoginInfoTables(){
+  const isAdm = (activePortalUserType === 'admin');
+  
+  // Update student login info table
+  const studentPanel = document.getElementById('studentLoginInfoPanel');
+  if (studentPanel) {
+    if (isAdm) {
+      studentPanel.style.display = 'block';
+      const body = document.getElementById('studentLoginInfoBody');
+      const studentsList = Object.values(generatedPortalUsers).filter(u => u.role === 'student');
+      if (studentsList.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No student portal accounts generated yet.</td></tr>';
+      } else {
+        body.innerHTML = studentsList.map(u => `
+          <tr>
+            <td>${escapeHtml(u.name)}</td>
+            <td><code>${escapeHtml(u.username)}</code></td>
+            <td><code>${escapeHtml(u.approvalCode)}</code></td>
+            <td>${escapeHtml(u.approvedBy)}</td>
+            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--green);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
+          </tr>
+        `).join('');
+      }
+    } else {
+      studentPanel.style.display = 'none';
+    }
+  }
+
+  // Update staff login info table
+  const staffPanel = document.getElementById('staffLoginInfoPanel');
+  if (staffPanel) {
+    if (isAdm) {
+      staffPanel.style.display = 'block';
+      const body = document.getElementById('staffLoginInfoBody');
+      const staffList = Object.values(generatedPortalUsers).filter(u => u.role === 'staff');
+      if (staffList.length === 0) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No staff portal accounts generated yet.</td></tr>';
+      } else {
+        body.innerHTML = staffList.map(u => `
+          <tr>
+            <td>${escapeHtml(u.name)}</td>
+            <td>${escapeHtml(u.roleLabel)}</td>
+            <td><code>${escapeHtml(u.username)}</code></td>
+            <td><code>${escapeHtml(u.approvalCode)}</code></td>
+            <td>${escapeHtml(u.approvedBy)}</td>
+            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--green);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
+          </tr>
+        `).join('');
+      }
+    } else {
+      staffPanel.style.display = 'none';
+    }
+  }
+}
+
+function registerGeneratedPortalUser(user){
+  const key=normalizeUsername(user.username);
+  generatedPortalUsers[key]={
+    username:user.username,
+    approvalCode:user.approvalCode,
+    role:user.role,
+    userType:user.userType,
+    name:user.name,
+    roleLabel:user.roleLabel,
+    unit:user.unit,
+    avatar:user.avatar || getInitials(user.name),
+    defaultSection:user.defaultSection || 'overview',
+    status:'approved',
+    approvedBy:getApproverName(),
+    approvedAt:new Date().toISOString()
+  };
+  saveGeneratedPortalUsers();
+  updateLoginInfoTables();
+  return generatedPortalUsers[key];
+}
+
+function findGeneratedPortalUser(username, role){
+  const user=generatedPortalUsers[normalizeUsername(username)];
+  if(!user || user.role!==role) return null;
+  return user;
+}
+
+// Generate secure random password
+function generatePassword(length=12) {
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  const symbols = '!@#$%^&*';
+  const all = upper + lower + numbers + symbols;
+  let pwd = '';
+  pwd += upper[Math.floor(Math.random() * upper.length)];
+  pwd += lower[Math.floor(Math.random() * lower.length)];
+  pwd += numbers[Math.floor(Math.random() * numbers.length)];
+  pwd += symbols[Math.floor(Math.random() * symbols.length)];
+  for(let i=pwd.length; i<length; i++) {
+    pwd += all[Math.floor(Math.random() * all.length)];
+  }
+  return pwd.split('').sort(()=>Math.random()-0.5).join('');
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('nav-'+id);
+  if(nb)nb.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openModal(){document.getElementById('loginModal').classList.add('open')}
+function closeModal(){document.getElementById('loginModal').classList.remove('open')}
+document.getElementById('loginModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.getElementById('credModal').addEventListener('click',function(e){if(e.target===this)closeCredModal()});
+document.getElementById('addStaffModal').addEventListener('click',function(e){if(e.target===this)closeAddStaffModal()});
+
+function setRole(el,role){
+  if(!portalRoles[role]) return;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentRole=role;
+  const usernameLabel=document.getElementById('loginUsernameLabel');
+  const secretLabel=document.getElementById('loginSecretLabel');
+  const loginHelp=document.getElementById('loginHelp');
+  const detailBtn=document.getElementById('showLoginDetailsBtn');
+  const usernameInput=document.getElementById('loginUsername');
+  const secretInput=document.getElementById('loginPassword');
+  const isAdmin=adminRoles.includes(role);
+
+  usernameLabel.textContent=role==='student' ? 'Student ID / Admission No.' : 'Staff ID / Email';
+  secretLabel.textContent=isAdmin ? 'Password' : 'Approval Code';
+  usernameInput.placeholder=isAdmin ? ('e.g. '+portalRoles[role].username) : (role==='student' ? 'e.g. PAA-2025-0041' : 'e.g. PAA-ST-007');
+  secretInput.placeholder=isAdmin ? 'Enter password' : 'Enter generated approval code';
+  loginHelp.textContent=isAdmin
+    ? 'Use the approved Principal or Head Teacher account to manage portal access.'
+    : 'This account can sign in only after the Principal or Head Teacher approves it and shares the generated code.';
+  if(detailBtn) detailBtn.textContent=isAdmin ? 'Show Principal / Head Teacher Login Details' : 'Approval code required after approval';
+}
+
+function doLogin(){
+  const username=document.getElementById('loginUsername').value.trim();
+  const secret=document.getElementById('loginPassword').value;
+  const roleConfig=portalRoles[currentRole];
+  if(!roleConfig){
+    alert('Select a valid portal role.');
+    return;
+  }
+  if(!username||!secret){alert('Enter your ID and '+(adminRoles.includes(currentRole)?'password':'approval code')+'.');return;}
+
+  if(adminRoles.includes(currentRole)){
+    if(username!==roleConfig.username||secret!==roleConfig.secret){
+      alert('Incorrect username or password. Please check your credentials and try again.');
+      return;
+    }
+    startPortalSession({
+      username:roleConfig.username,
+      name:roleConfig.name,
+      role:currentRole,
+      roleLabel:roleConfig.roleLabel,
+      unit:roleConfig.unit,
+      avatar:roleConfig.avatar,
+      userType:roleConfig.userType,
+      defaultSection:roleConfig.defaultSection
+    });
+    return;
+  }
+
+  const approvedUser=findGeneratedPortalUser(username, currentRole);
+  if(!approvedUser || approvedUser.status!=='approved'){
+    alert('This '+currentRole+' has not been approved for portal access yet. Ask the Principal or Head Teacher for a generated approval code.');
+    return;
+  }
+  if(secret!==approvedUser.approvalCode){
+    alert('Invalid approval code for this '+currentRole+' account.');
+    return;
+  }
+  startPortalSession(approvedUser);
+}
+
+function startPortalSession(user){
+  closeModal();
+  activeUser=user;
+  activePortalUserType=user.userType||'admin';
+  activeAllowedSections=(portalAccess[activePortalUserType]||portalAccess.admin).slice();
+  document.getElementById('dashName').textContent=user.name||'Portal User';
+  document.getElementById('dashRole').textContent=user.roleLabel||'Portal User';
+  document.getElementById('dashAvatar').textContent=user.avatar||getInitials(user.name);
+  document.getElementById('dashUnitBadge').textContent=user.unit||user.roleLabel||'Portal';
+  
+  localStorage.setItem('userRole', user.role||currentRole);
+  localStorage.setItem('userType', activePortalUserType);
+  document.getElementById('loginUsername').value='';
+  document.getElementById('loginPassword').value='';
+  applyPortalAccess();
+  showPage('dashboard');
+  updateLoginInfoTables();
+  showDashSection(user.defaultSection||activeAllowedSections[0]||'overview');
+}
+
+function showRoleLoginDetails(){
+  if(!adminRoles.includes(currentRole)){
+    alert('Staff and student login details are generated only after approval by the Principal or Head Teacher.');
+    return;
+  }
+  const roleCredential=portalRoles[currentRole];
+  closeModal();
+  showCredentialsModal(roleCredential.username, roleCredential.secret, roleCredential.name, roleCredential.unit, roleCredential.roleLabel, 'Password');
+}
+
+function logOut(){
+  activePortalUserType='admin';
+  activeAllowedSections=portalAccess.admin.slice();
+  activeUser=null;
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('userType');
+  showPage('home');
+}
+
+function getDashSectionFromLink(link){
+  const match=(link.getAttribute('onclick')||'').match(/showDashSection\('([^']+)'\)/);
+  return match ? match[1] : null;
+}
+
+function applyPortalAccess(){
+  document.querySelectorAll('.dash-nav a').forEach(link=>{
+    const section=getDashSectionFromLink(link);
+    if(!section) return;
+    link.style.display=activeAllowedSections.includes(section) ? 'flex' : 'none';
+  });
+}
+
+function showDashSection(sec){
+  if(!activeAllowedSections.includes(sec)){
+    sec=activeAllowedSections[0]||'overview';
+  }
+  document.querySelectorAll('[id^="ds-"]').forEach(d=>d.classList.add('hidden'));
+  document.getElementById('ds-'+sec).classList.remove('hidden');
+  document.querySelectorAll('.dash-nav a').forEach(a=>a.classList.remove('active'));
+  const activeLink=Array.from(document.querySelectorAll('.dash-nav a')).find(a=>getDashSectionFromLink(a)===sec);
+  if(activeLink)activeLink.classList.add('active');
+  const titles={overview:'School Overview',students:'Student Register',staff:'Staff Management',admissions:'Admissions',results:'Result Management',finance:'Finance Dashboard',timetable:'Timetables',reports:'Reports'};
+  const userPrefix=activePortalUserType==='student' ? 'Student ' : (activePortalUserType==='staff' ? 'Staff ' : '');
+  document.getElementById('dashSectionTitle').textContent=(sec==='overview' ? userPrefix : '')+(titles[sec]||'');
+  updateLoginInfoTables();
+}
+
+function submitAdmission(){
+  const unit=document.getElementById('admUnit').value;
+  const surname=document.getElementById('admSurname').value.trim();
+  const first=document.getElementById('admFirst').value.trim();
+  const dob=document.getElementById('admDob').value;
+  const gender=document.getElementById('admGender').value;
+  const parent=document.getElementById('admParent').value.trim();
+  const phone=document.getElementById('admPhone').value.trim();
+  if(!unit||!surname||!first){alert('Please fill in the unit, surname and first name.');return;}
+  appCounter++;
+  const appNo='PAA-2025-'+String(appCounter).padStart(4,'0');
+  const fullName=(surname+' '+first);
+  const unitShort=unit.split('(')[0].trim();
+  const dateStr=new Date().toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});
+
+  // Show admission slip
+  document.getElementById('slipNo').textContent=appNo;
+  document.getElementById('slipName').textContent=fullName.toUpperCase();
+  document.getElementById('slipUnit').textContent=unitShort;
+  document.getElementById('slipDob').textContent=dob||'\u2014';
+  document.getElementById('slipGender').textContent=gender;
+  document.getElementById('slipParent').textContent=parent||'\u2014';
+  document.getElementById('slipPhone').textContent=phone||'\u2014';
+  document.getElementById('slipDate').textContent=dateStr;
+  document.getElementById('admissionForm').classList.add('hidden');
+  document.getElementById('admissionSlip').classList.remove('hidden');
+
+  // Save to localStorage and add to dashboard admissions table
+  const app={appNo:appNo, name:fullName, unit:unitShort, date:dateStr, status:'pending', dob:dob, gender:gender, parent:parent, phone:phone};
+  submittedApplications.push(app);
+  saveSubmittedApplications();
+  addApplicationToTable(app);
+}
+
+function newApplication(){
+  document.getElementById('admissionForm').classList.remove('hidden');
+  document.getElementById('admissionSlip').classList.add('hidden');
+  document.querySelectorAll('#admissionForm input,#admissionForm textarea').forEach(el=>el.value='');
+}
+
+function checkResults(){
+  const id=document.getElementById('resId').value.trim();
+  if(!id){alert('Please enter your student ID or admission number.');return;}
+  document.getElementById('resultCard').classList.remove('hidden');
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
+
+function openAddStaff(){document.getElementById('addStaffModal').classList.add('open')}
+function closeAddStaffModal(){document.getElementById('addStaffModal').classList.remove('open')}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, function(ch){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+  });
+}
+
+function addStaffMember(){
+  if(!activeAllowedSections.includes('staff')){
+    alert('Only the Principal or Head Teacher can approve staff portal access.');
+    return;
+  }
+  const name=document.getElementById('staffName').value.trim();
+  const role=document.getElementById('staffRole').value;
+  const unit=document.getElementById('staffUnit').value;
+  const subject=document.getElementById('staffSubject').value.trim()||'General Duties';
+  if(!name||!role||!unit){alert('Please complete full name, role and unit.');return;}
+
+  staffCounter++;
+  const staffId='PAA-ST-'+String(staffCounter).padStart(3,'0');
+  const approvalCode=generateApprovalCode();
+  const staffTableBody=document.getElementById('staffTableBody');
+  const row=document.createElement('tr');
+  row.innerHTML='<td>'+staffId+'</td>'
+    +'<td>'+escapeHtml(name)+'</td>'
+    +'<td>'+escapeHtml(role)+'</td>'
+    +'<td>'+escapeHtml(unit)+'</td>'
+    +'<td>'+escapeHtml(subject)+'</td>'
+    +'<td><span class="badge badge-green">Approved</span></td>';
+  staffTableBody.prepend(row);
+  registerGeneratedPortalUser({
+    username:staffId,
+    approvalCode:approvalCode,
+    role:'staff',
+    userType:'staff',
+    name:name,
+    roleLabel:role,
+    unit:unit,
+    defaultSection:'overview'
+  });
+
+  closeAddStaffModal();
+  document.getElementById('staffName').value='';
+  document.getElementById('staffRole').value='';
+  document.getElementById('staffUnit').value='';
+  document.getElementById('staffSubject').value='';
+  showCredentialsModal(staffId, approvalCode, name, unit, role, 'Approval Code');
+}
+
+// Approve an admission application and generate login credentials
+function approveApplication(appNo, name, unit){
+  if(!activeAllowedSections.includes('admissions')){
+    alert('Only the Principal or Head Teacher can approve student portal access.');
+    return;
+  }
+  const approvalCode = generateApprovalCode();
+  const username = appNo;
+  // Update UI: set status to Approved and replace action button
+  const rows = document.querySelectorAll('#ds-admissions table tbody tr');
+  for(let r of rows){
+    const cell = r.querySelector('td');
+    if(cell && cell.textContent.trim() === appNo){
+      const statusSpan = r.querySelector('td:nth-child(5) span');
+      if(statusSpan){ statusSpan.className = 'badge badge-green'; statusSpan.textContent = 'Approved'; }
+      const actionCell = r.querySelector('td:nth-child(6)');
+      if(actionCell){ actionCell.innerHTML = '<span style="font-weight:700;color:var(--green)">Approved</span>'; }
+      break;
+    }
+  }
+  // Update localStorage status for submitted applications
+  const savedApp = submittedApplications.find(a => a.appNo === appNo);
+  if(savedApp){
+    savedApp.status = 'approved';
+    saveSubmittedApplications();
+  }
+  registerGeneratedPortalUser({
+    username:username,
+    approvalCode:approvalCode,
+    role:'student',
+    userType:'student',
+    name:name,
+    roleLabel:'Student',
+    unit:unit,
+    defaultSection:'results'
+  });
+  // Show generated credentials to the approver
+  showCredentialsModal(username, approvalCode, name, unit, 'Student', 'Approval Code');
+}
+
+function showCredentialsModal(username, password, name, unit, roleLabel, secretLabel='Approval Code'){
+  document.getElementById('credSecretLabel').textContent = secretLabel;
+  document.getElementById('credUsername').textContent = username;
+  document.getElementById('credPassword').textContent = password;
+  document.getElementById('credName').textContent = name;
+  document.getElementById('credRole').textContent = roleLabel + ' / ' + unit;
+  document.getElementById('credModal').classList.add('open');
+}
+
+function closeCredModal(){ document.getElementById('credModal').classList.remove('open'); }
+
+function copyCred(id){
+  const text = document.getElementById(id).textContent || '';
+  if(!navigator.clipboard){ alert('Copy the text: ' + text); return; }
+  navigator.clipboard.writeText(text).then(()=>{ alert('Copied to clipboard'); }, ()=>{ alert('Unable to copy'); });
+}
+
+// On page load: render any saved admission applications into the dashboard table
+renderSavedApplications();
+</script>
+</body>
+</html>
+<?php
+// Optional footer PHP
+// Uncomment below if needed for additional server-side processing
+
+/*
+// Example: Log page access
+if (function_exists('log_page_access')) {
+    log_page_access('index', $_SERVER['HTTP_USER_AGENT']);
+}
+*/
+?>
