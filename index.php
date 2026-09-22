@@ -1,25 +1,19 @@
 <?php
 /**
- * Plan Aid Academy - School Management System
+ * Plan Aid Academy & Educational Resource, Jos - School Management System
  * Main Application Entry Point
  * @version 1.0.0
- * @author Backend Development Team
  */
 
-// Start session for backend integration
 session_start();
-
-// Set headers
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 
-// Configuration
-define('API_BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/aidstudent/api');
-define('APP_NAME', 'Plan Aid Academy');
+define('API_BASE_URL', 'http://' . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost') . '/aidstudent/api');
+define('APP_NAME', 'Plan Aid Academy & Educational Resource, Jos');
 define('APP_VERSION', '1.0.0');
 
-// Optional: Check if backend is initialized (can be removed if not needed)
 $backendReady = true;
 ?>
 <!DOCTYPE html>
@@ -27,153 +21,327 @@ $backendReady = true;
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plan Aid Academy - Jos | School Management Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
+<title>Plan Aid Academy & Educational Resource, Jos | Science & ICT Education</title>
+<meta name="description" content="Plan Aid Academy & Educational Resource, Jos — a Science and ICT-based centre of excellence focused on academic excellence, innovation, creativity, technology and practical learning."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-  :root{--green:#1e3a8a;--gold:#c8960c;--cream:#faf7f0;--dark:#0f172a;--white:#fff;--red:#b03232;--blue:#1a3a5c;--light:#e0e7ff;--border:#d4e0d8;--shadow:0 4px 24px rgba(30,58,138,.15)}
-  *{box-sizing:border-box;margin:0;padding:0}
-  .hidden{display:none!important}
-  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
-  .page{display:none;min-height:100vh;animation:fadeIn .35s ease}
-  .page.active{display:block}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  nav{background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25)}
-  .nav-brand{display:flex;align-items:center;gap:12px;cursor:pointer}
-  .nav-logo{width:42px;height:42px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:18px;color:var(--dark)}
-  .nav-title{font-family:'Playfair Display',serif;font-size:17px;line-height:1.2}
-  .nav-title small{display:block;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:300;opacity:.8;letter-spacing:.5px}
-  .nav-links{display:flex;gap:4px}
-  .nav-links button{background:none;border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:background .2s}
-  .nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.18)}
-  .nav-right{display:flex;align-items:center;gap:12px}
-  .btn-login{background:var(--gold);color:var(--dark);border:none;padding:9px 20px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .2s}
-  .btn-login:hover{opacity:.85}
-  .hero{background:linear-gradient(135deg,var(--green) 0%,#0b1d3a 100%);color:#fff;padding:80px 32px 60px;text-align:center;position:relative;overflow:hidden}
-  .hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-  .hero-badge{display:inline-block;background:rgba(200,150,12,.25);border:1px solid var(--gold);color:var(--gold);padding:6px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
-  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,60px);font-weight:900;line-height:1.1;margin-bottom:16px}
-  .hero h1 span{color:var(--gold)}
-  .hero p{font-size:17px;opacity:.85;max-width:560px;margin:0 auto 36px;line-height:1.6}
-  .hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-  .btn-primary{background:var(--gold);color:var(--dark);border:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-  .btn-primary:hover{background:#e0a80e;transform:translateY(-2px)}
-  .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);padding:13px 28px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-  .btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1)}
-  .units-strip{display:flex;gap:0;overflow-x:auto}
-  .unit-card{flex:1;min-width:160px;padding:20px 16px;text-align:center;border-right:1px solid var(--border);cursor:pointer;transition:background .2s;background:#fff}
-  .unit-card:last-child{border-right:none}
-  .unit-card:hover{background:var(--light)}
-  .unit-icon{font-size:28px;margin-bottom:8px}
-  .unit-card h4{font-size:13px;font-weight:600;color:var(--green)}
-  .unit-card p{font-size:11px;color:#666;margin-top:4px}
-  .section{padding:56px 32px}
-  .section-alt{background:#fff}
-  .container{max-width:1100px;margin:0 auto}
-  .section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-  .section-title{font-family:'Playfair Display',serif;font-size:clamp(24px,3.5vw,38px);font-weight:700;color:var(--dark);margin-bottom:12px}
-  .section-sub{font-size:15px;color:#555;max-width:560px;line-height:1.6;margin-bottom:36px}
-  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
-  .card{background:#fff;border-radius:12px;padding:28px 24px;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
-  .card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(26,92,56,.18)}
-  .card-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
-  .card h3{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:8px}
-  .card p{font-size:13px;color:#666;line-height:1.5}
-  .card-link{display:inline-block;margin-top:14px;font-size:13px;font-weight:600;color:var(--green);cursor:pointer}
-  .card-link:hover{color:var(--gold)}
-  .stats-row{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:40px}
-  .stat{flex:1;min-width:140px;background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);border-left:4px solid var(--green);text-align:center}
-  .stat .val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--green)}
-  .stat .lbl{font-size:12px;color:#666;margin-top:4px}
-  .form-page{max-width:700px;margin:0 auto;background:#fff;border-radius:16px;padding:40px;box-shadow:var(--shadow)}
-  .form-page h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px;color:var(--dark)}
-  .form-page .sub{font-size:14px;color:#666;margin-bottom:28px}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0}
-  .form-group{margin-bottom:16px}
-  .form-group label{display:block;font-size:13px;font-weight:600;color:var(--dark);margin-bottom:6px}
-  .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);transition:border-color .2s;background:var(--cream)}
-  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green)}
-  .form-group textarea{resize:vertical;min-height:90px}
-  .btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;margin-top:8px}
-  .btn-submit:hover{background:#14472b}
-  .dash-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
-  .dash-sidebar{background:var(--dark);color:#fff;padding:24px 0}
-  .dash-sidebar .user-info{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px}
-  .dash-sidebar .user-info .avatar{width:44px;height:44px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:10px}
-  .dash-sidebar .user-info h4{font-size:14px;font-weight:600}
-  .dash-sidebar .user-info span{font-size:12px;color:rgba(255,255,255,.55)}
-  .dash-nav a{display:flex;align-items:center;gap:12px;padding:11px 20px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;border-left:3px solid transparent}
-  .dash-nav a:hover,.dash-nav a.active{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--gold)}
-  .dash-nav a .ico{font-size:16px;width:20px;text-align:center}
-  .dash-content{padding:32px;background:var(--cream);overflow-y:auto}
-  .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
-  .dash-header h2{font-family:'Playfair Display',serif;font-size:24px;color:var(--dark)}
-  .dash-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-bottom:28px}
-  .dash-card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow);border-bottom:3px solid var(--green)}
-  .dash-card .dc-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--green)}
-  .dash-card .dc-lbl{font-size:12px;color:#888;margin-top:4px}
-  .dash-card .dc-sub{font-size:12px;color:var(--gold);margin-top:2px;font-weight:600}
-  .table-wrap{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
-  .table-head{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-  .table-head h3{font-size:15px;font-weight:700;color:var(--dark)}
-  table{width:100%;border-collapse:collapse}
-  thead{background:var(--light)}
-  th{padding:12px 16px;text-align:left;font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px}
-  td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);color:var(--dark)}
-  tr:last-child td{border-bottom:none}
-  tr:hover td{background:#f7fcf9}
-  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
-  .badge-green{background:#dbeafe;color:#1e3a8a}
-  .badge-gold{background:#fef3cd;color:#856404}
-  .badge-red{background:#fde8e8;color:#b03232}
-  .badge-blue{background:#dbeafe;color:#1e40af}
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center}
-  .modal-overlay.open{display:flex}
-  .modal{background:#fff;border-radius:16px;padding:40px;width:90%;max-width:420px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-  .modal-wide{max-width:620px}
-  .modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888}
-  .modal h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px}
-  .modal .sub{font-size:13px;color:#666;margin-bottom:24px}
-  .role-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-  .role-tab{padding:7px 14px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:none;font-family:'DM Sans',sans-serif}
-  .role-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
-  .slip{background:#fff;border:2px solid var(--green);border-radius:12px;padding:32px;max-width:640px;margin:0 auto}
-  .slip-header{display:flex;align-items:center;gap:16px;border-bottom:2px solid var(--green);padding-bottom:16px;margin-bottom:20px}
-  .slip-logo{width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Playfair Display',serif;font-weight:900;font-size:22px;flex-shrink:0}
-  .slip-school{flex:1}
-  .slip-school h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--green)}
-  .slip-school p{font-size:12px;color:#666}
-  .slip-no{background:var(--green);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;white-space:nowrap}
-  .slip-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-  .slip-field{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
-  .slip-field .lbl{font-size:10px;font-weight:700;text-transform:uppercase;color:#888;margin-bottom:2px}
-  .slip-field .val{font-size:14px;font-weight:600;color:var(--dark)}
-  .slip-footer{border-top:1px solid var(--border);padding-top:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#666;flex-wrap:wrap;gap:10px}
-  .btn-print{background:var(--green);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
-  .arabic-text{font-family:'Amiri',serif;direction:rtl;font-size:16px;line-height:1.8;color:var(--dark)}
-  .finance-row{display:grid;grid-template-columns:2fr 1fr;gap:24px}
-  .chart-box{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow)}
-  .chart-box h3{font-size:14px;font-weight:700;margin-bottom:20px;color:var(--dark)}
-  .bar-chart{display:flex;align-items:flex-end;gap:8px;height:130px;padding-bottom:24px;position:relative}
-  .bar{flex:1;background:var(--green);border-radius:4px 4px 0 0;position:relative;min-width:24px;transition:opacity .2s}
-  .bar:hover{opacity:.75}
-  .bar .bar-lbl{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:#888;white-space:nowrap}
-  .bar .bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--green);white-space:nowrap}
-  .pie-wrap{display:flex;flex-direction:column;gap:12px}
-  .pie-item{display:flex;align-items:center;gap:10px}
-  .pie-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-  .pie-item span{font-size:13px;color:var(--dark);flex:1}
-  .pie-item b{font-size:13px;font-weight:700}
-  .alert{padding:14px 18px;border-radius:8px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-  .alert-success{background:#dbeafe;color:#1e3a8a;border-left:4px solid var(--green)}
-  .alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--blue)}
-  footer{background:var(--dark);color:rgba(255,255,255,.7);text-align:center;padding:24px 32px;font-size:13px}
-  footer strong{color:var(--gold)}
-  .hidden{display:none}
-  .divider{border:none;border-top:1px solid var(--border);margin:24px 0}
-  @media(max-width:768px){nav{padding:0 16px}.nav-links{display:none}.dash-layout{grid-template-columns:1fr}.dash-sidebar{display:none}.form-row{grid-template-columns:1fr}.finance-row{grid-template-columns:1fr}.hero{padding:50px 20px 40px}.section{padding:40px 20px}.slip-row{grid-template-columns:1fr}}
+  :root {
+    --navy: #0b2545;
+    --navy-light: #1e3a8a;
+    --navy-dark: #07162c;
+    --gold: #f59e0b;
+    --gold-light: #fbbf24;
+    --gold-dark: #d97706;
+    --red: #ef4444;
+    --red-dark: #dc2626;
+    --cyan: #0ea5e9;
+    --cyan-light: #e0f2fe;
+    --white: #ffffff;
+    --bg-base: #f8fafc;
+    --bg-card: #ffffff;
+    --dark: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 12px rgba(11,37,69,0.08);
+    --shadow-lg: 0 10px 30px rgba(11,37,69,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-base); color: var(--dark); line-height: 1.6; min-height: 100vh; }
+  .hidden { display: none !important; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  /* Smooth animations & page switching */
+  .page { display: none; min-height: 80vh; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Navigation Bar */
+  nav {
+    background: var(--navy);
+    color: var(--white);
+    position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    border-bottom: 3px solid var(--gold);
+  }
+  .nav-container {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px; padding: 0 20px; max-width: 1280px; margin: 0 auto;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; color: var(--white);
+  }
+  .nav-logo-icon {
+    width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+    display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: var(--navy-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); flex-shrink: 0;
+  }
+  .nav-title-box { display: flex; flex-direction: column; }
+  .nav-title-main { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 800; line-height: 1.15; letter-spacing: 0.3px; color: var(--white); }
+  .nav-title-sub { font-size: 10px; font-weight: 600; color: var(--gold-light); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .nav-menu { display: flex; align-items: center; gap: 4px; }
+  .nav-menu button {
+    background: transparent; border: none; color: rgba(255,255,255,0.9);
+    padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; font-family: inherit; white-space: nowrap;
+  }
+  .nav-menu button:hover, .nav-menu button.active { background: rgba(255,255,255,0.15); color: var(--gold-light); }
+  
+  .btn-portal-login {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-dark) 100%);
+    color: var(--navy-dark); border: none; padding: 9px 18px; border-radius: var(--radius-sm);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.3); font-family: inherit; white-space: nowrap;
+  }
+  .btn-portal-login:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245,158,11,0.4); }
+
+  .mobile-toggle { display: none; background: none; border: none; color: var(--white); font-size: 24px; cursor: pointer; }
+  .mobile-menu {
+    display: none; background: var(--navy-dark); padding: 16px; border-bottom: 2px solid var(--gold);
+    flex-direction: column; gap: 8px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu button {
+    background: none; border: none; color: var(--white); padding: 10px 14px; text-align: left;
+    font-size: 14px; font-weight: 500; border-radius: var(--radius-sm); cursor: pointer;
+  }
+  .mobile-menu button.active { background: rgba(255,255,255,0.12); color: var(--gold-light); font-weight: 700; }
+
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1e3a8a 100%);
+    color: var(--white); padding: 70px 20px 60px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero-section::before {
+    content: ''; position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-badge-location {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4);
+    color: var(--gold-light); padding: 6px 18px; border-radius: var(--radius-full);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 20px; text-transform: uppercase;
+  }
+  .hero-title-main {
+    font-family: 'Playfair Display', serif; font-size: clamp(30px, 5vw, 54px);
+    font-weight: 900; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px;
+  }
+  .hero-title-main span { color: var(--gold-light); }
+  .hero-motto-banner {
+    display: inline-block; background: rgba(255,255,255,0.1); border-left: 4px solid var(--gold);
+    padding: 8px 20px; border-radius: var(--radius-sm); font-size: 16px; font-weight: 700;
+    color: var(--gold-light); margin-bottom: 16px; font-style: italic;
+  }
+  .hero-tagline-badge {
+    display: inline-block; background: var(--red); color: var(--white);
+    padding: 6px 18px; border-radius: var(--radius-full); font-size: 12px; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+  }
+  .hero-intro {
+    font-size: 16px; opacity: 0.9; max-width: 800px; margin: 0 auto 36px; line-height: 1.7; font-weight: 400;
+  }
+  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-hero-primary {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); color: var(--navy-dark);
+    border: none; padding: 14px 28px; border-radius: var(--radius-md); font-weight: 800; font-size: 14px;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(245,158,11,0.35); text-transform: uppercase;
+  }
+  .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
+  
+  .btn-hero-cyan {
+    background: linear-gradient(135deg, var(--cyan), #0284c7); color: var(--white);
+    border: none; padding: 14px 28px; border-radius: var(--radius-md); font-weight: 800; font-size: 14px;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(14,165,233,0.35); text-transform: uppercase;
+  }
+  .btn-hero-cyan:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14,165,233,0.5); }
+
+  .btn-hero-outline {
+    background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.4);
+    padding: 13px 26px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+  }
+  .btn-hero-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.1); }
+
+  /* Features Strip */
+  .features-strip { background: var(--white); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+  .features-strip-inner { display: flex; overflow-x: auto; scrollbar-width: none; }
+  .feature-strip-card {
+    flex: 1; min-width: 180px; padding: 20px 16px; text-align: center;
+    border-right: 1px solid var(--border); cursor: pointer; transition: background 0.2s;
+  }
+  .feature-strip-card:last-child { border-right: none; }
+  .feature-strip-card:hover { background: var(--cyan-light); }
+  .feature-strip-icon { font-size: 28px; margin-bottom: 6px; }
+  .feature-strip-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .feature-strip-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Sections & Cards */
+  .section-padding { padding: 64px 0; }
+  .section-alt { background: var(--white); }
+  .section-header { text-align: center; margin-bottom: 48px; }
+  .section-badge {
+    display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--navy-light); background: var(--cyan-light);
+    padding: 4px 14px; border-radius: var(--radius-full); margin-bottom: 10px;
+  }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 3.5vw, 38px); font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+  .section-subtitle { font-size: 15px; color: var(--text-muted); max-width: 720px; margin: 0 auto; line-height: 1.6; }
+
+  /* Grid Layouts */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  @media (max-width: 992px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+  /* Cards */
+  .card-box {
+    background: var(--white); border-radius: var(--radius-lg); padding: 30px 24px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-md); transition: all 0.25s; position: relative;
+  }
+  .card-box:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--cyan); }
+  .card-icon-wrap {
+    width: 54px; height: 54px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--navy-light), var(--navy));
+    color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(30,58,138,0.2);
+  }
+  .card-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Vision & Mission Cards */
+  .vm-card {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    color: var(--white); border-radius: var(--radius-lg); padding: 36px 30px; border-top: 4px solid var(--gold);
+    box-shadow: var(--shadow-lg);
+  }
+  .vm-card h3 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold-light); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .vm-card p { font-size: 15px; line-height: 1.7; opacity: 0.95; }
+  .vm-list { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .vm-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; opacity: 0.95; }
+  .vm-list li::before { content: '✓'; color: var(--gold-light); font-weight: 900; }
+
+  /* Gallery Grid & Modal */
+  .gallery-nav { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
+  .gallery-filter-btn {
+    background: var(--white); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-full);
+    font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer; transition: all 0.2s;
+  }
+  .gallery-filter-btn.active, .gallery-filter-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+  .gallery-card {
+    background: var(--white); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm); transition: all 0.25s;
+  }
+  .gallery-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .gallery-img-placeholder {
+    height: 180px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--white);
+    padding: 20px; text-align: center; position: relative;
+  }
+  .gallery-tag { position: absolute; top: 12px; right: 12px; background: var(--gold); color: var(--navy-dark); font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: var(--radius-full); text-transform: uppercase; }
+  .gallery-body { padding: 16px; }
+  .gallery-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .gallery-sub { font-size: 12px; color: var(--text-muted); }
+
+  /* Contact Cards & Form */
+  .contact-info-card {
+    background: var(--white); border-radius: var(--radius-lg); padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow-md);
+  }
+  .contact-item { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  .contact-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--cyan-light); color: var(--navy); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .contact-text h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .contact-text p, .contact-text a { font-size: 14px; color: var(--text-muted); text-decoration: none; }
+  .contact-text a:hover { color: var(--navy-light); text-decoration: underline; }
+
+  /* Footer */
+  footer {
+    background: var(--navy-dark); color: var(--white); padding: 60px 20px 30px; border-top: 4px solid var(--gold);
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; max-width: 1200px; margin: 0 auto 40px; }
+  @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } }
+  .footer-brand h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 800; color: var(--gold-light); margin-bottom: 8px; }
+  .footer-brand p { font-size: 13px; opacity: 0.8; line-height: 1.6; margin-bottom: 16px; }
+  .footer-motto { font-size: 13px; font-weight: 700; color: var(--gold-light); font-style: italic; }
+  .footer-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 16px; position: relative; padding-bottom: 8px; }
+  .footer-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30px; height: 2px; background: var(--gold); }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 13px; transition: all 0.2s; cursor: pointer; }
+  .footer-links a:hover { color: var(--gold-light); padding-left: 4px; }
+  .footer-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; font-size: 12px; opacity: 0.7; }
+
+  /* Restored Modals, Form & Dashboard Styles */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: var(--radius-lg); padding: 36px; width: 90%; max-width: 440px; position: relative; box-shadow: var(--shadow-lg); }
+  .modal-wide { max-width: 640px; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+  .modal h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--navy); margin-bottom: 6px; }
+  .modal .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+  .role-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .role-tab { padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; background: var(--bg-base); }
+  .role-tab.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+  
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 14px; color: var(--dark); background: var(--bg-base); transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--navy-light); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+  
+  .btn-submit {
+    width: 100%; padding: 13px; background: var(--navy); color: var(--white); border: none;
+    border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 8px;
+  }
+  .btn-submit:hover { background: var(--navy-light); }
+
+  .slip { background: var(--white); border: 2px solid var(--navy); border-radius: var(--radius-md); padding: 30px; max-width: 680px; margin: 0 auto; box-shadow: var(--shadow-md); }
+  .slip-header { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid var(--navy); padding-bottom: 16px; margin-bottom: 20px; }
+  .slip-logo { width: 56px; height: 56px; border-radius: 50%; background: var(--navy); color: var(--gold); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; flex-shrink: 0; }
+  .slip-school { flex: 1; }
+  .slip-school h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--navy); }
+  .slip-no { background: var(--navy); color: var(--white); padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; }
+  .slip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .slip-field { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; }
+  .slip-field .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+  .slip-field .val { font-size: 13px; font-weight: 600; color: var(--dark); }
+  .btn-print { background: var(--navy); color: var(--white); border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; }
+
+  /* Dashboard Framework Styles */
+  .dash-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 72px); }
+  .dash-sidebar { background: var(--navy-dark); color: var(--white); padding: 24px 0; }
+  .dash-sidebar .user-info { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px; }
+  .dash-sidebar .user-info .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); color: var(--navy-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; margin-bottom: 10px; }
+  .dash-nav a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; font-size: 13px; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent; }
+  .dash-nav a:hover, .dash-nav a.active { color: var(--white); background: rgba(255,255,255,0.08); border-left-color: var(--gold); }
+  .dash-content { padding: 32px; background: var(--bg-base); overflow-y: auto; }
+  .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-bottom: 28px; }
+  .dash-card { background: var(--white); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); border-bottom: 3px solid var(--navy); }
+  .dash-card .dc-val { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--navy); }
+  .dash-card .dc-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .table-wrap { background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; border: 1px solid var(--border); }
+  .table-head { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--bg-base); }
+  th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--dark); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .badge-green { background: #dbeafe; color: #1e3a8a; }
+  .badge-gold { background: #fef3cd; color: #856404; }
+  .badge-red { background: #fde8e8; color: #b03232; }
+  @media (max-width: 992px) { .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { display: none; } }
 </style>
 <script>
-  // Set API configuration from PHP
   const API_CONFIG = {
     baseUrl: '<?php echo API_BASE_URL; ?>',
     appName: '<?php echo APP_NAME; ?>'
@@ -182,29 +350,54 @@ $backendReady = true;
 </head>
 <body>
 
+<!-- NAVIGATION BAR -->
 <nav>
-  <div class="nav-brand" onclick="showPage('home')">
-    <div class="nav-logo">P</div>
-    <div class="nav-title">Plan Aid Academy<small>Jos, Plateau State</small></div>
+  <div class="nav-container">
+    <a class="nav-brand" onclick="showPage('home')">
+      <div class="nav-logo-icon">🎓</div>
+      <div class="nav-title-box">
+        <span class="nav-title-main">PLAN AID ACADEMY</span>
+        <span class="nav-title-sub">&amp; Educational Resource, Jos</span>
+      </div>
+    </a>
+    <div class="nav-menu">
+      <button onclick="showPage('home')" id="nav-home" class="active">Home</button>
+      <button onclick="showPage('about')" id="nav-about">About Us</button>
+      <button onclick="showPage('academics')" id="nav-academics">Academics</button>
+      <button onclick="showPage('focus')" id="nav-focus">Focus Areas</button>
+      <button onclick="showPage('why-choose')" id="nav-why-choose">Why Choose Us</button>
+      <button onclick="showPage('science-ict')" id="nav-science-ict">Science &amp; ICT</button>
+      <button onclick="showPage('gallery')" id="nav-gallery">Gallery</button>
+      <button onclick="showPage('admission')" id="nav-admission">Admissions</button>
+      <button onclick="showPage('results')" id="nav-results">Results</button>
+      <button onclick="showPage('arabic')" id="nav-arabic">Arabic Unit</button>
+      <button onclick="showPage('contact')" id="nav-contact">Contact</button>
+      <button class="btn-portal-login" onclick="openModal()">Portal Login</button>
+    </div>
+    <button class="mobile-toggle" onclick="toggleMobileMenu()">☰</button>
   </div>
-  <div class="nav-links">
-    <button onclick="showPage('home')" id="nav-home" class="active">Home</button>
-    <button onclick="showPage('admission')" id="nav-admission">Admissions</button>
-    <button onclick="showPage('results')" id="nav-results">Results</button>
-    <button onclick="showPage('arabic')" id="nav-arabic">Arabic Unit</button>
-    <button onclick="showPage('about')" id="nav-about">About</button>
-  </div>
-  <div class="nav-right">
-    <button class="btn-login" onclick="openModal()">Portal Login</button>
+  <div class="mobile-menu" id="mobileMenu">
+    <button onclick="showPage('home'); toggleMobileMenu();">Home</button>
+    <button onclick="showPage('about'); toggleMobileMenu();">About Us</button>
+    <button onclick="showPage('academics'); toggleMobileMenu();">Academics</button>
+    <button onclick="showPage('focus'); toggleMobileMenu();">Focus Areas</button>
+    <button onclick="showPage('why-choose'); toggleMobileMenu();">Why Choose Us</button>
+    <button onclick="showPage('science-ict'); toggleMobileMenu();">Science &amp; ICT</button>
+    <button onclick="showPage('gallery'); toggleMobileMenu();">Gallery</button>
+    <button onclick="showPage('admission'); toggleMobileMenu();">Admissions</button>
+    <button onclick="showPage('results'); toggleMobileMenu();">Results</button>
+    <button onclick="showPage('arabic'); toggleMobileMenu();">Arabic Unit</button>
+    <button onclick="showPage('contact'); toggleMobileMenu();">Contact Us</button>
+    <button onclick="openModal(); toggleMobileMenu();" style="background:var(--gold); color:var(--navy-dark); font-weight:700;">Portal Login</button>
   </div>
 </nav>
 
-<!-- LOGIN MODAL -->
+<!-- PORTAL LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <h2>Portal Login</h2>
-    <p class="sub" id="loginHelp">Principal and Head Teacher approve portal access. Staff and students sign in with the generated approval code.</p>
+    <p class="sub" id="loginHelp">Sign in to your Plan Aid Academy portal account.</p>
     <div class="role-tabs">
       <button class="role-tab active" onclick="setRole(this,'principal')">Principal</button>
       <button class="role-tab" onclick="setRole(this,'unithead')">Head Teacher</button>
@@ -213,44 +406,46 @@ $backendReady = true;
     </div>
     <div class="form-group"><label id="loginUsernameLabel">Staff ID / Email</label><input id="loginUsername" type="text" placeholder="e.g. PAA-PRINCIPAL" autocomplete="off"/></div>
     <div class="form-group"><label id="loginSecretLabel">Password</label><input id="loginPassword" type="password" placeholder="Enter password" autocomplete="new-password"/></div>
-    <button class="btn-submit" onclick="doLogin()">Sign In</button>
-    <div style="text-align:center;margin-top:12px"><button id="showLoginDetailsBtn" type="button" onclick="showRoleLoginDetails()" style="background:none;border:none;color:var(--green);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Show Principal / Head Teacher Login Details</button></div>
-
+    <button class="btn-submit" onclick="doLogin()">Sign In to Portal</button>
+    <div style="text-align:center;margin-top:12px">
+      <button id="showLoginDetailsBtn" type="button" onclick="showRoleLoginDetails()" style="background:none;border:none;color:var(--navy-light);font-size:12px;cursor:pointer;text-decoration:underline">Show Principal / Head Teacher Demo Credentials</button>
+    </div>
   </div>
 </div>
+
 <!-- CREDENTIALS MODAL -->
 <div class="modal-overlay" id="credModal">
   <div class="modal">
     <button class="modal-close" onclick="closeCredModal()">✕</button>
     <h2>Generated Login Credentials</h2>
-    <p class="sub">Share these credentials securely. Staff and students can only sign in after approval with this generated code.</p>
-    <div class="form-group"><label>Name</label><div id="credName" style="font-weight:700;margin-top:6px"></div></div>
-    <div class="form-group"><label>Role / Unit</label><div id="credRole" style="margin-top:6px"></div></div>
-    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label style="min-width:110px">Username</label><div id="credUsername" style="font-family:monospace"></div><button onclick="copyCred('credUsername')" class="btn-primary" style="padding:6px 10px;font-size:12px">Copy</button></div>
-    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label id="credSecretLabel" style="min-width:110px">Approval Code</label><div id="credPassword" style="font-family:monospace"></div><button onclick="copyCred('credPassword')" class="btn-primary" style="padding:6px 10px;font-size:12px">Copy</button></div>
-    <div style="text-align:right;margin-top:12px"><button class="btn-submit" onclick="closeCredModal()">Done</button></div>
+    <p class="sub">Share these portal credentials securely.</p>
+    <div class="form-group"><label>Name</label><div id="credName" style="font-weight:700;margin-top:4px"></div></div>
+    <div class="form-group"><label>Role / Unit</label><div id="credRole" style="margin-top:4px"></div></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label style="min-width:110px">Username</label><div id="credUsername" style="font-family:monospace;font-weight:700"></div><button onclick="copyCred('credUsername')" class="btn-hero-cyan" style="padding:4px 10px;font-size:11px">Copy</button></div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px"><label id="credSecretLabel" style="min-width:110px">Approval Code</label><div id="credPassword" style="font-family:monospace;font-weight:700"></div><button onclick="copyCred('credPassword')" class="btn-hero-cyan" style="padding:4px 10px;font-size:11px">Copy</button></div>
+    <div style="text-align:right;margin-top:16px"><button class="btn-submit" onclick="closeCredModal()">Done</button></div>
   </div>
 </div>
+
 <!-- ADD STAFF MODAL -->
 <div class="modal-overlay" id="addStaffModal">
   <div class="modal modal-wide">
     <button class="modal-close" onclick="closeAddStaffModal()">✕</button>
     <h2>Approve Staff Login</h2>
-    <p class="sub">Approve a staff record and generate the portal code they will use to sign in.</p>
+    <p class="sub">Approve a staff record and generate their portal sign-in code.</p>
     <div class="form-row">
       <div class="form-group"><label>Full Name</label><input id="staffName" type="text" placeholder="e.g. Mr. John Danjuma"/></div>
       <div class="form-group"><label>Role</label>
         <select id="staffRole">
           <option value="">— Select Role —</option>
-          <option>Finance Officer</option>
-          <option>Teacher</option>
+          <option>Science Educator</option>
+          <option>ICT / Robotics Instructor</option>
           <option>Head of Secondary</option>
           <option>Head of Primary</option>
           <option>Head of Nursery</option>
           <option>Head of Arabic</option>
           <option>Class Teacher</option>
-          <option>Subject Teacher</option>
-          <option>Admin Officer</option>
+          <option>Finance Officer</option>
         </select>
       </div>
     </div>
@@ -265,70 +460,669 @@ $backendReady = true;
           <option>Administration</option>
         </select>
       </div>
-      <div class="form-group"><label>Subject / Department</label><input id="staffSubject" type="text" placeholder="e.g. Chemistry"/></div>
+      <div class="form-group"><label>Subject / Department</label><input id="staffSubject" type="text" placeholder="e.g. Computer Science / ICT"/></div>
     </div>
     <button class="btn-submit" onclick="addStaffMember()">Approve &amp; Generate Code</button>
   </div>
 </div>
 
-<!-- HOME -->
+<!-- PAGE 1: HOME PAGE -->
 <div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hero-badge">📍 Jos, Plateau State · Est. 2005</div>
-    <h1>Welcome to<br/><span>Plan Aid Academy</span></h1>
-    <p>A centre of excellence — Nursery, Primary, Secondary &amp; Arabic studies — shaping futures in the heart of Jos.</p>
-    <div class="hero-btns">
-      <button class="btn-primary" onclick="showPage('admission')">Apply for Admission</button>
-      <button class="btn-outline" onclick="showPage('results')">Check Results</button>
-    </div>
-  </div>
-  <div class="units-strip">
-    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">🌱</div><h4>Nursery School</h4><p>Ages 2–5 · Foundation years</p></div>
-    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">✏️</div><h4>Primary School</h4><p>Primary 1–6 · Core education</p></div>
-    <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">📚</div><h4>Secondary School</h4><p>JSS 1–3 · SSS 1–3 · WAEC/NECO</p></div>
-    <div class="unit-card" onclick="showPage('arabic')"><div class="unit-icon">☪️</div><h4>Arabic / Islamic</h4><p>Qur'an, Arabic &amp; Islamic Studies</p></div>
-    <div class="unit-card" onclick="openModal()"><div class="unit-icon">💻</div><h4>Staff Portal</h4><p>Admin, Finance &amp; Management</p></div>
-  </div>
-  <div class="section section-alt">
+  <!-- HERO SECTION -->
+  <section class="hero-section">
     <div class="container">
-      <div class="stats-row">
-        <div class="stat"><div class="val">1,240+</div><div class="lbl">Total Students</div></div>
-        <div class="stat"><div class="val">68</div><div class="lbl">Teaching Staff</div></div>
-        <div class="stat"><div class="val">4</div><div class="lbl">School Units</div></div>
-        <div class="stat"><div class="val">18+</div><div class="lbl">Years of Excellence</div></div>
-        <div class="stat"><div class="val">96%</div><div class="lbl">WAEC Pass Rate</div></div>
+      <div class="hero-badge-location">📍 A.U TETENGI HOUSE, NO 107/1 BAUCHI ROAD, JOS NORTH, PLATEAU STATE</div>
+      <h1 class="hero-title-main">
+        PLAN AID ACADEMY<br/>
+        <span>&amp; EDUCATIONAL RESOURCE, JOS</span>
+      </h1>
+      <div class="hero-motto-banner">Motto: "Empowering Knowledge, Igniting Innovation"</div>
+      <div>
+        <span class="hero-tagline-badge">A SCIENCE AND ICT-BASED CENTRE OF EXCELLENCE</span>
+      </div>
+      <p class="hero-intro">
+        At PLAN AID ACADEMY, we are dedicated to nurturing young minds through a balanced blend of scientific inquiry, technological innovation, and creative learning. Our mission is to empower students with practical skills and digital literacy that prepare them for the dynamic world of science and technology.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" onclick="showPage('admission')">Apply for Admission</button>
+        <button class="btn-hero-cyan" onclick="showPage('results')">Check Results</button>
+        <button class="btn-hero-outline" onclick="showPage('about')">About Us</button>
+        <button class="btn-hero-outline" onclick="showPage('contact')">Contact Us</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES STRIP -->
+  <div class="features-strip">
+    <div class="features-strip-inner">
+      <div class="feature-strip-card" onclick="showPage('science-ict')">
+        <div class="feature-strip-icon">🔬</div>
+        <div class="feature-strip-title">Science Education</div>
+        <div class="feature-strip-desc">Hands-on experimentation</div>
+      </div>
+      <div class="feature-strip-card" onclick="showPage('science-ict')">
+        <div class="feature-strip-icon">💻</div>
+        <div class="feature-strip-title">ICT Integration</div>
+        <div class="feature-strip-desc">Computer labs &amp; e-learning</div>
+      </div>
+      <div class="feature-strip-card" onclick="showPage('science-ict')">
+        <div class="feature-strip-icon">🤖</div>
+        <div class="feature-strip-title">Coding &amp; Robotics</div>
+        <div class="feature-strip-desc">Digital skills development</div>
+      </div>
+      <div class="feature-strip-card" onclick="showPage('focus')">
+        <div class="feature-strip-icon">💡</div>
+        <div class="feature-strip-title">Innovation Fairs</div>
+        <div class="feature-strip-desc">Projects &amp; tech competitions</div>
+      </div>
+      <div class="feature-strip-card" onclick="showPage('arabic')">
+        <div class="feature-strip-icon">☪️</div>
+        <div class="feature-strip-title">Arabic &amp; Islamic Unit</div>
+        <div class="feature-strip-desc">Qur'anic studies &amp; bilingual cards</div>
       </div>
     </div>
   </div>
-  <div class="section">
+
+  <!-- ABOUT US SECTION -->
+  <section class="section-padding section-alt" id="home-about">
     <div class="container">
-      <div class="section-label">Key Features</div>
-      <div class="section-title">Everything in One Portal</div>
-      <div class="cards-grid">
-        <div class="card"><div class="card-icon" style="background:#dbeafe">📝</div><h3>Online Admissions</h3><p>Apply online, get an application number instantly and print your admission slip.</p><span class="card-link" onclick="showPage('admission')">Apply Now →</span></div>
-        <div class="card"><div class="card-icon" style="background:#fef3cd">📊</div><h3>Result Portal</h3><p>Students and parents check results, download progress reports and track performance each term.</p><span class="card-link" onclick="showPage('results')">Check Results →</span></div>
-        <div class="card"><div class="card-icon" style="background:#fde8e8">☪️</div><h3>Arabic Programme</h3><p>Qur'anic recitation, Arabic language and Islamic Studies with bilingual report cards.</p><span class="card-link" onclick="showPage('arabic')">Learn More →</span></div>
-        <div class="card"><div class="card-icon" style="background:#e8d5f5">🎓</div><h3>Principal Dashboard</h3><p>Oversee all units, monitor staff, approve admissions and access whole-school analytics.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
-        <div class="card"><div class="card-icon" style="background:#dbeafe">👩‍🏫</div><h3>Unit Head Management</h3><p>Each unit head manages their own teachers, attendance and unit-specific reports.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
+      <div class="section-header">
+        <span class="section-badge">Welcome to Plan Aid Academy</span>
+        <h2 class="section-title">Nurturing Young Minds For A Digital World</h2>
+        <p class="section-subtitle">
+          "At PLAN AID ACADEMY, we are dedicated to nurturing young minds through a balanced blend of scientific inquiry, technological innovation, and creative learning. Our mission is to empower students with practical skills and digital literacy that prepare them for the dynamic world of science and technology."
+        </p>
+      </div>
+      <div class="grid-3">
+        <div class="card-box">
+          <div class="card-icon-wrap">🔬</div>
+          <h3 class="card-title">Science &amp; Tech Focus</h3>
+          <p class="card-desc">Fostering analytical thinking, scientific inquiry, and hands-on laboratory experiences to inspire future scientists and engineers.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">💻</div>
+          <h3 class="card-title">Digital Literacy &amp; ICT</h3>
+          <p class="card-desc">Providing modern computer laboratories, coding tutorials, robotics modules, and 21st-century digital competencies.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🌱</div>
+          <h3 class="card-title">Holistic Student Development</h3>
+          <p class="card-desc">Combining rigorous STEM curriculum with strong moral values, leadership training, creative expression, and extracurricular activities.</p>
+        </div>
       </div>
     </div>
-  </div>
-  <footer><strong>Plan Aid Academy</strong> · Jos, Plateau State, Nigeria · planaidacademy@email.com · +234 800 000 0000<br/><small style="opacity:.6;font-size:11px;margin-top:6px;display:block">© 2025 Plan Aid Academy. All rights reserved.</small></footer>
+  </section>
+
+  <!-- OUR FOCUS AREAS SECTION -->
+  <section class="section-padding" id="home-focus">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Core Pillars</span>
+        <h2 class="section-title">OUR FOCUS AREAS</h2>
+        <p class="section-subtitle">Empowering learners with discovery, digital technology, innovation, and academic rigor.</p>
+      </div>
+      <div class="grid-4">
+        <div class="card-box">
+          <div class="card-icon-wrap">🔬</div>
+          <h3 class="card-title">SCIENCE EDUCATION</h3>
+          <p class="card-desc">Hands-on experiences, critical thinking, and problem-solving approaches that inspire discovery and innovation.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">💻</div>
+          <h3 class="card-title">ICT INTEGRATION</h3>
+          <p class="card-desc">State-of-the-art computer laboratories, coding lessons, robotics, and digital skills development for 21st-century learners.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">💡</div>
+          <h3 class="card-title">INNOVATION &amp; CREATIVITY</h3>
+          <p class="card-desc">Encouraging students to design, build, and explore through science fairs, tech projects, and digital creativity programs.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🎓</div>
+          <h3 class="card-title">ACADEMIC EXCELLENCE</h3>
+          <p class="card-desc">A robust curriculum that combines STEM subjects with strong moral and intellectual foundations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION & MISSION SECTION -->
+  <section class="section-padding section-alt" id="home-vision-mission">
+    <div class="container">
+      <div class="grid-2">
+        <div class="vm-card">
+          <h3>👁️ OUR VISION</h3>
+          <p>
+            "To become a leading Science and ICT Institution producing learners who are Innovative, Analytical, And Globally Competitive."
+          </p>
+        </div>
+        <div class="vm-card" style="border-top-color: var(--cyan);">
+          <h3>🎯 OUR MISSION</h3>
+          <p><strong>"To provide quality education through:"</strong></p>
+          <ul class="vm-list">
+            <li>Modern science and technology facilities</li>
+            <li>Qualified and passionate educators</li>
+            <li>Interactive, project-based learning</li>
+            <li>Continuous digital skill development</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US SECTION -->
+  <section class="section-padding" id="home-why-choose">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Excellence Guaranteed</span>
+        <h2 class="section-title">WHY CHOOSE US</h2>
+        <p class="section-subtitle">Discover why families in Jos and Plateau State choose Plan Aid Academy for their children's education.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card-box">
+          <div class="card-icon-wrap">👨‍🏫</div>
+          <h3 class="card-title">Qualified &amp; Experienced Teachers</h3>
+          <p class="card-desc">Passionate educators trained in modern pedagogical approaches, scientific inquiry, and interactive student engagement.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🔬</div>
+          <h3 class="card-title">Modern Science &amp; Computer Labs</h3>
+          <p class="card-desc">Fully equipped science workstations and computer labs providing practical hands-on learning experiences.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🤖</div>
+          <h3 class="card-title">Coding &amp; Robotics Programs</h3>
+          <p class="card-desc">Structured digital skills development introducing students to logic, programming languages, and robotics automation.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">📲</div>
+          <h3 class="card-title">E-Learning &amp; Digital Resources</h3>
+          <p class="card-desc">Integrating digital learning tools, online student evaluation, and interactive educational content for continuous progress.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🏆</div>
+          <h3 class="card-title">Science &amp; Technology Competitions</h3>
+          <p class="card-desc">Encouraging student participation in inter-school science fairs, robotics challenges, and innovation competitions.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🏫</div>
+          <h3 class="card-title">Conducive Learning Environment</h3>
+          <p class="card-desc">Serene, secure, and supportive campus atmosphere fostering curiosity, discipline, and creative academic growth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>PLAN AID ACADEMY &amp; EDUCATIONAL RESOURCE, JOS</h3>
+        <p class="footer-motto">"Empowering Knowledge, Igniting Innovation"</p>
+        <p style="margin-top:10px; font-size:12px; opacity:0.8;">A Science and ICT-Based Centre of Excellence in Jos North, Plateau State.</p>
+      </div>
+      <div>
+        <h4 class="footer-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a onclick="showPage('home')">Home</a></li>
+          <li><a onclick="showPage('about')">About Us</a></li>
+          <li><a onclick="showPage('academics')">Academics</a></li>
+          <li><a onclick="showPage('focus')">Focus Areas</a></li>
+          <li><a onclick="showPage('why-choose')">Why Choose Us</a></li>
+          <li><a onclick="showPage('science-ict')">Science &amp; ICT</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Portals &amp; Media</h4>
+        <ul class="footer-links">
+          <li><a onclick="showPage('admission')">Online Admissions</a></li>
+          <li><a onclick="showPage('results')">Check Results</a></li>
+          <li><a onclick="showPage('arabic')">Arabic Unit</a></li>
+          <li><a onclick="showPage('gallery')">School Gallery</a></li>
+          <li><a onclick="showPage('contact')">Contact Us</a></li>
+          <li><a onclick="openModal()">Portal Login</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Official Contact</h4>
+        <p style="font-size:12px; opacity:0.85; line-height:1.6; margin-bottom:10px;">
+          <strong>Address:</strong><br/>
+          A.U Tetengi House, No 107/1 Bauchi Road, Jos, Jos North, Plateau State
+        </p>
+        <p style="font-size:12px; opacity:0.85; line-height:1.6; margin-bottom:10px;">
+          <strong>Phone:</strong><br/>
+          <a href="tel:08030459595" style="color:var(--gold-light); text-decoration:none;">08030459595</a> | 
+          <a href="tel:08088552501" style="color:var(--gold-light); text-decoration:none;">08088552501</a>
+        </p>
+        <p style="font-size:12px; opacity:0.85; line-height:1.6;">
+          <strong>Email:</strong><br/>
+          <a href="mailto:planaidjos@gmail.com" style="color:var(--gold-light); text-decoration:none;">planaidjos@gmail.com</a>
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; <?php echo date('Y'); ?> Plan Aid Academy &amp; Educational Resource, Jos. All rights reserved.
+    </div>
+  </footer>
 </div>
 
-<!-- ADMISSION -->
-<div class="page" id="page-admission">
-  <div class="section">
+<!-- PAGE 2: ABOUT US -->
+<div class="page" id="page-about">
+  <section class="hero-section" style="padding: 40px 20px;">
     <div class="container">
-      <div class="section-label">Enrolment</div>
-      <div class="section-title">Admission Application</div>
-      <p class="section-sub">Complete the form to apply for a place at Plan Aid Academy. You will receive an application number instantly and can print your admission slip.</p>
+      <span class="hero-badge-location">Official School Information</span>
+      <h1 class="hero-title-main">ABOUT <span>PLAN AID ACADEMY</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">
+        "At PLAN AID ACADEMY, we are dedicated to nurturing young minds through a balanced blend of scientific inquiry, technological innovation, and creative learning. Our mission is to empower students with practical skills and digital literacy that prepare them for the dynamic world of science and technology."
+      </p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-2" style="margin-bottom: 40px;">
+        <div class="card-box">
+          <h3 class="card-title" style="color:var(--navy-light);">🏫 Institution Overview</h3>
+          <p class="card-desc" style="margin-bottom:14px;">
+            Plan Aid Academy &amp; Educational Resource, Jos is situated at A.U Tetengi House, No 107/1 Bauchi Road, Jos North, Plateau State. The school provides quality education across Nursery, Primary, Secondary, and Arabic/Islamic Study units.
+          </p>
+          <p class="card-desc">
+            We are committed to building analytical, innovative, and globally competitive learners equipped with digital skills, practical scientific experience, and strong moral character.
+          </p>
+        </div>
+        <div class="card-box">
+          <h3 class="card-title" style="color:var(--navy-light);">💡 Science &amp; Technology Focus</h3>
+          <p class="card-desc" style="margin-bottom:14px;">
+            Our academic programs prioritize STEM (Science, Technology, Engineering, and Mathematics) education. Students engage in practical laboratory experiments, computer programming, and robotics workshops.
+          </p>
+          <p class="card-desc">
+            Through interactive learning and science fairs, we inspire discovery and critical thinking from early childhood through secondary education.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card-box">
+          <div class="card-icon-wrap">🧩</div>
+          <h3 class="card-title">Practical Learning</h3>
+          <p class="card-desc">Emphasis on hands-on laboratory experiments, project-based assignments, and interactive problem-solving modules.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">📲</div>
+          <h3 class="card-title">Digital Literacy</h3>
+          <p class="card-desc">Equipping every student with essential computer competencies, internet safety, coding foundations, and digital software skills.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🌟</div>
+          <h3 class="card-title">Student Development</h3>
+          <p class="card-desc">Cultivating moral integrity, intellectual curiosity, leadership qualities, and competitive academic excellence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 3: ACADEMICS -->
+<div class="page" id="page-academics">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">Academic Programs</span>
+      <h1 class="hero-title-main">OUR <span>ACADEMIC UNITS</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Offering continuous, high-quality Science and ICT-based education from early childhood to secondary graduation.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-2">
+        <div class="card-box">
+          <div class="card-icon-wrap">🌱</div>
+          <h3 class="card-title">Nursery School Unit</h3>
+          <p class="card-desc" style="margin-bottom:12px;">Creche, Pre-Nursery, and Nursery 1–2 foundation years.</p>
+          <p class="card-desc">Focusing on early child development, foundational literacy, numeracy, creative play, and introductory digital exposure.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">✏️</div>
+          <h3 class="card-title">Primary School Unit</h3>
+          <p class="card-desc" style="margin-bottom:12px;">Primary 1 through Primary 6 core education.</p>
+          <p class="card-desc">Integrating basic science, elementary computer studies, mathematics, language arts, and critical reasoning.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">📚</div>
+          <h3 class="card-title">Secondary School Unit</h3>
+          <p class="card-desc" style="margin-bottom:12px;">Junior Secondary (JSS 1–3) &amp; Senior Secondary (SSS 1–3).</p>
+          <p class="card-desc">Comprehensive STEM subjects, WAEC/NECO examination preparation, advanced science practicals, and coding curriculum.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">☪️</div>
+          <h3 class="card-title">Arabic &amp; Islamic Unit</h3>
+          <p class="card-desc" style="margin-bottom:12px;">Qur'anic studies, Arabic language &amp; Islamic education.</p>
+          <p class="card-desc">Qur'anic recitation (Tajweed), Arabic grammar, Islamic ethics, and bilingual report cards integrated alongside standard subjects.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 4: FOCUS AREAS -->
+<div class="page" id="page-focus">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">Core Educational Pillars</span>
+      <h1 class="hero-title-main">OUR <span>FOCUS AREAS</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Four key focus areas defining our academic approach and student development strategy.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-2">
+        <div class="card-box">
+          <div class="card-icon-wrap">🔬</div>
+          <h3 class="card-title">SCIENCE EDUCATION</h3>
+          <p class="card-desc">Hands-on experiences, critical thinking, and problem-solving approaches that inspire discovery and innovation.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">💻</div>
+          <h3 class="card-title">ICT INTEGRATION</h3>
+          <p class="card-desc">State-of-the-art computer laboratories, coding lessons, robotics, and digital skills development for 21st-century learners.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">💡</div>
+          <h3 class="card-title">INNOVATION &amp; CREATIVITY</h3>
+          <p class="card-desc">Encouraging students to design, build, and explore through science fairs, tech projects, and digital creativity programs.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🎓</div>
+          <h3 class="card-title">ACADEMIC EXCELLENCE</h3>
+          <p class="card-desc">A robust curriculum that combines STEM subjects with strong moral and intellectual foundations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 5: WHY CHOOSE US -->
+<div class="page" id="page-why-choose">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">Why Plan Aid Academy</span>
+      <h1 class="hero-title-main">WHY <span>CHOOSE US</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Dedicated to delivering qualitative, technology-driven education in Jos North, Plateau State.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-3">
+        <div class="card-box">
+          <div class="card-icon-wrap">👨‍🏫</div>
+          <h3 class="card-title">Qualified and Experienced Teachers</h3>
+          <p class="card-desc">Passionate educators committed to student growth and modern teaching methodologies.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🔬</div>
+          <h3 class="card-title">Modern Science &amp; Computer Laboratories</h3>
+          <p class="card-desc">Equipped facilities for practical chemistry, biology, physics, and ICT lessons.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🤖</div>
+          <h3 class="card-title">Coding and Robotics Programs</h3>
+          <p class="card-desc">Teaching students programming logic, hardware automation, and digital skills from an early age.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">📲</div>
+          <h3 class="card-title">E-Learning</h3>
+          <p class="card-desc">Digital learning integration, student portal access, and online academic tracking.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🏆</div>
+          <h3 class="card-title">Science &amp; Technology Competitions</h3>
+          <p class="card-desc">Inspiring students through inter-school STEM challenges, innovation exhibitions, and tech fairs.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🏫</div>
+          <h3 class="card-title">Conducive Learning Environment</h3>
+          <p class="card-desc">A safe, well-organized campus designed for focused academic and personal growth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 6: SCIENCE & ICT SHOWCASE -->
+<div class="page" id="page-science-ict">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">STEM Excellence</span>
+      <h1 class="hero-title-main">SCIENCE &amp; <span>ICT PROGRAM</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Building digital skills, scientific discovery, robotics, and creative problem-solving.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-3">
+        <div class="card-box"><div class="card-icon-wrap">🔬</div><h3 class="card-title">Science Education</h3><p class="card-desc">Interactive physics, chemistry, and biology experiments fostering deep scientific understanding.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">💻</div><h3 class="card-title">Computer Education</h3><p class="card-desc">Comprehensive ICT literacy, office tools, internet security, and computer fundamentals.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">👨‍💻</div><h3 class="card-title">Coding</h3><p class="card-desc">Introducing algorithms, web development basics, Python, and logic building for young programmers.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">🤖</div><h3 class="card-title">Robotics</h3><p class="card-desc">Hands-on robotics kits, sensor programming, and hardware automation modules.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">📲</div><h3 class="card-title">Digital Skills</h3><p class="card-desc">Developing 21st-century digital competencies, graphic tools, and computational thinking.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">💡</div><h3 class="card-title">Science Projects</h3><p class="card-desc">Student-led scientific research, model creation, and environmental technology solutions.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">🏆</div><h3 class="card-title">Technology Competitions</h3><p class="card-desc">Preparing students to represent the academy in regional and national STEM contests.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">🚀</div><h3 class="card-title">Innovation</h3><p class="card-desc">Cultivating an inventive mindset where students solve real-world problems with tech.</p></div>
+        <div class="card-box"><div class="card-icon-wrap">🎨</div><h3 class="card-title">Creative Learning</h3><p class="card-desc">Blending digital art, multimedia presentations, and design thinking into school coursework.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 7: GALLERY -->
+<div class="page" id="page-gallery">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">Campus &amp; Activities</span>
+      <h1 class="hero-title-main">SCHOOL <span>GALLERY</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Highlights of academic projects, science practicals, ICT classes, and student life at Plan Aid Academy.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="gallery-nav">
+        <button class="gallery-filter-btn active" onclick="filterGallery('all', this)">All</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('science', this)">Science Education</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('ict', this)">ICT &amp; Computer</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('coding', this)">Coding &amp; Robotics</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('activities', this)">School Activities</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('students', this)">Students</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('graduation', this)">Graduation</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('classroom', this)">Classroom</button>
+        <button class="gallery-filter-btn" onclick="filterGallery('competitions', this)">Competitions</button>
+      </div>
+
+      <div class="grid-3" id="galleryContainer">
+        <div class="gallery-card" data-cat="science">
+          <div class="gallery-img-placeholder">
+            <span class="gallery-tag">Science</span>
+            <div style="font-size:36px; margin-bottom:8px;">🧪</div>
+            <div style="font-weight:700; font-size:14px;">Science Laboratory Practical</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">Chemistry Lab Experiment</div>
+            <div class="gallery-sub">Students conducting chemical analysis in the science laboratory.</div>
+          </div>
+        </div>
+
+        <div class="gallery-card" data-cat="ict">
+          <div class="gallery-img-placeholder" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+            <span class="gallery-tag">ICT</span>
+            <div style="font-size:36px; margin-bottom:8px;">💻</div>
+            <div style="font-weight:700; font-size:14px;">ICT Computer Laboratory</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">Computer Science Class</div>
+            <div class="gallery-sub">Hands-on ICT training and software application practice.</div>
+          </div>
+        </div>
+
+        <div class="gallery-card" data-cat="coding">
+          <div class="gallery-img-placeholder" style="background: linear-gradient(135deg, #065f46 0%, #047857 100%);">
+            <span class="gallery-tag">Coding</span>
+            <div style="font-size:36px; margin-bottom:8px;">🤖</div>
+            <div style="font-weight:700; font-size:14px;">Robotics &amp; Coding Workshop</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">Robotics Kit Assembly</div>
+            <div class="gallery-sub">Junior programmers building and coding autonomous robotics models.</div>
+          </div>
+        </div>
+
+        <div class="gallery-card" data-cat="competitions">
+          <div class="gallery-img-placeholder" style="background: linear-gradient(135deg, #78350f 0%, #b45309 100%);">
+            <span class="gallery-tag">Competitions</span>
+            <div style="font-size:36px; margin-bottom:8px;">🏆</div>
+            <div style="font-weight:700; font-size:14px;">Annual Science Fair</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">STEM Project Exhibition</div>
+            <div class="gallery-sub">Student innovative projects presented at the annual technology competition.</div>
+          </div>
+        </div>
+
+        <div class="gallery-card" data-cat="classroom">
+          <div class="gallery-img-placeholder" style="background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);">
+            <span class="gallery-tag">Classroom</span>
+            <div style="font-size:36px; margin-bottom:8px;">📚</div>
+            <div style="font-weight:700; font-size:14px;">Interactive Learning Session</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">Secondary Mathematics Class</div>
+            <div class="gallery-sub">Engaging problem-solving session in a modern classroom setup.</div>
+          </div>
+        </div>
+
+        <div class="gallery-card" data-cat="graduation">
+          <div class="gallery-img-placeholder" style="background: linear-gradient(135deg, #831843 0%, #be185d 100%);">
+            <span class="gallery-tag">Graduation</span>
+            <div style="font-size:36px; margin-bottom:8px;">🎓</div>
+            <div style="font-weight:700; font-size:14px;">Annual Graduation Ceremony</div>
+          </div>
+          <div class="gallery-body">
+            <div class="gallery-title">Graduating Class Celebration</div>
+            <div class="gallery-sub">Celebrating academic achievement and student excellence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 8: CONTACT US -->
+<div class="page" id="page-contact">
+  <section class="hero-section" style="padding: 40px 20px;">
+    <div class="container">
+      <span class="hero-badge-location">Get in Touch</span>
+      <h1 class="hero-title-main">CONTACT <span>OUR OFFICE</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">We welcome your inquiries, school visit requests, and admission questions.</p>
+    </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-2">
+        <div class="contact-info-card">
+          <h3 class="section-title" style="font-size:24px; margin-bottom:24px;">Official Contact Details</h3>
+          
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <div class="contact-text">
+              <h4>School Address</h4>
+              <p>
+                A.U TETENGI HOUSE,<br/>
+                No 107/1 BAUCHI ROAD, JOS,<br/>
+                JOS NORTH, PLATEAU STATE
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div class="contact-text">
+              <h4>Phone Numbers</h4>
+              <p>
+                <a href="tel:08030459595">08030459595</a><br/>
+                <a href="tel:08088552501">08088552501</a>
+              </p>
+              <a href="https://wa.me/2348030459595" target="_blank" class="btn-hero-cyan" style="display:inline-block; margin-top:10px; padding:6px 14px; font-size:12px;">💬 Chat on WhatsApp</a>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <div class="contact-text">
+              <h4>Email Address</h4>
+              <p><a href="mailto:planaidjos@gmail.com">planaidjos@gmail.com</a></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info-card">
+          <h3 class="section-title" style="font-size:24px; margin-bottom:20px;">Send Us A Message</h3>
+          <form onsubmit="event.preventDefault(); alert('Thank you for contacting Plan Aid Academy! We will respond shortly.');">
+            <div class="form-group">
+              <label>Your Full Name</label>
+              <input type="text" placeholder="Enter your name" required/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="email@example.com" required/>
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" placeholder="08012345678" required/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input type="text" placeholder="Inquiry about admissions, fees, etc." required/>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea placeholder="Write your message here..." style="min-height:100px" required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Submit Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PAGE 9: ADMISSION APPLICATION (PRESERVED) -->
+<div class="page" id="page-admission">
+  <section class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Enrolment Application</span>
+        <h2 class="section-title">Online Student Admission</h2>
+        <p class="section-subtitle">Complete the form below to apply for admission at Plan Aid Academy. You will receive an instant application reference number.</p>
+      </div>
       <div id="admissionForm">
-        <div class="form-page">
-          <h2>Student Admission Form</h2>
-          <p class="sub">Plan Aid Academy, Jos · 2025/2026 Academic Session</p>
-          <div class="form-group"><label>School Unit Applying For</label>
-            <select id="admUnit"><option value="">— Select Unit —</option><option>Nursery School (Creche / Pre-Nursery / Nursery 1-2)</option><option>Primary School (Primary 1 – 6)</option><option>Junior Secondary School (JSS 1 – 3)</option><option>Senior Secondary School (SSS 1 – 3)</option><option>Arabic / Islamic Studies Unit</option></select>
+        <div class="slip" style="max-width:760px; border-color:var(--border);">
+          <h2 style="font-family:'Playfair Display',serif; font-size:24px; color:var(--navy); margin-bottom:4px;">Student Admission Form</h2>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Plan Aid Academy &amp; Educational Resource, Jos · Academic Session Registration</p>
+          <div class="form-group">
+            <label>School Unit Applying For</label>
+            <select id="admUnit">
+              <option value="">— Select Unit —</option>
+              <option>Nursery School Unit (Creche / Pre-Nursery / Nursery 1-2)</option>
+              <option>Primary School Unit (Primary 1 – 6)</option>
+              <option>Junior Secondary School Unit (JSS 1 – 3)</option>
+              <option>Senior Secondary School Unit (SSS 1 – 3)</option>
+              <option>Arabic / Islamic Studies Unit</option>
+            </select>
           </div>
           <div class="form-row">
             <div class="form-group"><label>Surname</label><input id="admSurname" type="text" placeholder="Student's surname"/></div>
@@ -342,25 +1136,25 @@ $backendReady = true;
             <div class="form-group"><label>State of Origin</label><input id="admState" type="text" placeholder="e.g. Plateau"/></div>
             <div class="form-group"><label>Religion</label><select id="admReligion"><option>Christianity</option><option>Islam</option><option>Other</option></select></div>
           </div>
-          <div class="divider"></div>
+          <hr style="margin:20px 0; border:none; border-top:1px solid var(--border);"/>
           <div class="form-row">
             <div class="form-group"><label>Parent / Guardian Name</label><input id="admParent" type="text" placeholder="Full name"/></div>
-            <div class="form-group"><label>Phone Number</label><input id="admPhone" type="tel" placeholder="+234 800 000 0000"/></div>
+            <div class="form-group"><label>Phone Number</label><input id="admPhone" type="tel" placeholder="080XXXXXXXX"/></div>
           </div>
-          <div class="form-group"><label>Home Address</label><textarea id="admAddress" placeholder="Street, Area, Jos"></textarea></div>
-          <div class="form-row">
-            <div class="form-group"><label>Previous School (if any)</label><input id="admPrev" type="text" placeholder="Previous school name"/></div>
-            <div class="form-group"><label>Class Last Attended</label><input id="admClass" type="text" placeholder="e.g. Primary 3"/></div>
-          </div>
-          <button class="btn-submit" onclick="submitAdmission()">Submit Application &amp; Get Admission Number</button>
+          <div class="form-group"><label>Home Address</label><textarea id="admAddress" placeholder="Address, Jos"></textarea></div>
+          <button class="btn-submit" onclick="submitAdmission()">Submit Application &amp; Generate Admission Slip</button>
         </div>
       </div>
+
       <div id="admissionSlip" class="hidden" style="margin-top:32px">
-        <div class="alert alert-success">✅ Application submitted! Print or save your admission slip below.</div>
         <div class="slip">
           <div class="slip-header">
-            <div class="slip-logo">P</div>
-            <div class="slip-school"><h2>Plan Aid Academy</h2><p>Jos, Plateau State</p><p style="font-size:11px;color:#888">2025/2026 Academic Session – Admission Slip</p></div>
+            <div class="slip-logo">🎓</div>
+            <div class="slip-school">
+              <h2>PLAN AID ACADEMY</h2>
+              <p>&amp; Educational Resource, Jos</p>
+              <p style="font-size:11px;color:#888">Admission Slip</p>
+            </div>
             <div class="slip-no" id="slipNo">PAA-2025-0001</div>
           </div>
           <div class="slip-row">
@@ -382,26 +1176,27 @@ $backendReady = true;
           </div>
         </div>
         <div style="text-align:center;margin-top:20px">
-          <button onclick="newApplication()" style="background:none;border:2px solid var(--green);color:var(--green);padding:11px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Submit Another Application</button>
+          <button onclick="newApplication()" class="btn-hero-outline" style="color:var(--navy); border-color:var(--navy);">Submit Another Application</button>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 
-<!-- RESULTS -->
+<!-- PAGE 10: RESULTS PORTAL (PRESERVED) -->
 <div class="page" id="page-results">
-  <div class="section">
+  <section class="section-padding">
     <div class="container">
-      <div class="section-label">Academic Records</div>
-      <div class="section-title">Student Result Portal</div>
-      <p class="section-sub">Enter your student ID and select the term to view and print your academic progress report.</p>
-      <div class="form-page" style="margin-bottom:28px">
-        <h2>Check Results</h2>
-        <p class="sub">Enter your admission number to view your report card</p>
+      <div class="section-header">
+        <span class="section-badge">Academic Verification</span>
+        <h2 class="section-title">Student Result Portal</h2>
+        <p class="section-subtitle">Enter student admission number to access and print academic report cards.</p>
+      </div>
+      <div class="slip" style="max-width:680px; border-color:var(--border); margin-bottom:28px;">
+        <h2 style="font-family:'Playfair Display',serif; font-size:22px; color:var(--navy); margin-bottom:16px;">Check Results</h2>
         <div class="form-row">
-          <div class="form-group"><label>Student ID / Admission Number</label><input id="resId" type="text" placeholder="e.g. PAA-2023-0047"/></div>
-          <div class="form-group"><label>Academic Session</label><select><option>2024/2025</option><option>2023/2024</option></select></div>
+          <div class="form-group"><label>Student ID / Admission Number</label><input id="resId" type="text" placeholder="e.g. PAA-2025-0047"/></div>
+          <div class="form-group"><label>Academic Session</label><select><option>2025/2026</option><option>2024/2025</option></select></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label>Term</label><select><option>1st Term</option><option>2nd Term</option><option>3rd Term</option></select></div>
@@ -409,17 +1204,20 @@ $backendReady = true;
         </div>
         <button class="btn-submit" onclick="checkResults()">View Result Card</button>
       </div>
+
       <div id="resultCard" class="hidden">
-        <div class="alert alert-info">📄 Showing result for <b>Aisha Mohammed</b> · JSS 2A · 1st Term 2024/2025</div>
-        <div class="slip" style="max-width:740px">
+        <div class="slip" style="max-width:760px">
           <div class="slip-header">
-            <div class="slip-logo">P</div>
-            <div class="slip-school"><h2>Plan Aid Academy</h2><p>Student Academic Report Card · 1st Term 2024/2025</p></div>
+            <div class="slip-logo">🎓</div>
+            <div class="slip-school">
+              <h2>PLAN AID ACADEMY</h2>
+              <p>&amp; Educational Resource, Jos · Academic Report Card</p>
+            </div>
             <div class="slip-no">JSS 2A</div>
           </div>
           <div class="slip-row" style="grid-template-columns:1fr 1fr 1fr">
             <div class="slip-field"><div class="lbl">Student Name</div><div class="val">Aisha Mohammed</div></div>
-            <div class="slip-field"><div class="lbl">Admission No.</div><div class="val">PAA-2023-0047</div></div>
+            <div class="slip-field"><div class="lbl">Admission No.</div><div class="val">PAA-2025-0047</div></div>
             <div class="slip-field"><div class="lbl">Class</div><div class="val">JSS 2A</div></div>
           </div>
           <div class="table-wrap" style="margin:16px 0">
@@ -429,70 +1227,71 @@ $backendReady = true;
                 <tr><td>Mathematics</td><td>34</td><td>52</td><td>86</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
                 <tr><td>English Language</td><td>30</td><td>48</td><td>78</td><td><span class="badge badge-green">B</span></td><td>Good</td></tr>
                 <tr><td>Basic Science</td><td>32</td><td>50</td><td>82</td><td><span class="badge badge-green">A</span></td><td>Very Good</td></tr>
-                <tr><td>Social Studies</td><td>28</td><td>44</td><td>72</td><td><span class="badge badge-gold">C</span></td><td>Average</td></tr>
+                <tr><td>Computer Studies / ICT</td><td>36</td><td>54</td><td>90</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
                 <tr><td>Agric Science</td><td>35</td><td>55</td><td>90</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
-                <tr><td>Civic Education</td><td>29</td><td>46</td><td>75</td><td><span class="badge badge-gold">C</span></td><td>Average</td></tr>
+                <tr><td>Civic Education</td><td>29</td><td>46</td><td>75</td><td><span class="badge badge-gold">B</span></td><td>Good</td></tr>
                 <tr><td>Arabic Language</td><td>38</td><td>57</td><td>95</td><td><span class="badge badge-green">A</span></td><td>Excellent</td></tr>
               </tbody>
             </table>
           </div>
           <div class="slip-row">
-            <div class="slip-field"><div class="lbl">Total Score</div><div class="val" style="color:var(--green)">578 / 700</div></div>
-            <div class="slip-field"><div class="lbl">Average</div><div class="val" style="color:var(--green)">82.6%</div></div>
-            <div class="slip-field"><div class="lbl">Position</div><div class="val">3rd / 42</div></div>
-            <div class="slip-field"><div class="lbl">Next Term</div><div class="val">Jan 13, 2025</div></div>
+            <div class="slip-field"><div class="lbl">Total Score</div><div class="val" style="color:var(--navy)">596 / 700</div></div>
+            <div class="slip-field"><div class="lbl">Average</div><div class="val" style="color:var(--navy)">85.1%</div></div>
+            <div class="slip-field"><div class="lbl">Position</div><div class="val">1st / 42</div></div>
           </div>
-          <div style="padding:14px;background:var(--light);border-radius:8px;font-size:13px;margin-top:12px"><b>Class Teacher's Remark:</b> Aisha is a diligent student who has shown remarkable improvement in Mathematics. We encourage her to put in more effort in Social Studies. Keep it up!</div>
           <div class="slip-footer">
             <div>Principal: <b>Mr. Samuel Dung</b></div>
-            <div>Class Teacher: <b>Mrs. Fatima Sani</b></div>
             <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 
-
-<!-- ARABIC -->
+<!-- PAGE 11: ARABIC UNIT (PRESERVED) -->
 <div class="page" id="page-arabic">
-  <div class="hero" style="padding:50px 32px 40px">
-    <div class="hero-badge">☪️ Arabic &amp; Islamic Studies Unit</div>
-    <h1>Arabic &amp; <span>Islamic Education</span></h1>
-    <p>A dedicated programme integrating Qur'anic studies, Arabic language and Islamic knowledge alongside the national curriculum.</p>
-  </div>
-  <div class="section section-alt">
+  <section class="hero-section" style="padding: 40px 20px;">
     <div class="container">
-      <div class="cards-grid">
-        <div class="card"><div class="card-icon" style="background:#fef3cd;font-size:28px">📖</div><h3>Qur'anic Studies</h3><p class="arabic-text">تحفيظ القرآن الكريم وتجويده</p><p style="margin-top:8px;font-size:13px;color:#666">Hifz (memorisation), Tajweed (recitation) and Tafseer (interpretation) from beginner to advanced.</p></div>
-        <div class="card"><div class="card-icon" style="background:#dbeafe;font-size:28px">✍️</div><h3>Arabic Language</h3><p class="arabic-text">اللغة العربية – قراءة وكتابة ومحادثة</p><p style="margin-top:8px;font-size:13px;color:#666">Reading, writing, grammar and spoken Arabic across Foundation, Intermediate and Advanced levels.</p></div>
-        <div class="card"><div class="card-icon" style="background:#dbeafe;font-size:28px">🕌</div><h3>Islamic Studies</h3><p class="arabic-text">الفقه والعقيدة والسيرة النبوية</p><p style="margin-top:8px;font-size:13px;color:#666">Fiqh, Aqeedah, Seerah (Prophet's biography) and Islamic ethics integrated into the weekly timetable.</p></div>
-        <div class="card"><div class="card-icon" style="background:#fde8e8;font-size:28px">📜</div><h3>Bilingual Reports</h3><p class="arabic-text">كشف الدرجات – عربي وإنجليزي</p><p style="margin-top:8px;font-size:13px;color:#666">Arabic Unit students receive bilingual report cards in both English and Arabic, certified by the Unit Head.</p></div>
-      </div>
-      <div style="margin-top:32px;text-align:center"><button class="btn-primary" onclick="showPage('admission')">Apply to Arabic Unit</button></div>
+      <span class="hero-badge-location">☪️ Arabic &amp; Islamic Studies Unit</span>
+      <h1 class="hero-title-main">ARABIC &amp; <span>ISLAMIC EDUCATION</span></h1>
+      <p class="hero-intro" style="margin-bottom:0;">Integrating Qur'anic memorization, Tajweed, Arabic language, and Islamic ethics into our STEM curriculum.</p>
     </div>
-  </div>
+  </section>
+
+  <section class="section-padding section-alt">
+    <div class="container">
+      <div class="grid-2">
+        <div class="card-box">
+          <div class="card-icon-wrap">📖</div>
+          <h3 class="card-title">Qur'anic Studies</h3>
+          <p class="arabic-text" style="font-size:18px; margin-bottom:8px;">تحفيظ القرآن الكريم وتجويده</p>
+          <p class="card-desc">Hifz (memorisation), Tajweed (recitation) and Tafseer (interpretation) from beginner to advanced levels.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">✍️</div>
+          <h3 class="card-title">Arabic Language</h3>
+          <p class="arabic-text" style="font-size:18px; margin-bottom:8px;">اللغة العربية – قراءة وكتابة ومحادثة</p>
+          <p class="card-desc">Reading, writing, grammar and spoken Arabic across Foundation, Intermediate and Advanced levels.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">🕌</div>
+          <h3 class="card-title">Islamic Studies</h3>
+          <p class="arabic-text" style="font-size:18px; margin-bottom:8px;">الفقه والعقيدة والسيرة النبوية</p>
+          <p class="card-desc">Fiqh, Aqeedah, Seerah (Prophet's biography) and Islamic ethics integrated into the weekly timetable.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon-wrap">📜</div>
+          <h3 class="card-title">Bilingual Reports</h3>
+          <p class="arabic-text" style="font-size:18px; margin-bottom:8px;">كشف الدرجات – عربي وإنجليزي</p>
+          <p class="card-desc">Arabic Unit students receive bilingual report cards in both English and Arabic, certified by the Unit Head.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- ABOUT -->
-<div class="page" id="page-about">
-  <div class="section">
-    <div class="container">
-      <div class="section-label">Our School</div>
-      <div class="section-title">About Plan Aid Academy</div>
-      <p style="font-size:15px;color:#555;line-height:1.8;max-width:760px;margin-bottom:36px">Plan Aid Academy, Jos, is a private co-educational school founded to provide quality, affordable and holistic education to children and youth of Jos, Plateau State. We operate four distinct units — Nursery, Primary, Secondary and Arabic/Islamic Studies — under one administration, ensuring continuity of education from early childhood to senior secondary.</p>
-      <div class="cards-grid">
-        <div class="card"><div class="card-icon" style="background:#dbeafe">🎯</div><h3>Our Mission</h3><p>To equip every student with academic excellence, sound moral values and the practical skills needed to thrive in a modern, diverse world.</p></div>
-        <div class="card"><div class="card-icon" style="background:#fef3cd">👁️</div><h3>Our Vision</h3><p>To be the leading institution of learning in Plateau State, producing well-rounded graduates who serve Nigeria and the global community.</p></div>
-        <div class="card"><div class="card-icon" style="background:#dbeafe">📍</div><h3>Location</h3><p>Jos, Plateau State, Nigeria. Easily accessible, in a serene environment conducive to learning and holistic development.</p></div>
-        <div class="card"><div class="card-icon" style="background:#fde8e8">📞</div><h3>Contact Us</h3><p>Phone: +234 800 000 0000<br/>Email: planaidacademy@email.com<br/>Office Hours: Mon–Fri, 8am–4pm</p></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
+<!-- PAGE 12: PORTAL DASHBOARD (PRESERVED) -->
 <div class="page" id="page-dashboard">
   <div class="dash-layout">
     <div class="dash-sidebar">
@@ -514,53 +1313,45 @@ $backendReady = true;
       </div>
     </div>
     <div class="dash-content">
-      <div class="dash-header">
-        <h2 id="dashSectionTitle">School Overview</h2>
+      <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 id="dashSectionTitle" style="font-family:'Playfair Display',serif; font-size:24px; color:var(--navy);">School Overview</h2>
         <span class="badge badge-green" id="dashUnitBadge">All Units</span>
       </div>
 
       <div id="ds-overview">
         <div class="dash-cards">
-          <div class="dash-card"><div class="dc-val">1,240</div><div class="dc-lbl">Total Students</div><div class="dc-sub">All 4 units</div></div>
-          <div class="dash-card"><div class="dc-val">68</div><div class="dc-lbl">Teaching Staff</div><div class="dc-sub">Across all units</div></div>
-          <div class="dash-card"><div class="dc-val">42</div><div class="dc-lbl">New Admissions</div><div class="dc-sub">2025/2026 session</div></div>
-          <div class="dash-card"><div class="dc-val">96%</div><div class="dc-lbl">Attendance Rate</div><div class="dc-sub">This week</div></div>
+          <div class="dash-card"><div class="dc-val">Plan Aid</div><div class="dc-lbl">School Management</div></div>
+          <div class="dash-card"><div class="dc-val">4</div><div class="dc-lbl">Academic Units</div></div>
+          <div class="dash-card"><div class="dc-val">Active</div><div class="dc-lbl">Academic Session</div></div>
         </div>
         <div class="table-wrap">
-          <div class="table-head"><h3>Unit Overview</h3></div>
+          <div class="table-head"><h3>Academic Units Status</h3></div>
           <table>
-            <thead><tr><th>Unit</th><th>Head</th><th>Students</th><th>Staff</th><th>Fee Collection</th><th>Status</th></tr></thead>
+            <thead><tr><th>Unit</th><th>Head Teacher</th><th>Focus Area</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>🌱 Nursery School</td><td>Mrs. Grace Longs</td><td>180</td><td>12</td><td>88%</td><td><span class="badge badge-green">Active</span></td></tr>
-              <tr><td>✏️ Primary School</td><td>Mr. Elisha Pwol</td><td>420</td><td>22</td><td>81%</td><td><span class="badge badge-green">Active</span></td></tr>
-              <tr><td>📚 Secondary School</td><td>Mrs. Amaka Uche</td><td>510</td><td>28</td><td>74%</td><td><span class="badge badge-green">Active</span></td></tr>
-              <tr><td>☪️ Arabic Unit</td><td>Mallam Umar Sani</td><td>130</td><td>6</td><td>92%</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>🌱 Nursery School</td><td>Mrs. Grace Longs</td><td>Early Science &amp; Literacy</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>✏️ Primary School</td><td>Mr. Elisha Pwol</td><td>Basic Science &amp; Math</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>📚 Secondary School</td><td>Mrs. Amaka Uche</td><td>STEM &amp; Computer Science</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>☪️ Arabic Unit</td><td>Mallam Umar Sani</td><td>Arabic &amp; Islamic Studies</td><td><span class="badge badge-green">Active</span></td></tr>
             </tbody>
           </table>
         </div>
-        <div class="alert alert-info">📢 <b>Reminder:</b> 2nd Term examination timetable should be uploaded by Friday. 3 staff leave requests pending approval.</div>
       </div>
 
       <div id="ds-students" class="hidden">
         <div class="table-wrap">
-          <div class="table-head"><h3>Student Register</h3><button class="btn-primary" style="font-size:12px;padding:7px 14px" onclick="showPage('admission')">+ New Admission</button></div>
+          <div class="table-head"><h3>Student Register</h3><button class="btn-hero-primary" style="font-size:11px; padding:6px 12px;" onclick="showPage('admission')">+ New Admission</button></div>
           <table>
-            <thead><tr><th>Adm. No.</th><th>Name</th><th>Class</th><th>Unit</th><th>Gender</th><th>Fee Status</th></tr></thead>
+            <thead><tr><th>Adm. No.</th><th>Name</th><th>Class</th><th>Unit</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>PAA-2023-0047</td><td>Aisha Mohammed</td><td>JSS 2A</td><td>Secondary</td><td>F</td><td><span class="badge badge-green">Paid</span></td></tr>
-              <tr><td>PAA-2024-0112</td><td>Ibrahim Hassan</td><td>SSS 2</td><td>Secondary</td><td>M</td><td><span class="badge badge-green">Paid</span></td></tr>
-              <tr><td>PAA-2024-0201</td><td>Blessing Musa</td><td>JSS 1A</td><td>Secondary</td><td>F</td><td><span class="badge badge-gold">Part</span></td></tr>
-              <tr><td>PAA-2022-0089</td><td>Fatima Yusuf</td><td>Primary 5</td><td>Primary</td><td>F</td><td><span class="badge badge-green">Paid</span></td></tr>
-              <tr><td>PAA-2025-0004</td><td>John Dakyen</td><td>Nursery 2</td><td>Nursery</td><td>M</td><td><span class="badge badge-green">Paid</span></td></tr>
-              <tr><td>PAA-2024-0315</td><td>Amina Abdullahi</td><td>Arabic Adv.</td><td>Arabic</td><td>F</td><td><span class="badge badge-red">Pending</span></td></tr>
+              <tr><td>PAA-2025-0047</td><td>Aisha Mohammed</td><td>JSS 2A</td><td>Secondary</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-2025-0112</td><td>Ibrahim Hassan</td><td>SSS 2</td><td>Secondary</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td>PAA-2025-0089</td><td>Fatima Yusuf</td><td>Primary 5</td><td>Primary</td><td><span class="badge badge-green">Active</span></td></tr>
             </tbody>
           </table>
         </div>
         <div id="studentLoginInfoPanel" class="table-wrap" style="margin-top:20px;display:none">
-          <div class="table-head" style="background:#f0faf4">
-            <h3>🔐 Student Portal Login Info</h3>
-            <span class="badge badge-green" style="font-size:11px">Visible to Admin only</span>
-          </div>
+          <div class="table-head"><h3>🔐 Student Portal Login Info</h3></div>
           <table>
             <thead><tr><th>Name</th><th>Username</th><th>Approval Code</th><th>Approved By</th><th>Action</th></tr></thead>
             <tbody id="studentLoginInfoBody"><tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No student portal accounts generated yet.</td></tr></tbody>
@@ -570,7 +1361,7 @@ $backendReady = true;
 
       <div id="ds-staff" class="hidden">
         <div class="table-wrap">
-          <div class="table-head"><h3>Staff Directory</h3><button class="btn-primary" style="font-size:12px;padding:7px 14px" onclick="openAddStaff()">+ Add Staff</button></div>
+          <div class="table-head"><h3>Staff Directory</h3><button class="btn-hero-primary" style="font-size:11px; padding:6px 12px;" onclick="openAddStaff()">+ Add Staff</button></div>
           <table>
             <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Unit</th><th>Subject</th><th>Status</th></tr></thead>
             <tbody id="staffTableBody">
@@ -578,16 +1369,11 @@ $backendReady = true;
               <tr><td>PAA-ST-002</td><td>Mr. Elisha Pwol</td><td>Head of Primary</td><td>Primary</td><td>Mathematics</td><td><span class="badge badge-green">Active</span></td></tr>
               <tr><td>PAA-ST-003</td><td>Mrs. Grace Longs</td><td>Head of Nursery</td><td>Nursery</td><td>Early Childhood</td><td><span class="badge badge-green">Active</span></td></tr>
               <tr><td>PAA-ST-004</td><td>Mallam Umar Sani</td><td>Head of Arabic</td><td>Arabic</td><td>Arabic Language</td><td><span class="badge badge-green">Active</span></td></tr>
-              <tr><td>PAA-ST-005</td><td>Mrs. Fatima Sani</td><td>Class Teacher</td><td>Secondary</td><td>Biology</td><td><span class="badge badge-green">Active</span></td></tr>
-              <tr><td>PAA-ST-006</td><td>Mr. James Lar</td><td>Class Teacher</td><td>Secondary</td><td>Physics</td><td><span class="badge badge-gold">On Leave</span></td></tr>
             </tbody>
           </table>
         </div>
         <div id="staffLoginInfoPanel" class="table-wrap" style="margin-top:20px;display:none">
-          <div class="table-head" style="background:#f0faf4">
-            <h3>🔐 Staff Portal Login Info</h3>
-            <span class="badge badge-green" style="font-size:11px">Visible to Admin only</span>
-          </div>
+          <div class="table-head"><h3>🔐 Staff Portal Login Info</h3></div>
           <table>
             <thead><tr><th>Name</th><th>Role</th><th>Username</th><th>Approval Code</th><th>Approved By</th><th>Action</th></tr></thead>
             <tbody id="staffLoginInfoBody"><tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No staff portal accounts generated yet.</td></tr></tbody>
@@ -597,80 +1383,47 @@ $backendReady = true;
 
       <div id="ds-admissions" class="hidden">
         <div class="table-wrap">
-          <div class="table-head"><h3>Admission Applications – 2025/2026</h3></div>
+          <div class="table-head"><h3>Admission Applications</h3></div>
           <table>
             <thead><tr><th>App. No.</th><th>Name</th><th>Unit Applied</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="admissionsTableBody">
-              <tr><td>PAA-2025-0041</td><td>Daniel Gyang</td><td>JSS 1</td><td>12 May 2025</td><td><span class="badge badge-gold">Pending</span></td><td><button onclick="approveApplication('PAA-2025-0041','Daniel Gyang','JSS 1')" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button></td></tr>
-              <tr><td>PAA-2025-0042</td><td>Hauwa Suleiman</td><td>Arabic Unit</td><td>13 May 2025</td><td><span class="badge badge-gold">Pending</span></td><td><button onclick="approveApplication('PAA-2025-0042','Hauwa Suleiman','Arabic Unit')" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button></td></tr>
-              <tr><td>PAA-2025-0039</td><td>Ruth Pam</td><td>Primary 1</td><td>10 May 2025</td><td><span class="badge badge-green">Approved</span></td><td>—</td></tr>
-              <tr><td>PAA-2025-0040</td><td>Ali Musa</td><td>Nursery 1</td><td>11 May 2025</td><td><span class="badge badge-green">Approved</span></td><td>—</td></tr>
+              <tr><td>PAA-2025-0041</td><td>Daniel Gyang</td><td>JSS 1</td><td>12 May 2025</td><td><span class="badge badge-gold">Pending</span></td><td><button onclick="approveApplication('PAA-2025-0041','Daniel Gyang','JSS 1')" style="background:var(--navy);color:#fff;border:none;padding:5px 12px;border-radius:4px;font-size:11px;cursor:pointer">Approve</button></td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
       <div id="ds-results" class="hidden">
-        <div class="alert alert-info">📊 Enter results for 1st Term 2024/2025. Deadline: 20th May 2025.</div>
         <div class="table-wrap">
           <div class="table-head"><h3>Result Entry Status by Class</h3></div>
           <table>
-            <thead><tr><th>Class</th><th>Teacher</th><th>Students</th><th>Results Entered</th><th>Status</th></tr></thead>
+            <thead><tr><th>Class</th><th>Teacher</th><th>Students</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>SSS 3A</td><td>Mr. James Lar</td><td>38</td><td>38</td><td><span class="badge badge-green">Complete</span></td></tr>
-              <tr><td>SSS 2</td><td>Mrs. Amaka Uche</td><td>42</td><td>42</td><td><span class="badge badge-green">Complete</span></td></tr>
-              <tr><td>JSS 2A</td><td>Mrs. Fatima Sani</td><td>40</td><td>35</td><td><span class="badge badge-gold">In Progress</span></td></tr>
-              <tr><td>JSS 1A</td><td>Mr. Yakubu Ali</td><td>44</td><td>0</td><td><span class="badge badge-red">Not Started</span></td></tr>
-              <tr><td>Primary 6</td><td>Mrs. Helen Gom</td><td>36</td><td>36</td><td><span class="badge badge-green">Complete</span></td></tr>
+              <tr><td>SSS 2</td><td>Mrs. Amaka Uche</td><td>42</td><td><span class="badge badge-green">Complete</span></td></tr>
+              <tr><td>JSS 2A</td><td>Mrs. Fatima Sani</td><td>40</td><td><span class="badge badge-gold">In Progress</span></td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
       <div id="ds-finance" class="hidden">
-        <div class="dash-cards">
-          <div class="dash-card"><div class="dc-val">₦18.4M</div><div class="dc-lbl">Total Revenue</div></div>
-          <div class="dash-card"><div class="dc-val">₦14.1M</div><div class="dc-lbl">Fees Collected</div></div>
-          <div class="dash-card"><div class="dc-val">₦4.3M</div><div class="dc-lbl">Outstanding</div></div>
-          <div class="dash-card"><div class="dc-val">₦2.1M</div><div class="dc-lbl">Staff Salaries (Oct)</div></div>
-        </div>
         <div class="table-wrap">
-          <div class="table-head"><h3>Outstanding Fee Defaulters</h3></div>
-          <table>
-            <thead><tr><th>Student</th><th>Class</th><th>Fee</th><th>Paid</th><th>Balance</th><th>Duration</th></tr></thead>
-            <tbody>
-              <tr><td>Amina Abdullahi</td><td>Arabic Adv.</td><td>₦25,000</td><td>₦0</td><td>₦25,000</td><td><span class="badge badge-red">6 wks</span></td></tr>
-              <tr><td>Blessing Musa</td><td>JSS 1A</td><td>₦45,000</td><td>₦20,000</td><td>₦25,000</td><td><span class="badge badge-gold">3 wks</span></td></tr>
-              <tr><td>Peter Nda</td><td>SSS 1</td><td>₦65,000</td><td>₦40,000</td><td>₦25,000</td><td><span class="badge badge-gold">2 wks</span></td></tr>
-            </tbody>
-          </table>
+          <div class="table-head"><h3>Finance &amp; Fee Status</h3></div>
+          <div style="padding:20px; color:var(--text-muted); font-size:14px;">Fee tracking and financial management.</div>
         </div>
       </div>
 
       <div id="ds-timetable" class="hidden">
-        <div class="alert alert-info">📅 Weekly timetable for JSS 2A — 2024/2025 Session</div>
         <div class="table-wrap">
-          <table>
-            <thead><tr><th>Time</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr></thead>
-            <tbody>
-              <tr><td>8:00–9:00</td><td>Mathematics</td><td>English</td><td>Basic Science</td><td>Mathematics</td><td>Assembly / Islamiyya</td></tr>
-              <tr><td>9:00–10:00</td><td>English</td><td>Social Studies</td><td>Arabic</td><td>Civic Education</td><td>Agric Science</td></tr>
-              <tr><td>10:00–10:30</td><td colspan="5" style="text-align:center;color:#888;font-style:italic">— BREAK —</td></tr>
-              <tr><td>10:30–11:30</td><td>Basic Science</td><td>Mathematics</td><td>English</td><td>Arabic</td><td>Computer Studies</td></tr>
-              <tr><td>11:30–12:30</td><td>Agric Science</td><td>Arabic</td><td>Social Studies</td><td>Basic Science</td><td>Cultural / Creative</td></tr>
-              <tr><td>12:30–1:30</td><td colspan="5" style="text-align:center;color:#888;font-style:italic">— LUNCH —</td></tr>
-              <tr><td>1:30–2:30</td><td>Civic Education</td><td>Computer</td><td>Mathematics</td><td>English</td><td>Sports / P.E.</td></tr>
-            </tbody>
-          </table>
+          <div class="table-head"><h3>School Timetables</h3></div>
+          <div style="padding:20px; color:var(--text-muted); font-size:14px;">Class schedules and weekly timetables.</div>
         </div>
       </div>
 
       <div id="ds-reports" class="hidden">
-        <div class="cards-grid">
-          <div class="card"><div class="card-icon" style="background:#dbeafe">📄</div><h3>End-of-Term Report</h3><p>Generate and print end-of-term academic reports for any class or entire unit.</p><span class="card-link">Generate →</span></div>
-          <div class="card"><div class="card-icon" style="background:#fef3cd">💰</div><h3>Finance Report</h3><p>Monthly and termly fee collection, outstanding balances and expense summary.</p><span class="card-link">Download PDF →</span></div>
-          <div class="card"><div class="card-icon" style="background:#dbeafe">📊</div><h3>Attendance Report</h3><p>Class-by-class attendance statistics across all units for the selected period.</p><span class="card-link">View Report →</span></div>
-          <div class="card"><div class="card-icon" style="background:#fde8e8">👩‍🏫</div><h3>Staff Report</h3><p>Staff performance, leave records, qualifications and unit allocation summary.</p><span class="card-link">View Report →</span></div>
+        <div class="table-wrap">
+          <div class="table-head"><h3>Academic Reports</h3></div>
+          <div style="padding:20px; color:var(--text-muted); font-size:14px;">Termly reports and statistics.</div>
         </div>
       </div>
 
@@ -678,28 +1431,53 @@ $backendReady = true;
   </div>
 </div>
 
+<!-- SCRIPTS -->
 <script>
+function toggleMobileMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target = document.getElementById('page-'+id);
+  if(target){
+    target.classList.add('active');
+  } else {
+    document.getElementById('page-home').classList.add('active');
+  }
+  document.querySelectorAll('.nav-menu button').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('nav-'+id);
+  if(nb) nb.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function filterGallery(category, btn){
+  document.querySelectorAll('.gallery-filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  
+  const cards = document.querySelectorAll('.gallery-card');
+  cards.forEach(card => {
+    if(category === 'all' || card.getAttribute('data-cat') === category){
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Portal Login JS Logic
 let currentRole='principal';
 let appCounter=42;
-let staffCounter=6;
+let staffCounter=4;
 const SUBMITTED_APPS_KEY='paaSubmittedApplications';
 let submittedApplications=loadSubmittedApplications();
 
 function loadSubmittedApplications(){
   try{
     const stored=localStorage.getItem(SUBMITTED_APPS_KEY);
-    const apps=stored ? JSON.parse(stored) : [];
-    // Update appCounter to avoid duplicates
-    if(apps.length>0){
-      const maxNum=Math.max(...apps.map(a=>parseInt(a.appNo.split('-').pop())||0));
-      if(maxNum>=appCounter) appCounter=maxNum;
-    }
-    return apps;
-  }catch(e){
-    return [];
-  }
+    return stored ? JSON.parse(stored) : [];
+  }catch(e){ return []; }
 }
-
 function saveSubmittedApplications(){
   localStorage.setItem(SUBMITTED_APPS_KEY, JSON.stringify(submittedApplications));
 }
@@ -710,63 +1488,30 @@ function addApplicationToTable(app){
   const row=document.createElement('tr');
   row.id='app-row-'+app.appNo;
   const isApproved=app.status==='approved';
-  const approveBtn='<button onclick="approveApplication(\x27'+escapeHtml(app.appNo)+'\x27,\x27'+escapeHtml(app.name)+'\x27,\x27'+escapeHtml(app.unit)+'\x27)" style="background:var(--green);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer">Approve</button>';
+  const approveBtn='<button onclick="approveApplication(\x27'+escapeHtml(app.appNo)+'\x27,\x27'+escapeHtml(app.name)+'\x27,\x27'+escapeHtml(app.unit)+'\x27)" style="background:var(--navy);color:#fff;border:none;padding:5px 12px;border-radius:4px;font-size:11px;cursor:pointer">Approve</button>';
   row.innerHTML='<td>'+escapeHtml(app.appNo)+'</td>'
     +'<td>'+escapeHtml(app.name)+'</td>'
     +'<td>'+escapeHtml(app.unit)+'</td>'
     +'<td>'+escapeHtml(app.date)+'</td>'
     +'<td><span class="badge '+(isApproved?'badge-green':'badge-gold')+'">'+(isApproved?'Approved':'Pending')+'</span></td>'
-    +'<td>'+(isApproved?'<span style="font-weight:700;color:var(--green)">Approved</span>':approveBtn)+'</td>';
-  // Insert at the top (before existing rows)
-  const firstRow=tbody.querySelector('tr');
-  if(firstRow){
-    tbody.insertBefore(row, firstRow);
-  } else {
-    tbody.appendChild(row);
-  }
+    +'<td>'+(isApproved?'<span style="font-weight:700;color:var(--navy)">Approved</span>':approveBtn)+'</td>';
+  tbody.prepend(row);
 }
+function renderSavedApplications(){ submittedApplications.forEach(app=>addApplicationToTable(app)); }
 
-function renderSavedApplications(){
-  submittedApplications.forEach(app=>addApplicationToTable(app));
-}
 const adminRoles=['principal','unithead'];
 const portalRoles={
-  principal:{
-    username:'PAA-PRINCIPAL',
-    secret:'PAA@Principal2026',
-    name:'Mr. Samuel Dung',
-    roleLabel:'Principal',
-    unit:'All Units',
-    avatar:'P',
-    userType:'admin',
-    defaultSection:'overview'
-  },
-  unithead:{
-    username:'PAA-UH-001',
-    secret:'PAA@UnitHead2026',
-    name:'Head Teacher',
-    roleLabel:'Head Teacher',
-    unit:'All Units',
-    avatar:'H',
-    userType:'admin',
-    defaultSection:'overview'
-  },
-  staff:{
-    roleLabel:'Staff',
-    userType:'staff',
-    defaultSection:'overview'
-  },
-  student:{
-    roleLabel:'Student',
-    userType:'student',
-    defaultSection:'results'
-  }
+  principal:{ username:'PAA-PRINCIPAL', secret:'PAA@Principal2026', name:'Mr. Samuel Dung', roleLabel:'Principal', unit:'All Units', avatar:'P', userType:'admin', defaultSection:'overview' },
+  unithead:{ username:'PAA-UH-001', secret:'PAA@UnitHead2026', name:'Head Teacher', roleLabel:'Head Teacher', unit:'All Units', avatar:'H', userType:'admin', defaultSection:'overview' },
+  staff:{ roleLabel:'Staff', userType:'staff', defaultSection:'overview' },
+  student:{ roleLabel:'Student', userType:'student', defaultSection:'results' }
 };
 const portalAccess={
   admin:['overview','students','staff','admissions','results','finance','timetable','reports'],
   staff:['overview','students','results','timetable','reports'],
   student:['overview','results','finance','timetable']
 };
+
 const GENERATED_USERS_KEY='paaGeneratedPortalUsers';
 let generatedPortalUsers=loadGeneratedPortalUsers();
 let activePortalUserType='admin';
@@ -774,46 +1519,26 @@ let activeAllowedSections=portalAccess.admin.slice();
 let activeUser=null;
 
 function loadGeneratedPortalUsers(){
-  try{
-    const stored=localStorage.getItem(GENERATED_USERS_KEY);
-    return stored ? JSON.parse(stored) : {};
-  }catch(e){
-    return {};
-  }
+  try{ const stored=localStorage.getItem(GENERATED_USERS_KEY); return stored ? JSON.parse(stored) : {}; }catch(e){ return {}; }
 }
-
-function saveGeneratedPortalUsers(){
-  localStorage.setItem(GENERATED_USERS_KEY, JSON.stringify(generatedPortalUsers));
-}
-
-function normalizeUsername(username){
-  return String(username||'').trim().toUpperCase();
-}
-
+function saveGeneratedPortalUsers(){ localStorage.setItem(GENERATED_USERS_KEY, JSON.stringify(generatedPortalUsers)); }
+function normalizeUsername(username){ return String(username||'').trim().toUpperCase(); }
 function generateApprovalCode(length=8){
   const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code='';
-  for(let i=0;i<length;i++){
-    code+=chars[Math.floor(Math.random()*chars.length)];
-  }
+  for(let i=0;i<length;i++){ code+=chars[Math.floor(Math.random()*chars.length)]; }
   return 'PAA-'+code;
 }
-
 function getInitials(name){
   const parts=String(name||'').trim().split(/\s+/).filter(Boolean);
   if(parts.length===0) return '?';
   if(parts.length===1) return parts[0].charAt(0).toUpperCase();
   return (parts[0].charAt(0)+parts[parts.length-1].charAt(0)).toUpperCase();
 }
-
-function getApproverName(){
-  return activeUser ? activeUser.name : (portalRoles[currentRole] ? portalRoles[currentRole].name : 'Approver');
-}
+function getApproverName(){ return activeUser ? activeUser.name : 'Principal'; }
 
 function updateLoginInfoTables(){
   const isAdm = (activePortalUserType === 'admin');
-  
-  // Update student login info table
   const studentPanel = document.getElementById('studentLoginInfoPanel');
   if (studentPanel) {
     if (isAdm) {
@@ -829,16 +1554,13 @@ function updateLoginInfoTables(){
             <td><code>${escapeHtml(u.username)}</code></td>
             <td><code>${escapeHtml(u.approvalCode)}</code></td>
             <td>${escapeHtml(u.approvedBy)}</td>
-            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--green);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
+            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--navy);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
           </tr>
         `).join('');
       }
-    } else {
-      studentPanel.style.display = 'none';
-    }
+    } else { studentPanel.style.display = 'none'; }
   }
 
-  // Update staff login info table
   const staffPanel = document.getElementById('staffLoginInfoPanel');
   if (staffPanel) {
     if (isAdm) {
@@ -855,203 +1577,96 @@ function updateLoginInfoTables(){
             <td><code>${escapeHtml(u.username)}</code></td>
             <td><code>${escapeHtml(u.approvalCode)}</code></td>
             <td>${escapeHtml(u.approvedBy)}</td>
-            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--green);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
+            <td><button onclick="showCredentialsModal('${escapeHtml(u.username)}', '${escapeHtml(u.approvalCode)}', '${escapeHtml(u.name)}', '${escapeHtml(u.unit)}', '${escapeHtml(u.roleLabel)}')" style="background:var(--navy);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">Show Code</button></td>
           </tr>
         `).join('');
       }
-    } else {
-      staffPanel.style.display = 'none';
-    }
+    } else { staffPanel.style.display = 'none'; }
   }
 }
 
 function registerGeneratedPortalUser(user){
   const key=normalizeUsername(user.username);
   generatedPortalUsers[key]={
-    username:user.username,
-    approvalCode:user.approvalCode,
-    role:user.role,
-    userType:user.userType,
-    name:user.name,
-    roleLabel:user.roleLabel,
-    unit:user.unit,
-    avatar:user.avatar || getInitials(user.name),
-    defaultSection:user.defaultSection || 'overview',
-    status:'approved',
-    approvedBy:getApproverName(),
-    approvedAt:new Date().toISOString()
+    username:user.username, approvalCode:user.approvalCode, role:user.role, userType:user.userType,
+    name:user.name, roleLabel:user.roleLabel, unit:user.unit, avatar:user.avatar || getInitials(user.name),
+    defaultSection:user.defaultSection || 'overview', status:'approved', approvedBy:getApproverName(), approvedAt:new Date().toISOString()
   };
-  saveGeneratedPortalUsers();
-  updateLoginInfoTables();
-  return generatedPortalUsers[key];
+  saveGeneratedPortalUsers(); updateLoginInfoTables(); return generatedPortalUsers[key];
 }
 
 function findGeneratedPortalUser(username, role){
   const user=generatedPortalUsers[normalizeUsername(username)];
-  if(!user || user.role!==role) return null;
-  return user;
+  if(!user || user.role!==role) return null; return user;
 }
 
-// Generate secure random password
-function generatePassword(length=12) {
-  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lower = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const symbols = '!@#$%^&*';
-  const all = upper + lower + numbers + symbols;
-  let pwd = '';
-  pwd += upper[Math.floor(Math.random() * upper.length)];
-  pwd += lower[Math.floor(Math.random() * lower.length)];
-  pwd += numbers[Math.floor(Math.random() * numbers.length)];
-  pwd += symbols[Math.floor(Math.random() * symbols.length)];
-  for(let i=pwd.length; i<length; i++) {
-    pwd += all[Math.floor(Math.random() * all.length)];
-  }
-  return pwd.split('').sort(()=>Math.random()-0.5).join('');
-}
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
-  const nb=document.getElementById('nav-'+id);
-  if(nb)nb.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function openModal(){document.getElementById('loginModal').classList.add('open')}
-function closeModal(){document.getElementById('loginModal').classList.remove('open')}
-document.getElementById('loginModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
-document.getElementById('credModal').addEventListener('click',function(e){if(e.target===this)closeCredModal()});
-document.getElementById('addStaffModal').addEventListener('click',function(e){if(e.target===this)closeAddStaffModal()});
+function openModal(){ document.getElementById('loginModal').classList.add('open'); }
+function closeModal(){ document.getElementById('loginModal').classList.remove('open'); }
+function closeCredModal(){ document.getElementById('credModal').classList.remove('open'); }
+function openAddStaff(){ document.getElementById('addStaffModal').classList.add('open'); }
+function closeAddStaffModal(){ document.getElementById('addStaffModal').classList.remove('open'); }
 
 function setRole(el,role){
   if(!portalRoles[role]) return;
   document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  currentRole=role;
-  const usernameLabel=document.getElementById('loginUsernameLabel');
-  const secretLabel=document.getElementById('loginSecretLabel');
-  const loginHelp=document.getElementById('loginHelp');
-  const detailBtn=document.getElementById('showLoginDetailsBtn');
-  const usernameInput=document.getElementById('loginUsername');
-  const secretInput=document.getElementById('loginPassword');
+  el.classList.add('active'); currentRole=role;
   const isAdmin=adminRoles.includes(role);
-
-  usernameLabel.textContent=role==='student' ? 'Student ID / Admission No.' : 'Staff ID / Email';
-  secretLabel.textContent=isAdmin ? 'Password' : 'Approval Code';
-  usernameInput.placeholder=isAdmin ? ('e.g. '+portalRoles[role].username) : (role==='student' ? 'e.g. PAA-2025-0041' : 'e.g. PAA-ST-007');
-  secretInput.placeholder=isAdmin ? 'Enter password' : 'Enter generated approval code';
-  loginHelp.textContent=isAdmin
-    ? 'Use the approved Principal or Head Teacher account to manage portal access.'
-    : 'This account can sign in only after the Principal or Head Teacher approves it and shares the generated code.';
-  if(detailBtn) detailBtn.textContent=isAdmin ? 'Show Principal / Head Teacher Login Details' : 'Approval code required after approval';
+  document.getElementById('loginUsernameLabel').textContent=role==='student' ? 'Student ID / Admission No.' : 'Staff ID / Email';
+  document.getElementById('loginSecretLabel').textContent=isAdmin ? 'Password' : 'Approval Code';
+  document.getElementById('loginUsername').placeholder=isAdmin ? ('e.g. '+portalRoles[role].username) : (role==='student' ? 'e.g. PAA-2025-0041' : 'e.g. PAA-ST-007');
+  document.getElementById('loginPassword').placeholder=isAdmin ? 'Enter password' : 'Enter generated approval code';
 }
 
 function doLogin(){
   const username=document.getElementById('loginUsername').value.trim();
   const secret=document.getElementById('loginPassword').value;
   const roleConfig=portalRoles[currentRole];
-  if(!roleConfig){
-    alert('Select a valid portal role.');
-    return;
-  }
-  if(!username||!secret){alert('Enter your ID and '+(adminRoles.includes(currentRole)?'password':'approval code')+'.');return;}
+  if(!roleConfig || !username || !secret){ alert('Enter your credentials.'); return; }
 
   if(adminRoles.includes(currentRole)){
-    if(username!==roleConfig.username||secret!==roleConfig.secret){
-      alert('Incorrect username or password. Please check your credentials and try again.');
-      return;
-    }
-    startPortalSession({
-      username:roleConfig.username,
-      name:roleConfig.name,
-      role:currentRole,
-      roleLabel:roleConfig.roleLabel,
-      unit:roleConfig.unit,
-      avatar:roleConfig.avatar,
-      userType:roleConfig.userType,
-      defaultSection:roleConfig.defaultSection
-    });
+    if(username!==roleConfig.username || secret!==roleConfig.secret){ alert('Incorrect username or password.'); return; }
+    startPortalSession({ username:roleConfig.username, name:roleConfig.name, role:currentRole, roleLabel:roleConfig.roleLabel, unit:roleConfig.unit, avatar:roleConfig.avatar, userType:roleConfig.userType, defaultSection:roleConfig.defaultSection });
     return;
   }
-
   const approvedUser=findGeneratedPortalUser(username, currentRole);
-  if(!approvedUser || approvedUser.status!=='approved'){
-    alert('This '+currentRole+' has not been approved for portal access yet. Ask the Principal or Head Teacher for a generated approval code.');
-    return;
-  }
-  if(secret!==approvedUser.approvalCode){
-    alert('Invalid approval code for this '+currentRole+' account.');
-    return;
-  }
+  if(!approvedUser || secret!==approvedUser.approvalCode){ alert('Invalid portal account or approval code.'); return; }
   startPortalSession(approvedUser);
 }
 
 function startPortalSession(user){
-  closeModal();
-  activeUser=user;
-  activePortalUserType=user.userType||'admin';
+  closeModal(); activeUser=user; activePortalUserType=user.userType||'admin';
   activeAllowedSections=(portalAccess[activePortalUserType]||portalAccess.admin).slice();
   document.getElementById('dashName').textContent=user.name||'Portal User';
   document.getElementById('dashRole').textContent=user.roleLabel||'Portal User';
   document.getElementById('dashAvatar').textContent=user.avatar||getInitials(user.name);
   document.getElementById('dashUnitBadge').textContent=user.unit||user.roleLabel||'Portal';
-  
-  localStorage.setItem('userRole', user.role||currentRole);
-  localStorage.setItem('userType', activePortalUserType);
-  document.getElementById('loginUsername').value='';
-  document.getElementById('loginPassword').value='';
-  applyPortalAccess();
-  showPage('dashboard');
-  updateLoginInfoTables();
+  applyPortalAccess(); showPage('dashboard'); updateLoginInfoTables();
   showDashSection(user.defaultSection||activeAllowedSections[0]||'overview');
 }
 
 function showRoleLoginDetails(){
-  if(!adminRoles.includes(currentRole)){
-    alert('Staff and student login details are generated only after approval by the Principal or Head Teacher.');
-    return;
-  }
-  const roleCredential=portalRoles[currentRole];
-  closeModal();
+  if(!adminRoles.includes(currentRole)){ alert('Code required after admin approval.'); return; }
+  const roleCredential=portalRoles[currentRole]; closeModal();
   showCredentialsModal(roleCredential.username, roleCredential.secret, roleCredential.name, roleCredential.unit, roleCredential.roleLabel, 'Password');
 }
 
-function logOut(){
-  activePortalUserType='admin';
-  activeAllowedSections=portalAccess.admin.slice();
-  activeUser=null;
-  localStorage.removeItem('userRole');
-  localStorage.removeItem('userType');
-  showPage('home');
-}
-
-function getDashSectionFromLink(link){
-  const match=(link.getAttribute('onclick')||'').match(/showDashSection\('([^']+)'\)/);
-  return match ? match[1] : null;
-}
-
+function logOut(){ activePortalUserType='admin'; activeUser=null; showPage('home'); }
+function getDashSectionFromLink(link){ const match=(link.getAttribute('onclick')||'').match(/showDashSection\('([^']+)'\)/); return match ? match[1] : null; }
 function applyPortalAccess(){
   document.querySelectorAll('.dash-nav a').forEach(link=>{
     const section=getDashSectionFromLink(link);
-    if(!section) return;
-    link.style.display=activeAllowedSections.includes(section) ? 'flex' : 'none';
+    if(!section) return; link.style.display=activeAllowedSections.includes(section) ? 'flex' : 'none';
   });
 }
-
 function showDashSection(sec){
-  if(!activeAllowedSections.includes(sec)){
-    sec=activeAllowedSections[0]||'overview';
-  }
+  if(!activeAllowedSections.includes(sec)){ sec=activeAllowedSections[0]||'overview'; }
   document.querySelectorAll('[id^="ds-"]').forEach(d=>d.classList.add('hidden'));
   document.getElementById('ds-'+sec).classList.remove('hidden');
   document.querySelectorAll('.dash-nav a').forEach(a=>a.classList.remove('active'));
   const activeLink=Array.from(document.querySelectorAll('.dash-nav a')).find(a=>getDashSectionFromLink(a)===sec);
-  if(activeLink)activeLink.classList.add('active');
+  if(activeLink) activeLink.classList.add('active');
   const titles={overview:'School Overview',students:'Student Register',staff:'Staff Management',admissions:'Admissions',results:'Result Management',finance:'Finance Dashboard',timetable:'Timetables',reports:'Reports'};
-  const userPrefix=activePortalUserType==='student' ? 'Student ' : (activePortalUserType==='staff' ? 'Staff ' : '');
-  document.getElementById('dashSectionTitle').textContent=(sec==='overview' ? userPrefix : '')+(titles[sec]||'');
+  document.getElementById('dashSectionTitle').textContent=titles[sec]||'';
   updateLoginInfoTables();
 }
 
@@ -1063,105 +1678,61 @@ function submitAdmission(){
   const gender=document.getElementById('admGender').value;
   const parent=document.getElementById('admParent').value.trim();
   const phone=document.getElementById('admPhone').value.trim();
-  if(!unit||!surname||!first){alert('Please fill in the unit, surname and first name.');return;}
+  if(!unit||!surname||!first){ alert('Please fill in required fields.'); return; }
   appCounter++;
   const appNo='PAA-2025-'+String(appCounter).padStart(4,'0');
   const fullName=(surname+' '+first);
-  const unitShort=unit.split('(')[0].trim();
   const dateStr=new Date().toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});
 
-  // Show admission slip
   document.getElementById('slipNo').textContent=appNo;
   document.getElementById('slipName').textContent=fullName.toUpperCase();
-  document.getElementById('slipUnit').textContent=unitShort;
-  document.getElementById('slipDob').textContent=dob||'\u2014';
+  document.getElementById('slipUnit').textContent=unit.split('(')[0].trim();
+  document.getElementById('slipDob').textContent=dob||'—';
   document.getElementById('slipGender').textContent=gender;
-  document.getElementById('slipParent').textContent=parent||'\u2014';
-  document.getElementById('slipPhone').textContent=phone||'\u2014';
+  document.getElementById('slipParent').textContent=parent||'—';
+  document.getElementById('slipPhone').textContent=phone||'—';
   document.getElementById('slipDate').textContent=dateStr;
   document.getElementById('admissionForm').classList.add('hidden');
   document.getElementById('admissionSlip').classList.remove('hidden');
 
-  // Save to localStorage and add to dashboard admissions table
-  const app={appNo:appNo, name:fullName, unit:unitShort, date:dateStr, status:'pending', dob:dob, gender:gender, parent:parent, phone:phone};
-  submittedApplications.push(app);
-  saveSubmittedApplications();
-  addApplicationToTable(app);
+  const app={appNo:appNo, name:fullName, unit:unit, date:dateStr, status:'pending'};
+  submittedApplications.push(app); saveSubmittedApplications(); addApplicationToTable(app);
 }
 
 function newApplication(){
   document.getElementById('admissionForm').classList.remove('hidden');
   document.getElementById('admissionSlip').classList.add('hidden');
-  document.querySelectorAll('#admissionForm input,#admissionForm textarea').forEach(el=>el.value='');
 }
 
 function checkResults(){
   const id=document.getElementById('resId').value.trim();
-  if(!id){alert('Please enter your student ID or admission number.');return;}
+  if(!id){ alert('Please enter admission number.'); return; }
   document.getElementById('resultCard').classList.remove('hidden');
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
 }
 
-function openAddStaff(){document.getElementById('addStaffModal').classList.add('open')}
-function closeAddStaffModal(){document.getElementById('addStaffModal').classList.remove('open')}
-
-function escapeHtml(value){
-  return String(value).replace(/[&<>"']/g, function(ch){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
-  });
-}
+function escapeHtml(val){ return String(val).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
 function addStaffMember(){
-  if(!activeAllowedSections.includes('staff')){
-    alert('Only the Principal or Head Teacher can approve staff portal access.');
-    return;
-  }
   const name=document.getElementById('staffName').value.trim();
   const role=document.getElementById('staffRole').value;
   const unit=document.getElementById('staffUnit').value;
-  const subject=document.getElementById('staffSubject').value.trim()||'General Duties';
-  if(!name||!role||!unit){alert('Please complete full name, role and unit.');return;}
-
+  const subject=document.getElementById('staffSubject').value.trim()||'General';
+  if(!name||!role||!unit){ alert('Fill required fields.'); return; }
   staffCounter++;
   const staffId='PAA-ST-'+String(staffCounter).padStart(3,'0');
   const approvalCode=generateApprovalCode();
-  const staffTableBody=document.getElementById('staffTableBody');
+  const tbody=document.getElementById('staffTableBody');
   const row=document.createElement('tr');
-  row.innerHTML='<td>'+staffId+'</td>'
-    +'<td>'+escapeHtml(name)+'</td>'
-    +'<td>'+escapeHtml(role)+'</td>'
-    +'<td>'+escapeHtml(unit)+'</td>'
-    +'<td>'+escapeHtml(subject)+'</td>'
-    +'<td><span class="badge badge-green">Approved</span></td>';
-  staffTableBody.prepend(row);
-  registerGeneratedPortalUser({
-    username:staffId,
-    approvalCode:approvalCode,
-    role:'staff',
-    userType:'staff',
-    name:name,
-    roleLabel:role,
-    unit:unit,
-    defaultSection:'overview'
-  });
-
+  row.innerHTML='<td>'+staffId+'</td><td>'+escapeHtml(name)+'</td><td>'+escapeHtml(role)+'</td><td>'+escapeHtml(unit)+'</td><td>'+escapeHtml(subject)+'</td><td><span class="badge badge-green">Approved</span></td>';
+  tbody.prepend(row);
+  registerGeneratedPortalUser({ username:staffId, approvalCode:approvalCode, role:'staff', userType:'staff', name:name, roleLabel:role, unit:unit });
   closeAddStaffModal();
-  document.getElementById('staffName').value='';
-  document.getElementById('staffRole').value='';
-  document.getElementById('staffUnit').value='';
-  document.getElementById('staffSubject').value='';
   showCredentialsModal(staffId, approvalCode, name, unit, role, 'Approval Code');
 }
 
-// Approve an admission application and generate login credentials
 function approveApplication(appNo, name, unit){
-  if(!activeAllowedSections.includes('admissions')){
-    alert('Only the Principal or Head Teacher can approve student portal access.');
-    return;
-  }
   const approvalCode = generateApprovalCode();
-  const username = appNo;
-  // Update UI: set status to Approved and replace action button
   const rows = document.querySelectorAll('#ds-admissions table tbody tr');
   for(let r of rows){
     const cell = r.querySelector('td');
@@ -1169,28 +1740,14 @@ function approveApplication(appNo, name, unit){
       const statusSpan = r.querySelector('td:nth-child(5) span');
       if(statusSpan){ statusSpan.className = 'badge badge-green'; statusSpan.textContent = 'Approved'; }
       const actionCell = r.querySelector('td:nth-child(6)');
-      if(actionCell){ actionCell.innerHTML = '<span style="font-weight:700;color:var(--green)">Approved</span>'; }
+      if(actionCell){ actionCell.innerHTML = '<span style="font-weight:700;color:var(--navy)">Approved</span>'; }
       break;
     }
   }
-  // Update localStorage status for submitted applications
   const savedApp = submittedApplications.find(a => a.appNo === appNo);
-  if(savedApp){
-    savedApp.status = 'approved';
-    saveSubmittedApplications();
-  }
-  registerGeneratedPortalUser({
-    username:username,
-    approvalCode:approvalCode,
-    role:'student',
-    userType:'student',
-    name:name,
-    roleLabel:'Student',
-    unit:unit,
-    defaultSection:'results'
-  });
-  // Show generated credentials to the approver
-  showCredentialsModal(username, approvalCode, name, unit, 'Student', 'Approval Code');
+  if(savedApp){ savedApp.status = 'approved'; saveSubmittedApplications(); }
+  registerGeneratedPortalUser({ username:appNo, approvalCode:approvalCode, role:'student', userType:'student', name:name, roleLabel:'Student', unit:unit, defaultSection:'results' });
+  showCredentialsModal(appNo, approvalCode, name, unit, 'Student', 'Approval Code');
 }
 
 function showCredentialsModal(username, password, name, unit, roleLabel, secretLabel='Approval Code'){
@@ -1202,27 +1759,12 @@ function showCredentialsModal(username, password, name, unit, roleLabel, secretL
   document.getElementById('credModal').classList.add('open');
 }
 
-function closeCredModal(){ document.getElementById('credModal').classList.remove('open'); }
-
 function copyCred(id){
   const text = document.getElementById(id).textContent || '';
-  if(!navigator.clipboard){ alert('Copy the text: ' + text); return; }
   navigator.clipboard.writeText(text).then(()=>{ alert('Copied to clipboard'); }, ()=>{ alert('Unable to copy'); });
 }
 
-// On page load: render any saved admission applications into the dashboard table
 renderSavedApplications();
 </script>
 </body>
 </html>
-<?php
-// Optional footer PHP
-// Uncomment below if needed for additional server-side processing
-
-/*
-// Example: Log page access
-if (function_exists('log_page_access')) {
-    log_page_access('index', $_SERVER['HTTP_USER_AGENT']);
-}
-*/
-?>
