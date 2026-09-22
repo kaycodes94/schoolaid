@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Plan Aid Academy &amp; Educational Resource, Jos | Science &amp; ICT Education</title>
 <meta name="description" content="Plan Aid Academy &amp; Educational Resource, Jos — a Science and ICT-based centre of excellence focused on academic excellence, innovation, creativity, technology and practical learning."/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
+    --font-main: 'Calibri', Carlito, 'Segoe UI', Arial, sans-serif;
     --green: #1e3a8a;
     --navy: #0f275c;
     --gold: #c8960c;
@@ -23,7 +24,8 @@
     --shadow: 0 4px 20px rgba(15,39,92,0.12);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; line-height: 1.5; }
+  body, button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: var(--font-main); }
+  body { background: var(--cream); color: var(--dark); min-height: 100vh; line-height: 1.5; }
   
   .page { display: none; min-height: 100vh; animation: fadeIn .3s ease; }
   .page.active { display: block; }
@@ -32,11 +34,11 @@
   /* Navigation */
   nav { background: var(--green); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 68px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
   .nav-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; color: inherit; }
-  .nav-logo { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 19px; color: var(--dark); border: 2px solid #fff; flex-shrink: 0; }
-  .nav-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; line-height: 1.2; }
-  .nav-title small { display: block; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 400; opacity: 0.85; letter-spacing: 0.5px; color: var(--sky); }
+  .nav-logo { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 19px; color: var(--dark); border: 2px solid #fff; flex-shrink: 0; }
+  .nav-title { font-size: 16px; font-weight: 700; line-height: 1.2; }
+  .nav-title small { display: block; font-size: 10px; font-weight: 400; opacity: 0.85; letter-spacing: 0.5px; color: var(--sky); }
   .nav-links { display: flex; gap: 2px; align-items: center; }
-  .nav-links button { background: none; border: none; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; transition: background .2s; }
+  .nav-links button { background: none; border: none; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: background .2s; }
   .nav-links button:hover, .nav-links button.active { background: rgba(255,255,255,0.18); }
   .nav-right { display: flex; align-items: center; gap: 10px; }
   .btn-login { background: var(--gold); color: var(--dark); border: none; padding: 9px 18px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; transition: opacity .2s; }
@@ -45,15 +47,15 @@
   /* Hero */
   .hero { background: linear-gradient(135deg, var(--green) 0%, var(--navy) 100%); color: #fff; padding: 64px 24px 50px; text-align: center; position: relative; overflow: hidden; }
   .hero-badge { display: inline-block; background: rgba(200,150,12,0.2); border: 1px solid var(--gold); color: var(--gold); padding: 5px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
-  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px, 4.5vw, 48px); font-weight: 900; line-height: 1.15; margin-bottom: 12px; }
+  .hero h1 { font-size: clamp(26px, 4.5vw, 48px); font-weight: 900; line-height: 1.15; margin-bottom: 12px; }
   .hero h1 span { color: var(--gold); }
   .hero-motto { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 6px; font-style: italic; }
   .hero-tagline { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sky); margin-bottom: 28px; }
   .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   
-  .btn-primary { background: var(--gold); color: var(--dark); border: none; padding: 12px 26px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+  .btn-primary { background: var(--gold); color: var(--dark); border: none; padding: 12px 26px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all .2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
   .btn-primary:hover { background: #e0a80e; transform: translateY(-1px); }
-  .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.6); padding: 11px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.6); padding: 11px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .2s; }
   .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.12); }
   
   /* Units Strip */
@@ -70,7 +72,7 @@
   .section-alt { background: #fff; }
   .container { max-width: 1080px; margin: 0 auto; }
   .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
-  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 32px); font-weight: 700; color: var(--dark); margin-bottom: 10px; }
+  .section-title { font-size: clamp(22px, 3vw, 32px); font-weight: 700; color: var(--dark); margin-bottom: 10px; }
   .section-sub { font-size: 14px; color: #555; max-width: 650px; line-height: 1.6; margin-bottom: 30px; }
   
   .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
@@ -84,22 +86,22 @@
   /* Vision & Mission Box */
   .vm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 10px; }
   .vm-card { background: linear-gradient(135deg, var(--navy) 0%, var(--green) 100%); color: #fff; border-radius: 12px; padding: 28px 24px; box-shadow: var(--shadow); }
-  .vm-card h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .vm-card h3 { font-size: 20px; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
   .vm-card p, .vm-card ul { font-size: 14px; line-height: 1.6; opacity: 0.95; }
   .vm-card ul { margin-left: 18px; margin-top: 8px; }
   .vm-card li { margin-bottom: 4px; }
   
   /* Forms & Slips */
   .form-page { max-width: 680px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 32px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .form-page h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 4px; color: var(--dark); }
+  .form-page h2 { font-size: 24px; margin-bottom: 4px; color: var(--dark); }
   .form-page .sub { font-size: 13px; color: #666; margin-bottom: 24px; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: var(--cream); }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--dark); background: var(--cream); }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--green); background: #fff; }
   .form-group textarea { resize: vertical; min-height: 80px; }
-  .btn-submit { width: 100%; padding: 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; margin-top: 6px; }
+  .btn-submit { width: 100%; padding: 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; margin-top: 6px; }
   .btn-submit:hover { background: var(--navy); }
   
   /* Dashboards */
@@ -113,11 +115,11 @@
   .dash-nav a:hover, .dash-nav a.active { color: #fff; background: rgba(255,255,255,0.08); border-left-color: var(--gold); }
   .dash-content { padding: 28px; background: var(--cream); overflow-y: auto; }
   .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .dash-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--dark); }
+  .dash-header h2 { font-size: 22px; color: var(--dark); }
   
   .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
   .dash-card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: var(--shadow); border-bottom: 3px solid var(--green); }
-  .dash-card .dc-val { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: var(--green); }
+  .dash-card .dc-val { font-size: 26px; font-weight: 900; color: var(--green); }
   .dash-card .dc-lbl { font-size: 11px; color: #666; margin-top: 2px; }
   
   .table-wrap { background: #fff; border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border); }
@@ -138,18 +140,18 @@
   .modal-overlay.open { display: flex; }
   .modal { background: #fff; border-radius: 12px; padding: 32px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.3); }
   .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 20px; cursor: pointer; color: #888; }
-  .modal h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 4px; }
+  .modal h2 { font-size: 22px; margin-bottom: 4px; }
   .modal .sub { font-size: 12px; color: #666; margin-bottom: 18px; }
   
   .role-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-  .role-tab { padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .2s; background: none; font-family: 'DM Sans', sans-serif; }
+  .role-tab { padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .2s; background: none; }
   .role-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
   
   .slip { background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 24px; max-width: 640px; margin: 0 auto; }
   .slip-header { display: flex; align-items: center; gap: 14px; border-bottom: 2px solid var(--green); padding-bottom: 14px; margin-bottom: 16px; }
-  .slip-logo { width: 50px; height: 50px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 20px; flex-shrink: 0; }
+  .slip-logo { width: 50px; height: 50px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 20px; flex-shrink: 0; }
   .slip-school { flex: 1; }
-  .slip-school h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--green); }
+  .slip-school h2 { font-size: 18px; color: var(--green); }
   .slip-school p { font-size: 11px; color: #666; }
   .slip-no { background: var(--green); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .slip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -157,7 +159,7 @@
   .slip-field .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 2px; }
   .slip-field .val { font-size: 13px; font-weight: 600; color: var(--dark); }
   .slip-footer { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; flex-wrap: wrap; gap: 8px; }
-  .btn-print { background: var(--green); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-print { background: var(--green); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; }
   
   .arabic-text { font-family: 'Amiri', serif; direction: rtl; font-size: 15px; line-height: 1.6; color: var(--dark); }
   .alert { padding: 12px 16px; border-radius: 6px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
@@ -175,7 +177,7 @@
   
   /* Footer */
   footer { background: var(--dark); color: rgba(255,255,255,0.75); padding: 40px 24px 24px; font-size: 13px; }
-  footer h4 { color: #fff; font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 8px; }
+  footer h4 { color: #fff; font-size: 18px; margin-bottom: 8px; }
   footer p { line-height: 1.6; margin-bottom: 12px; }
   footer a { color: var(--sky); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
@@ -213,26 +215,49 @@
     <button onclick="showPage('contact')" id="nav-contact">Contact</button>
   </div>
   <div class="nav-right">
-    <button class="btn-login" onclick="openModal()">🔐 Portal Login</button>
+    <button class="btn-login" onclick="openStudentLogin()"><span style="margin-right:4px;">🎓</span> Student Login</button>
   </div>
 </nav>
 
-<!-- LOGIN MODAL -->
-<div class="modal-overlay" id="loginModal">
+<!-- STUDENT LOGIN MODAL -->
+<div class="modal-overlay" id="studentLoginModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <h2>Portal Login</h2>
-    <p class="sub">Select your account type to continue</p>
-    <div class="role-tabs">
-      <button class="role-tab active" onclick="setRole(this,'principal')">🎓 Principal</button>
-      <button class="role-tab" onclick="setRole(this,'staff')">👩‍🏫 Staff</button>
-      <button class="role-tab" onclick="setRole(this,'student')">👨‍🎓 Student</button>
-      <button class="role-tab" onclick="setRole(this,'arabic')">☪️ Arabic</button>
-      <button class="role-tab" onclick="setRole(this,'finance')">💰 Finance</button>
+    <button class="modal-close" onclick="closeStudentLogin()">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-size:24px;">🎓</span>
+      <h2 style="margin-bottom:0;">Student Login</h2>
     </div>
-    <div class="form-group"><label>User ID / Reg No</label><input type="text" id="loginUsername" placeholder="e.g. PAA-ST-001 or PAA-2025-0001"/></div>
-    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="loginPassword" placeholder="Enter password or code"/></div>
-    <button class="btn-submit" onclick="doLogin()">Sign In →</button>
+    <p class="sub">Enter your Student ID or Reg No to access your student portal</p>
+    <div class="form-group"><label>Student ID / Reg No</label><input type="text" id="studentUsername" placeholder="e.g. PAA-2023-0047 or PAA-2025-0001"/></div>
+    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="studentPassword" placeholder="Enter password or code"/></div>
+    <button class="btn-submit" onclick="doStudentLogin()">Sign In as Student →</button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
+      Staff or Administrator? <a href="#site-footer" onclick="closeStudentLogin(); scrollToFooterPortals();" style="color:var(--green);font-weight:700;text-decoration:none;">Access Management Portals in Footer ↓</a>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGEMENT & STAFF PORTAL MODAL -->
+<div class="modal-overlay" id="portalLoginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePortalLogin()">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-size:24px;">🏛️</span>
+      <h2 style="margin-bottom:0;">Management Portal</h2>
+    </div>
+    <p class="sub">Select your portal role to continue</p>
+    <div class="role-tabs">
+      <button class="role-tab active" id="tab-principal" onclick="setRole(this,'principal')">🎓 Principal</button>
+      <button class="role-tab" id="tab-staff" onclick="setRole(this,'staff')">👩‍🏫 Staff</button>
+      <button class="role-tab" id="tab-arabic" onclick="setRole(this,'arabic')">☪️ Arabic Unit</button>
+      <button class="role-tab" id="tab-finance" onclick="setRole(this,'finance')">💰 Finance</button>
+    </div>
+    <div class="form-group"><label>Staff / User ID</label><input type="text" id="portalUsername" placeholder="e.g. PAA-ST-001 or Staff ID"/></div>
+    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="portalPassword" placeholder="Enter password or code"/></div>
+    <button class="btn-submit" onclick="doPortalLogin()">Sign In to Portal →</button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
+      Are you a student? <a href="javascript:void(0)" onclick="closePortalLogin(); openStudentLogin();" style="color:var(--green);font-weight:700;text-decoration:none;">Go to Student Login ↑</a>
+    </div>
   </div>
 </div>
 
@@ -272,7 +297,8 @@
     <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">✏️</div><h4>Primary School</h4><p>Primary 1 – 6</p></div>
     <div class="unit-card" onclick="showPage('admission')"><div class="unit-icon">📚</div><h4>Secondary School</h4><p>JSS &amp; SSS STEM Track</p></div>
     <div class="unit-card" onclick="showPage('arabic')"><div class="unit-icon">☪️</div><h4>Arabic Unit</h4><p>Qur'an &amp; Islamic Studies</p></div>
-    <div class="unit-card" onclick="openModal()"><div class="unit-icon">💻</div><h4>Portal Login</h4><p>Staff &amp; Student Access</p></div>
+    <div class="unit-card" onclick="openStudentLogin()"><div class="unit-icon">🎓</div><h4>Student Login</h4><p>Result &amp; Student Access</p></div>
+    <div class="unit-card" onclick="openPortalLogin('principal')"><div class="unit-icon">🏛️</div><h4>Staff Portals</h4><p>Principal, Staff &amp; Finance</p></div>
   </div>
 
   <!-- ABOUT US SUMMARY -->
@@ -377,30 +403,6 @@
     </div>
   </div>
 
-  <footer>
-    <div class="footer-grid">
-      <div>
-        <h4>Plan Aid Academy &amp; Educational Resource, Jos</h4>
-        <p style="font-size:12px;color:var(--gold);margin-bottom:4px;">"Empowering Knowledge, Igniting Innovation"</p>
-        <p style="font-size:11px;color:var(--sky);">A Science and ICT-Based Centre of Excellence</p>
-      </div>
-      <div>
-        <h4 style="font-size:15px">Contact Details</h4>
-        <p style="font-size:12px">📍 A.U TETENGI HOUSE, No 107/1 BAUCHI ROAD, JOS, JOS NORTH, PLATEAU STATE</p>
-        <p style="font-size:12px">📞 <a href="tel:08030459595">08030459595</a> | <a href="tel:08088552501">08088552501</a></p>
-        <p style="font-size:12px">✉️ <a href="mailto:planaidjos@gmail.com">planaidjos@gmail.com</a></p>
-      </div>
-      <div>
-        <h4 style="font-size:15px">Quick Links</h4>
-        <p style="font-size:12px"><a href="#" onclick="showPage('home')">Home</a> · <a href="#" onclick="showPage('about')">About Us</a> · <a href="#" onclick="showPage('admission')">Admissions</a></p>
-        <p style="font-size:12px"><a href="#" onclick="showPage('results')">Results</a> · <a href="#" onclick="showPage('gallery')">Gallery</a> · <a href="#" onclick="showPage('arabic')">Arabic Unit</a></p>
-        <p style="font-size:12px"><a href="#" onclick="showPage('contact')">Contact Us</a> · <a href="#" onclick="openModal()">Portal Login</a></p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      &copy; 2025 Plan Aid Academy &amp; Educational Resource, Jos. All rights reserved.
-    </div>
-  </footer>
 </div>
 
 <!-- ABOUT US PAGE -->
@@ -692,6 +694,39 @@
   </div>
 </div>
 
+<!-- SITE FOOTER WITH PORTALS -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h4>Plan Aid Academy &amp; Educational Resource, Jos</h4>
+      <p style="font-size:12px;color:var(--gold);margin-bottom:4px;">"Empowering Knowledge, Igniting Innovation"</p>
+      <p style="font-size:11px;color:var(--sky);">A Science and ICT-Based Centre of Excellence</p>
+    </div>
+    <div>
+      <h4 style="font-size:15px">Contact Details</h4>
+      <p style="font-size:12px">📍 A.U TETENGI HOUSE, No 107/1 BAUCHI ROAD, JOS, JOS NORTH, PLATEAU STATE</p>
+      <p style="font-size:12px">📞 <a href="tel:08030459595">08030459595</a> | <a href="tel:08088552501">08088552501</a></p>
+      <p style="font-size:12px">✉️ <a href="mailto:planaidjos@gmail.com">planaidjos@gmail.com</a></p>
+    </div>
+    <div>
+      <h4 style="font-size:15px">Management Portals</h4>
+      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('principal')">🎓 Principal Portal</a></p>
+      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('staff')">👩‍🏫 Staff Portal</a></p>
+      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('arabic')">☪️ Arabic Unit Portal</a></p>
+      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('finance')">💰 Finance Portal</a></p>
+    </div>
+    <div>
+      <h4 style="font-size:15px">Quick Links</h4>
+      <p style="font-size:12px"><a href="#" onclick="showPage('home')">Home</a> · <a href="#" onclick="showPage('about')">About Us</a> · <a href="#" onclick="showPage('admission')">Admissions</a></p>
+      <p style="font-size:12px"><a href="#" onclick="showPage('results')">Results</a> · <a href="#" onclick="showPage('gallery')">Gallery</a> · <a href="#" onclick="showPage('arabic')">Arabic Unit</a></p>
+      <p style="font-size:12px"><a href="#" onclick="showPage('contact')">Contact Us</a> · <a href="javascript:void(0)" onclick="openStudentLogin()">Student Login</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 Plan Aid Academy &amp; Educational Resource, Jos. All rights reserved.
+  </div>
+</footer>
+
 <!-- DASHBOARD PAGE -->
 <div class="page" id="page-dashboard">
   <div class="dash-layout">
@@ -840,6 +875,15 @@ function showPage(pageId) {
   const navBtn = document.getElementById('nav-' + pageId);
   if (navBtn) navBtn.classList.add('active');
 
+  const sharedFooter = document.getElementById('site-footer');
+  if (sharedFooter) {
+    if (pageId === 'dashboard') {
+      sharedFooter.style.display = 'none';
+    } else {
+      sharedFooter.style.display = 'block';
+    }
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -855,11 +899,36 @@ function filterGallery(cat) {
   });
 }
 
-function openModal() { document.getElementById('loginModal').classList.add('open'); }
-function closeModal() { document.getElementById('loginModal').classList.remove('open'); }
+function openStudentLogin() {
+  document.getElementById('studentLoginModal').classList.add('open');
+}
+
+function closeStudentLogin() {
+  document.getElementById('studentLoginModal').classList.remove('open');
+}
+
+function openPortalLogin(role = 'principal') {
+  currentRole = role;
+  document.querySelectorAll('#portalLoginModal .role-tab').forEach(t => t.classList.remove('active'));
+  const targetTab = document.getElementById('tab-' + role);
+  if (targetTab) targetTab.classList.add('active');
+  document.getElementById('portalLoginModal').classList.add('open');
+}
+
+function closePortalLogin() {
+  document.getElementById('portalLoginModal').classList.remove('open');
+}
+
+function scrollToFooterPortals() {
+  const footer = document.getElementById('site-footer');
+  if (footer) footer.scrollIntoView({ behavior: 'smooth' });
+}
+
+function openModal() { openPortalLogin('principal'); }
+function closeModal() { closeStudentLogin(); closePortalLogin(); }
 
 function setRole(btn, role) {
-  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#portalLoginModal .role-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   currentRole = role;
 }
@@ -882,10 +951,42 @@ function registerGeneratedPortalUser(userObj) {
   saveRegisteredUsers(users);
 }
 
-function doLogin() {
-  const userVal = document.getElementById('loginUsername').value.trim();
-  const passVal = document.getElementById('loginPassword').value.trim();
+function doStudentLogin() {
+  const userVal = document.getElementById('studentUsername').value.trim();
+  const passVal = document.getElementById('studentPassword').value.trim();
   const registeredUsers = getRegisteredUsers();
+  
+  const matchedUser = registeredUsers.find(u => 
+    (u.userType === 'student' || u.role === 'student') &&
+    u.username.toLowerCase() === userVal.toLowerCase() && 
+    (u.approvalCode === passVal || passVal === '123456')
+  );
+
+  let userName = userVal || 'Student User';
+  let userRoleLabel = 'Student Portal Access';
+
+  if (matchedUser) {
+    userName = matchedUser.name;
+    userRoleLabel = (matchedUser.roleLabel || 'Student') + ' (' + (matchedUser.unit || 'General Track') + ')';
+  }
+
+  activePortalUserType = 'student';
+  activeAllowedSections = ['results'];
+
+  document.getElementById('dashName').textContent = userName;
+  document.getElementById('dashRole').textContent = userRoleLabel;
+  document.getElementById('dashAvatar').textContent = userName.charAt(0).toUpperCase();
+
+  closeStudentLogin();
+  showPage('dashboard');
+  showDashSection('results');
+}
+
+function doPortalLogin() {
+  const userVal = document.getElementById('portalUsername').value.trim();
+  const passVal = document.getElementById('portalPassword').value.trim();
+  const registeredUsers = getRegisteredUsers();
+  
   const matchedUser = registeredUsers.find(u => 
     u.username.toLowerCase() === userVal.toLowerCase() && 
     (u.approvalCode === passVal || passVal === '123456')
@@ -893,7 +994,13 @@ function doLogin() {
 
   let userType = currentRole;
   let userName = 'Authorized User';
-  let userRoleLabel = 'Staff Portal Access';
+  const roleTitles = {
+    principal: "Principal's Office",
+    staff: "Staff Member",
+    arabic: "Arabic Unit Officer",
+    finance: "Finance Director"
+  };
+  let userRoleLabel = (roleTitles[currentRole] || currentRole) + ' Portal Access';
   let defaultSec = 'overview';
 
   if (matchedUser) {
@@ -908,10 +1015,16 @@ function doLogin() {
   activePortalUserType = userType;
   if (userType === 'principal') {
     activeAllowedSections = ['overview','students','staff','admissions','results','finance'];
+    defaultSec = 'overview';
   } else if (userType === 'staff') {
     activeAllowedSections = ['overview','students','admissions','results'];
-  } else if (userType === 'student') {
-    activeAllowedSections = ['results'];
+    defaultSec = 'overview';
+  } else if (userType === 'arabic') {
+    activeAllowedSections = ['overview','students','results'];
+    defaultSec = 'overview';
+  } else if (userType === 'finance') {
+    activeAllowedSections = ['overview','finance'];
+    defaultSec = 'finance';
   } else {
     activeAllowedSections = ['overview','students','results'];
   }
@@ -920,9 +1033,13 @@ function doLogin() {
   document.getElementById('dashRole').textContent = userRoleLabel;
   document.getElementById('dashAvatar').textContent = userName.charAt(0).toUpperCase();
 
-  closeModal();
+  closePortalLogin();
   showPage('dashboard');
   showDashSection(defaultSec);
+}
+
+function doLogin() {
+  doPortalLogin();
 }
 
 function logOut() {
