@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -212,7 +212,7 @@
       ]
     },
     {
-      id: 3, name: 'Mr. Bello', role: 'Basic Science Teacher', initials: 'MB', color: '#10b981',
+      id: 3, name: 'Mr. Bello', role: 'Basic Science Teacher', initials: 'MB', color: '#1e3a8a',
       unread: false,
       messages: [
         { from: 'teacher', text: 'Hi John, your lab report was well-written. I gave you 45/50. Minor deductions for the conclusion section.', time: new Date(Date.now() - 86400000*5).toISOString() },

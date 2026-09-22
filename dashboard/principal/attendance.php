@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -144,7 +144,7 @@
 
       <!-- Stats Grid -->
       <div class="stats-grid stats-grid-4 mb-6">
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">✅</div>
           <div class="stat-value" id="totalPresent">824</div>
           <div class="stat-label">Present Today</div>
@@ -187,7 +187,7 @@
                 <span>Secondary School</span>
                 <strong>98%</strong>
               </div>
-              <div class="progress"><div class="progress-bar" style="width: 98%; background:#10b981;"></div></div>
+              <div class="progress"><div class="progress-bar" style="width: 98%; background:#1e3a8a;"></div></div>
             </div>
             <div class="mb-4">
               <div class="flex justify-between text-xs mb-1">
@@ -276,7 +276,7 @@
           {
             label: 'Present',
             data: [812, 820, 834, 824, 805],
-            backgroundColor: '#10b981',
+            backgroundColor: '#1e3a8a',
             borderRadius: 4
           },
           {

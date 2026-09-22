@@ -1,27 +1,3 @@
-<?php
-/**
- * Plan Aid Academy - School Management System
- * Main Application Entry Point
- * @version 1.0.0
- * @author Backend Development Team
- */
-
-// Start session for backend integration
-session_start();
-
-// Set headers
-header('Content-Type: text/html; charset=UTF-8');
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: SAMEORIGIN');
-
-// Configuration
-define('API_BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/aidstudent/api');
-define('APP_NAME', 'Plan Aid Academy');
-define('APP_VERSION', '1.0.0');
-
-// Optional: Check if backend is initialized (can be removed if not needed)
-$backendReady = true;
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -173,10 +149,9 @@ $backendReady = true;
   @media(max-width:768px){nav{padding:0 16px}.nav-links{display:none}.dash-layout{grid-template-columns:1fr}.dash-sidebar{display:none}.form-row{grid-template-columns:1fr}.finance-row{grid-template-columns:1fr}.hero{padding:50px 20px 40px}.section{padding:40px 20px}.slip-row{grid-template-columns:1fr}}
 </style>
 <script>
-  // Set API configuration from PHP
   const API_CONFIG = {
-    baseUrl: '<?php echo API_BASE_URL; ?>',
-    appName: '<?php echo APP_NAME; ?>'
+    baseUrl: window.location.origin + '/aidstudent/api',
+    appName: 'Plan Aid Academy'
   };
 </script>
 </head>
@@ -689,7 +664,6 @@ function loadSubmittedApplications(){
   try{
     const stored=localStorage.getItem(SUBMITTED_APPS_KEY);
     const apps=stored ? JSON.parse(stored) : [];
-    // Update appCounter to avoid duplicates
     if(apps.length>0){
       const maxNum=Math.max(...apps.map(a=>parseInt(a.appNo.split('-').pop())||0));
       if(maxNum>=appCounter) appCounter=maxNum;
@@ -717,7 +691,6 @@ function addApplicationToTable(app){
     +'<td>'+escapeHtml(app.date)+'</td>'
     +'<td><span class="badge '+(isApproved?'badge-green':'badge-gold')+'">'+(isApproved?'Approved':'Pending')+'</span></td>'
     +'<td>'+(isApproved?'<span style="font-weight:700;color:var(--green)">Approved</span>':approveBtn)+'</td>';
-  // Insert at the top (before existing rows)
   const firstRow=tbody.querySelector('tr');
   if(firstRow){
     tbody.insertBefore(row, firstRow);
@@ -813,7 +786,6 @@ function getApproverName(){
 function updateLoginInfoTables(){
   const isAdm = (activePortalUserType === 'admin');
   
-  // Update student login info table
   const studentPanel = document.getElementById('studentLoginInfoPanel');
   if (studentPanel) {
     if (isAdm) {
@@ -838,7 +810,6 @@ function updateLoginInfoTables(){
     }
   }
 
-  // Update staff login info table
   const staffPanel = document.getElementById('staffLoginInfoPanel');
   if (staffPanel) {
     if (isAdm) {
@@ -890,24 +861,6 @@ function findGeneratedPortalUser(username, role){
   const user=generatedPortalUsers[normalizeUsername(username)];
   if(!user || user.role!==role) return null;
   return user;
-}
-
-// Generate secure random password
-function generatePassword(length=12) {
-  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lower = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const symbols = '!@#$%^&*';
-  const all = upper + lower + numbers + symbols;
-  let pwd = '';
-  pwd += upper[Math.floor(Math.random() * upper.length)];
-  pwd += lower[Math.floor(Math.random() * lower.length)];
-  pwd += numbers[Math.floor(Math.random() * numbers.length)];
-  pwd += symbols[Math.floor(Math.random() * symbols.length)];
-  for(let i=pwd.length; i<length; i++) {
-    pwd += all[Math.floor(Math.random() * all.length)];
-  }
-  return pwd.split('').sort(()=>Math.random()-0.5).join('');
 }
 
 function showPage(id){
@@ -1070,7 +1023,6 @@ function submitAdmission(){
   const unitShort=unit.split('(')[0].trim();
   const dateStr=new Date().toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});
 
-  // Show admission slip
   document.getElementById('slipNo').textContent=appNo;
   document.getElementById('slipName').textContent=fullName.toUpperCase();
   document.getElementById('slipUnit').textContent=unitShort;
@@ -1082,7 +1034,6 @@ function submitAdmission(){
   document.getElementById('admissionForm').classList.add('hidden');
   document.getElementById('admissionSlip').classList.remove('hidden');
 
-  // Save to localStorage and add to dashboard admissions table
   const app={appNo:appNo, name:fullName, unit:unitShort, date:dateStr, status:'pending', dob:dob, gender:gender, parent:parent, phone:phone};
   submittedApplications.push(app);
   saveSubmittedApplications();
@@ -1153,7 +1104,6 @@ function addStaffMember(){
   showCredentialsModal(staffId, approvalCode, name, unit, role, 'Approval Code');
 }
 
-// Approve an admission application and generate login credentials
 function approveApplication(appNo, name, unit){
   if(!activeAllowedSections.includes('admissions')){
     alert('Only the Principal or Head Teacher can approve student portal access.');
@@ -1161,7 +1111,6 @@ function approveApplication(appNo, name, unit){
   }
   const approvalCode = generateApprovalCode();
   const username = appNo;
-  // Update UI: set status to Approved and replace action button
   const rows = document.querySelectorAll('#ds-admissions table tbody tr');
   for(let r of rows){
     const cell = r.querySelector('td');
@@ -1173,7 +1122,6 @@ function approveApplication(appNo, name, unit){
       break;
     }
   }
-  // Update localStorage status for submitted applications
   const savedApp = submittedApplications.find(a => a.appNo === appNo);
   if(savedApp){
     savedApp.status = 'approved';
@@ -1189,7 +1137,6 @@ function approveApplication(appNo, name, unit){
     unit:unit,
     defaultSection:'results'
   });
-  // Show generated credentials to the approver
   showCredentialsModal(username, approvalCode, name, unit, 'Student', 'Approval Code');
 }
 
@@ -1210,19 +1157,7 @@ function copyCred(id){
   navigator.clipboard.writeText(text).then(()=>{ alert('Copied to clipboard'); }, ()=>{ alert('Unable to copy'); });
 }
 
-// On page load: render any saved admission applications into the dashboard table
 renderSavedApplications();
 </script>
 </body>
 </html>
-<?php
-// Optional footer PHP
-// Uncomment below if needed for additional server-side processing
-
-/*
-// Example: Log page access
-if (function_exists('log_page_access')) {
-    log_page_access('index', $_SERVER['HTTP_USER_AGENT']);
-}
-*/
-?>

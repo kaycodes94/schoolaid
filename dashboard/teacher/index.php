@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -127,7 +127,7 @@
           <div class="stat-value">2</div>
           <div class="stat-label">Assigned Classes</div>
         </div>
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">👨‍🎓</div>
           <div class="stat-value" id="studentCount">84</div>
           <div class="stat-label">Students Handled</div>
@@ -265,7 +265,7 @@
           {
             label: 'SS 2 Biology',
             data: [13, 12, 56, 81],
-            backgroundColor: '#10b981',
+            backgroundColor: '#1e3a8a',
             borderRadius: 4
           }
         ]

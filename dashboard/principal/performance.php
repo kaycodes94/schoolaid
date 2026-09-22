@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -144,7 +144,7 @@
 
       <!-- Performance Stats Grid -->
       <div class="stats-grid stats-grid-4 mb-6">
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">📈</div>
           <div class="stat-value">82.6%</div>
           <div class="stat-label">Average Class Score</div>
@@ -288,7 +288,7 @@
         labels: ['Grade A', 'Grade B', 'Grade C', 'Grade D/E', 'Grade F'],
         datasets: [{
           data: [35, 40, 18, 5, 2],
-          backgroundColor: ['#10b981', '#3b82f6', '#6366f1', '#f59e0b', '#ef4444'],
+          backgroundColor: ['#1e3a8a', '#3b82f6', '#6366f1', '#f59e0b', '#ef4444'],
           borderColor: '#111827',
           borderWidth: 2
         }]

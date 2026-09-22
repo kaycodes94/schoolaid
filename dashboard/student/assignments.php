@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -26,7 +26,7 @@
       border-radius: 4px 0 0 4px;
     }
     .assignment-card.status-pending::before { background: #f59e0b; }
-    .assignment-card.status-submitted::before { background: #10b981; }
+    .assignment-card.status-submitted::before { background: #1e3a8a; }
     .assignment-card.status-overdue::before { background: #ef4444; }
     .assignment-card.status-graded::before { background: #6366f1; }
     .assignment-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
@@ -178,7 +178,7 @@
           <div class="stat-value" id="pendingAssign">0</div>
           <div class="stat-label">Pending</div>
         </div>
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">✅</div>
           <div class="stat-value" id="submittedAssign">0</div>
           <div class="stat-label">Submitted</div>
@@ -302,7 +302,7 @@
       } else if (a.status === 'overdue') {
         actionBtn = `<button class="btn btn-sm" style="background:#ef444418;color:#ef4444;border-color:#ef4444;" onclick="openSubmitModal(${a.id})">Submit Late</button>`;
       } else if (a.status === 'submitted') {
-        actionBtn = `<span style="color:#10b981;font-size:var(--font-size-sm);font-weight:500;">✓ Submitted — Awaiting Grade</span>`;
+        actionBtn = `<span style="color:#1e3a8a;font-size:var(--font-size-sm);font-weight:500;">✓ Submitted — Awaiting Grade</span>`;
       } else if (a.status === 'graded') {
         actionBtn = `<div class="score-display">⭐ ${a.score}/${a.maxScore}</div>`;
       }

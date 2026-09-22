@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -120,7 +120,7 @@
 
       <!-- Stats Grid -->
       <div class="stats-grid stats-grid-3 mb-6">
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">✅</div>
           <div class="stat-value" id="presentDays">30</div>
           <div class="stat-label">Days Present</div>
@@ -244,8 +244,8 @@
         datasets: [{
           label: 'Weekly Rate (%)',
           data: [100, 100, 80, 100, 100],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16,185,129,0.05)',
+          borderColor: '#1e3a8a',
+          backgroundColor: 'rgba(30,58,138,0.08)',
           fill: true,
           tension: 0.3,
           borderWidth: 2

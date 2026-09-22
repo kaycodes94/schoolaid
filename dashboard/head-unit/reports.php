@@ -235,9 +235,9 @@
               <div class="text-xs text-secondary">Pending Reviews</div>
               <div class="text-2xl font-bold" style="color:#f59e0b;">${pending}</div>
             </div>
-            <div style="border:1px solid var(--color-border);padding:var(--space-4);border-radius:var(--radius-md);background:rgba(16,185,129,0.08);">
+            <div style="border:1px solid var(--color-border);padding:var(--space-4);border-radius:var(--radius-md);background:rgba(30,58,138,0.12);">
               <div class="text-xs text-secondary">Approved Applicants</div>
-              <div class="text-2xl font-bold" style="color:#10b981;">${approved}</div>
+              <div class="text-2xl font-bold" style="color:#1e3a8a;">${approved}</div>
             </div>
             <div style="border:1px solid var(--color-border);padding:var(--space-4);border-radius:var(--radius-md);background:rgba(239,68,68,0.08);">
               <div class="text-xs text-secondary">Rejected Applications</div>

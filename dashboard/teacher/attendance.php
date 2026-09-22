@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -25,7 +25,7 @@
       transition: all var(--transition-normal);
     }
     .attendance-btn.present.active {
-      background: rgba(16,185,129,0.15);
+      background: rgba(30,58,138,0.15);
       border-color: var(--color-success);
       color: var(--color-success);
     }

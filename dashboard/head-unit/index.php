@@ -250,7 +250,7 @@
   function renderStats(s) {
     const cards = [
       { label: 'Total Teachers', value: s.total_teachers, icon: '👨‍🏫', color: '#6366f1', bgColor: 'rgba(99,102,241,0.12)' },
-      { label: 'Active Teachers', value: s.active_teachers, icon: '✅', color: '#10b981', bgColor: 'rgba(16,185,129,0.12)' },
+      { label: 'Active Teachers', value: s.active_teachers, icon: '✅', color: '#1e3a8a', bgColor: 'rgba(30,58,138,0.15)' },
       { label: 'Pending Recruits', value: s.pending_teachers, icon: '⏳', color: '#f59e0b', bgColor: 'rgba(245,158,11,0.12)' },
       { label: 'Syllabus Groups', value: s.departments, icon: '🏛️', color: '#3b82f6', bgColor: 'rgba(59,130,246,0.12)' },
     ];
@@ -295,7 +295,7 @@
         labels: labels.length ? labels : ['Science', 'Arts', 'Primary', 'Nursery'],
         datasets: [{
           data: counts.length ? counts : [8, 5, 12, 6],
-          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'],
+          backgroundColor: ['#3b82f6', '#1e3a8a', '#f59e0b', '#6366f1', '#ec4899'],
           borderColor: '#111827',
           borderWidth: 2
         }]

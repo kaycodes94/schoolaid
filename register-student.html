@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration — School Aid Management System</title>
+  <meta name="description" content="Apply for student enrollment at Plan Aid Academy.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    .reg-page { min-height: 100vh; background: var(--color-bg-base); }
+    .reg-header {
+      background: var(--color-bg-surface); border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4) var(--space-8);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .reg-header-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+    .reg-header-logo .logo-icon {
+      width: 40px; height: 40px; background: var(--gradient-accent);
+      border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+    }
+    .reg-header-logo .logo-name { font-weight: 700; color: var(--color-text-primary); }
+    .reg-body { max-width: 760px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+    .reg-hero { text-align: center; margin-bottom: var(--space-8); }
+    .reg-hero .hero-badge {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: rgba(30,58,138,0.2); color: #93c5fd;
+      border: 1px solid rgba(30,58,138,0.4); border-radius: var(--radius-full);
+      padding: 0.4rem 1rem; font-size: var(--font-size-sm); font-weight: 600; margin-bottom: var(--space-4);
+    }
+    .reg-hero h1 { font-size: var(--font-size-3xl); margin-bottom: var(--space-3); }
+    .steps-indicator {
+      display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: var(--space-8);
+    }
+    .step { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-bg-elevated); border: 2px solid var(--color-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-muted);
+      transition: all var(--transition-base); position: relative; z-index: 1;
+    }
+    .step.active .step-circle { background: var(--gradient-accent); border-color: transparent; color: #fff; box-shadow: 0 0 16px rgba(59,130,246,0.4); }
+    .step.done .step-circle   { background: var(--color-success); border-color: transparent; color: #fff; }
+    .step-label { font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 500; white-space: nowrap; }
+    .step.active .step-label  { color: var(--color-accent-light); }
+    .step.done .step-label    { color: var(--color-success); }
+    .step-line { flex: 1; height: 2px; background: var(--color-border); margin: 0 var(--space-2); margin-bottom: var(--space-5); min-width: 40px; }
+    .step-line.done { background: var(--color-success); }
+    .form-card { background: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-2xl); overflow: hidden; box-shadow: var(--shadow-card); }
+    .form-card-header {
+      padding: var(--space-6); border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-elevated); display: flex; align-items: center; gap: var(--space-3);
+    }
+    .form-card-header .section-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .form-step .form-body { padding: var(--space-6); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+    .photo-upload { display: flex; align-items: flex-start; gap: var(--space-5); }
+    .photo-preview {
+      width: 100px; height: 120px; border-radius: var(--radius-lg);
+      border: 2px dashed var(--color-border); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer;
+      background: var(--color-bg-elevated); overflow: hidden; transition: all var(--transition-base); flex-shrink: 0;
+    }
+    .photo-preview:hover { border-color: var(--color-success); background: rgba(30,58,138,0.15); }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-preview .upload-placeholder { text-align: center; padding: var(--space-3); }
+    .photo-preview .upload-placeholder .ico { font-size: 1.75rem; margin-bottom: var(--space-1); }
+    .photo-preview .upload-placeholder p { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+    .terms-check {
+      display: flex; align-items: flex-start; gap: var(--space-3);
+      padding: var(--space-4); background: var(--color-bg-elevated);
+      border-radius: var(--radius-lg); border: 1px solid var(--color-border);
+    }
+    .terms-check input { margin-top: 2px; accent-color: var(--color-success); flex-shrink: 0; }
+    .terms-check label { font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; }
+    .form-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-5) var(--space-6); border-top: 1px solid var(--color-border); background: var(--color-bg-elevated);
+    }
+    .success-screen { display: none; padding: var(--space-12) var(--space-8); text-align: center; }
+    .success-screen.show { display: block; }
+    .success-icon { font-size: 5rem; margin-bottom: var(--space-6); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+    .ref-box {
+      display: inline-block; background: var(--color-bg-elevated); border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl); padding: var(--space-4) var(--space-8);
+      font-family: monospace; font-size: var(--font-size-xl); font-weight: 700;
+      color: var(--color-success); letter-spacing: 0.1em; margin: var(--space-4) 0;
+    }
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .reg-body { padding: var(--space-4); }
+      .step-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="reg-page">
+  <header class="reg-header">
+    <a href="index.html" class="reg-header-logo">
+      <div class="logo-icon">🏫</div>
+      <span class="logo-name">Plan Aid Academy</span>
+    </a>
+    <a href="index.html" class="btn btn-secondary btn-sm">← Back to Portal</a>
+  </header>
+
+  <div class="reg-body">
+    <div class="reg-hero">
+      <div class="hero-badge">🎓 Student Enrollment</div>
+      <h1>Begin Your Learning Journey</h1>
+      <p class="text-secondary">Apply for enrollment at Plan Aid Academy. Your application will be reviewed by the Principal.</p>
+    </div>
+
+    <div class="steps-indicator" id="stepsIndicator">
+      <div class="step active" id="step-ind-1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Personal Info</div>
+      </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step" id="step-ind-2" style="opacity:0.4">
+        <div class="step-circle">2</div>
+        <div class="step-label">Academic Details</div>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step" id="step-ind-3" style="opacity:0.4">
+        <div class="step-circle">3</div>
+        <div class="step-label">Photo & Security</div>
+      </div>
+    </div>
+
+    <div class="form-card" id="formCard">
+
+      <!-- Step 1: Personal -->
+      <div class="form-step active" id="formStep1">
+        <div class="form-card-header">
+          <div class="section-icon" style="background:rgba(30,58,138,0.2);">👤</div>
+          <div>
+            <div class="font-semibold">Personal Information</div>
+            <div class="text-xs text-muted">Step 1 of 3 — Your basic details</div>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" class="form-control" placeholder="e.g. Aisha Mohammed" required>
+              <span class="form-error" id="fullNameErr">Full name is required</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dob">Date of Birth <span class="required">*</span></label>
+              <input type="date" id="dob" class="form-control" required>
+              <span class="form-error" id="dobErr">Date of birth is required</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" class="form-control" placeholder="student@email.com" required>
+              <span class="form-error" id="emailErr">Valid email is required</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="phone" class="form-control" placeholder="+234 800 000 0000" required>
+              <span class="form-error" id="phoneErr">Phone number is required</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-nav">
+          <span class="text-muted text-sm">Step 1 of 3</span>
+          <button class="btn btn-primary" onclick="goStep(2)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Academic -->
+      <div class="form-step" id="formStep2">
+        <div class="form-card-header">
+          <div class="section-icon" style="background:rgba(59,130,246,0.15);">📚</div>
+          <div>
+            <div class="font-semibold">Academic Details</div>
+            <div class="text-xs text-muted">Step 2 of 3 — Class and department</div>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="className">Class <span class="required">*</span></label>
+              <select id="className" class="form-control" required>
+                <option value="">Select class</option>
+                <optgroup label="Nursery">
+                  <option>Pre-Nursery</option>
+                  <option>Nursery 1</option>
+                  <option>Nursery 2</option>
+                </optgroup>
+                <optgroup label="Primary">
+                  <option>Primary 1</option><option>Primary 2</option>
+                  <option>Primary 3</option><option>Primary 4</option>
+                  <option>Primary 5</option><option>Primary 6</option>
+                </optgroup>
+                <optgroup label="Junior Secondary">
+                  <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                </optgroup>
+                <optgroup label="Senior Secondary">
+                  <option>SS 1</option><option>SS 2</option><option>SS 3</option>
+                </optgroup>
+                <optgroup label="Arabic Unit">
+                  <option>Arabic Level 1</option><option>Arabic Level 2</option><option>Arabic Level 3</option>
+                </optgroup>
+              </select>
+              <span class="form-error" id="classErr">Please select a class</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="department">Department</label>
+              <select id="department" class="form-control">
+                <option value="">Select department (optional)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-nav">
+          <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Photo & Password -->
+      <div class="form-step" id="formStep3">
+        <div class="form-card-header">
+          <div class="section-icon" style="background:rgba(245,158,11,0.15);">🔐</div>
+          <div>
+            <div class="font-semibold">Photo & Account Security</div>
+            <div class="text-xs text-muted">Step 3 of 3 — Upload photo and create password</div>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label class="form-label">Passport Photograph</label>
+            <div class="photo-upload">
+              <div class="photo-preview" onclick="document.getElementById('photoInput').click()">
+                <img id="photoImg" src="" alt="Preview">
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                  <div class="ico">📷</div>
+                  <p>Click to upload</p>
+                </div>
+              </div>
+              <div>
+                <p class="text-sm text-secondary">Upload a clear, recent passport photograph.</p>
+                <ul style="margin-top:var(--space-3);padding-left:var(--space-5);">
+                  <li class="text-xs text-muted">JPG, PNG or WEBP</li>
+                  <li class="text-xs text-muted">Maximum 2MB</li>
+                  <li class="text-xs text-muted">White background preferred</li>
+                </ul>
+                <button type="button" class="btn btn-secondary btn-sm" style="margin-top:var(--space-3);" onclick="document.getElementById('photoInput').click()">Choose File</button>
+              </div>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="password">Password <span class="required">*</span></label>
+              <input type="password" id="password" class="form-control" placeholder="Min. 8 characters" required>
+              <span class="form-error" id="pwdErr">Password must be at least 8 characters</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirmPwd">Confirm Password <span class="required">*</span></label>
+              <input type="password" id="confirmPwd" class="form-control" placeholder="Repeat password" required>
+              <span class="form-error" id="cpwdErr">Passwords do not match</span>
+            </div>
+          </div>
+
+          <div class="terms-check">
+            <input type="checkbox" id="terms">
+            <label for="terms">I confirm that all information provided is accurate. I understand this enrollment application will be reviewed by the Principal before approval.</label>
+          </div>
+        </div>
+        <div class="form-nav">
+          <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+          <button class="btn btn-success" id="submitBtn" onclick="submitForm()">
+            <span class="spinner btn-spinner" style="width:14px;height:14px;border-width:2px;display:none;" id="submitSpinner"></span>
+            Submit Application
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="form-card success-screen" id="successScreen">
+      <div class="success-icon">🎊</div>
+      <h2 style="margin-bottom:var(--space-3);">Enrollment Application Submitted!</h2>
+      <p class="text-secondary" style="max-width:480px;margin:0 auto var(--space-4);">
+        Your enrollment application has been submitted. The Principal will review your details and you will be contacted once a decision is made.
+      </p>
+      <p class="text-sm text-muted" style="margin-bottom:var(--space-2);">Your Reference ID:</p>
+      <div class="ref-box" id="refId">—</div>
+      <p class="text-xs text-muted" style="margin-bottom:var(--space-6);">Save this ID for future reference.</p>
+      <a href="index.html" class="btn btn-success btn-lg">Back to Home</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="assets/js/auth.js"></script>
+<script>
+  const BASE_URL_LOCAL = (() => {
+    const parts = window.location.pathname.split('/');
+    const idx = parts.indexOf('aidstudent');
+    return idx !== -1 ? window.location.origin + parts.slice(0, idx + 1).join('/') : window.location.origin;
+  })();
+
+  let currentStep = 1;
+
+  fetch(`${BASE_URL_LOCAL}/api/departments.php?action=list`)
+    .then(r => r.json()).then(data => {
+      const sel = document.getElementById('department');
+      (data.data || []).forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.id; opt.textContent = d.name;
+        sel.appendChild(opt);
+      });
+    }).catch(() => {});
+
+  function goStep(n) {
+    if (n > currentStep && !validateStep(currentStep)) return;
+    document.getElementById(`formStep${currentStep}`).classList.remove('active');
+    document.getElementById(`formStep${n}`).classList.add('active');
+    currentStep = n;
+    updateStepIndicator(n);
+  }
+
+  function updateStepIndicator(n) {
+    for (let i = 1; i <= 3; i++) {
+      const ind = document.getElementById(`step-ind-${i}`);
+      if (i < n)  { ind.className = 'step done';   ind.style.opacity = '1'; ind.querySelector('.step-circle').textContent = '✓'; }
+      if (i === n){ ind.className = 'step active';  ind.style.opacity = '1'; ind.querySelector('.step-circle').textContent = i; }
+      if (i > n)  { ind.className = 'step';         ind.style.opacity = '0.4'; ind.querySelector('.step-circle').textContent = i; }
+      if (i < 3) { const l = document.getElementById(`line-${i}`); if (l) l.classList.toggle('done', i < n); }
+    }
+  }
+
+  function validateStep(s) {
+    let ok = true; clearErrors();
+    if (s === 1) {
+      if (!v('fullName')){ err('fullName','fullNameErr'); ok=false; }
+      if (!v('dob'))     { err('dob','dobErr');           ok=false; }
+      if (!/\S+@\S+\.\S+/.test(v('email'))){ err('email','emailErr'); ok=false; }
+      if (!v('phone'))   { err('phone','phoneErr');       ok=false; }
+    }
+    if (s === 2) {
+      if (!v('className')){ err('className','classErr'); ok=false; }
+    }
+    return ok;
+  }
+  function v(id) { return document.getElementById(id).value.trim(); }
+  function err(fId, eId) {
+    document.getElementById(fId)?.classList.add('is-error');
+    const el = document.getElementById(eId); if (el) el.style.display = 'block';
+  }
+  function clearErrors() {
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-error'));
+    document.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+  }
+
+  function previewPhoto(input) {
+    if (input.files?.[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('photoImg').src = e.target.result;
+        document.getElementById('photoImg').style.display = 'block';
+        document.getElementById('uploadPlaceholder').style.display = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  async function submitForm() {
+    if (!validateStep(3)) return;
+    const pwd = document.getElementById('password').value;
+    const cpwd = document.getElementById('confirmPwd').value;
+    if (pwd.length < 8) { err('password','pwdErr'); return; }
+    if (pwd !== cpwd)   { err('confirmPwd','cpwdErr'); return; }
+    if (!document.getElementById('terms').checked) { alert('Please accept the terms.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    const spin = document.getElementById('submitSpinner');
+    btn.disabled = true; spin.style.display = 'inline-block';
+
+    const fd = new FormData();
+    fd.append('full_name',    v('fullName'));
+    fd.append('email',        v('email'));
+    fd.append('phone',        v('phone'));
+    fd.append('date_of_birth',v('dob'));
+    fd.append('class_name',   v('className'));
+    fd.append('department_id', document.getElementById('department').value);
+    fd.append('department_name', document.getElementById('department').options[document.getElementById('department').selectedIndex]?.text || '');
+    fd.append('password', pwd);
+    const photo = document.getElementById('photoInput').files[0];
+    if (photo) fd.append('passport_photo', photo);
+
+    try {
+      const res = await fetch(`${BASE_URL_LOCAL}/api/register.php?type=student`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.status === 'success') {
+        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('stepsIndicator').style.display = 'none';
+        document.getElementById('successScreen').classList.add('show');
+        document.getElementById('refId').textContent = 'REF-' + String(data.data.registration_id).padStart(6, '0');
+      } else {
+        alert(data.message || 'Submission failed. Please try again.');
+      }
+    } catch (e) {
+      alert('Network error. Please try again.');
+    } finally {
+      btn.disabled = false; spin.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>

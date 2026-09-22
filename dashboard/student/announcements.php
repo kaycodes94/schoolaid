@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -39,7 +39,7 @@
     .announcement-item.expanded .announcement-preview { display: none; }
     .priority-high { background: rgba(239,68,68,0.12); color: #ef4444; }
     .priority-medium { background: rgba(245,158,11,0.12); color: #f59e0b; }
-    .priority-low { background: rgba(16,185,129,0.12); color: #10b981; }
+    .priority-low { background: rgba(30,58,138,0.15); color: #1e3a8a; }
     .category-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .cat-tab {
       padding: 6px 16px; border-radius: var(--radius-lg);
@@ -258,8 +258,8 @@
     }
 
     const priorityBg = { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' };
-    const catColors = { exam: '#6366f1', event: '#10b981', urgent: '#ef4444', general: '#3b82f6' };
-    const catBg = { exam: 'rgba(99,102,241,0.12)', event: 'rgba(16,185,129,0.12)', urgent: 'rgba(239,68,68,0.12)', general: 'rgba(59,130,246,0.12)' };
+    const catColors = { exam: '#6366f1', event: '#1e3a8a', urgent: '#ef4444', general: '#3b82f6' };
+    const catBg = { exam: 'rgba(99,102,241,0.12)', event: 'rgba(30,58,138,0.15)', urgent: 'rgba(239,68,68,0.12)', general: 'rgba(59,130,246,0.12)' };
 
     list.innerHTML = filtered.map(a => `
       <div class="announcement-item ${a.unread ? 'unread' : ''}" id="ann-${a.id}" onclick="toggleItem(${a.id})">

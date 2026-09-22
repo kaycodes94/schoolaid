@@ -6,7 +6,7 @@
 <title>Plan Aid Academy – Jos | School Management Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-  :root{--green:#1a5c38;--gold:#c8960c;--cream:#faf7f0;--dark:#0d1f17;--white:#fff;--red:#b03232;--blue:#1a3a5c;--light:#e8f5ee;--border:#d4e0d8;--shadow:0 4px 24px rgba(26,92,56,.13)}
+  :root{--green:#1e3a8a;--gold:#c8960c;--cream:#faf7f0;--dark:#0f172a;--white:#fff;--red:#b03232;--blue:#1a3a5c;--light:#e0e7ff;--border:#d4e0d8;--shadow:0 4px 24px rgba(30,58,138,.15)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
   .page{display:none;min-height:100vh;animation:fadeIn .35s ease}
@@ -23,7 +23,7 @@
   .nav-right{display:flex;align-items:center;gap:12px}
   .btn-login{background:var(--gold);color:var(--dark);border:none;padding:9px 20px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .2s}
   .btn-login:hover{opacity:.85}
-  .hero{background:linear-gradient(135deg,var(--green) 0%,#0d3d22 100%);color:#fff;padding:80px 32px 60px;text-align:center;position:relative;overflow:hidden}
+  .hero{background:linear-gradient(135deg,var(--green) 0%,#0b1d3a 100%);color:#fff;padding:80px 32px 60px;text-align:center;position:relative;overflow:hidden}
   .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
   .hero-badge{display:inline-block;background:rgba(200,150,12,.25);border:1px solid var(--gold);color:var(--gold);padding:6px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
   .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,60px);font-weight:900;line-height:1.1;margin-bottom:16px}
@@ -97,7 +97,7 @@
   tr:last-child td{border-bottom:none}
   tr:hover td{background:#f7fcf9}
   .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
-  .badge-green{background:#d4f0e2;color:#1a5c38}
+  .badge-green{background:#dbeafe;color:#1e3a8a}
   .badge-gold{background:#fef3cd;color:#856404}
   .badge-red{background:#fde8e8;color:#b03232}
   .badge-blue{background:#dbeafe;color:#1e40af}
@@ -138,7 +138,7 @@
   .pie-item span{font-size:13px;color:var(--dark);flex:1}
   .pie-item b{font-size:13px;font-weight:700}
   .alert{padding:14px 18px;border-radius:8px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-  .alert-success{background:#d4f0e2;color:#1a5c38;border-left:4px solid var(--green)}
+  .alert-success{background:#dbeafe;color:#1e3a8a;border-left:4px solid var(--green)}
   .alert-info{background:#dbeafe;color:#1e40af;border-left:4px solid var(--blue)}
   footer{background:var(--dark);color:rgba(255,255,255,.7);text-align:center;padding:24px 32px;font-size:13px}
   footer strong{color:var(--gold)}
@@ -222,12 +222,12 @@
       <div class="section-label">Key Features</div>
       <div class="section-title">Everything in One Portal</div>
       <div class="cards-grid">
-        <div class="card"><div class="card-icon" style="background:#d4f0e2">📝</div><h3>Online Admissions</h3><p>Apply online, get an application number instantly and print your admission slip.</p><span class="card-link" onclick="showPage('admission')">Apply Now →</span></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe">📝</div><h3>Online Admissions</h3><p>Apply online, get an application number instantly and print your admission slip.</p><span class="card-link" onclick="showPage('admission')">Apply Now →</span></div>
         <div class="card"><div class="card-icon" style="background:#fef3cd">📊</div><h3>Result Portal</h3><p>Students and parents check results, download progress reports and track performance each term.</p><span class="card-link" onclick="showPage('results')">Check Results →</span></div>
         <div class="card"><div class="card-icon" style="background:#dbeafe">💰</div><h3>Finance Dashboard</h3><p>Transparent fee tracking, payment records, revenue charts and reports — all in one place.</p><span class="card-link" onclick="showPage('finance')">View Finance →</span></div>
         <div class="card"><div class="card-icon" style="background:#fde8e8">☪️</div><h3>Arabic Programme</h3><p>Qur'anic recitation, Arabic language and Islamic Studies with bilingual report cards.</p><span class="card-link" onclick="showPage('arabic')">Learn More →</span></div>
         <div class="card"><div class="card-icon" style="background:#e8d5f5">🎓</div><h3>Principal Dashboard</h3><p>Oversee all units, monitor staff, approve admissions and access whole-school analytics.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
-        <div class="card"><div class="card-icon" style="background:#d4f0e2">👩‍🏫</div><h3>Unit Head Management</h3><p>Each unit head manages their own teachers, attendance and unit-specific reports.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe">👩‍🏫</div><h3>Unit Head Management</h3><p>Each unit head manages their own teachers, attendance and unit-specific reports.</p><span class="card-link" onclick="openModal()">Staff Login →</span></div>
       </div>
     </div>
   </div>
@@ -404,7 +404,7 @@
         <div class="chart-box">
           <h3>Revenue by Unit</h3>
           <div class="pie-wrap">
-            <div class="pie-item"><div class="pie-dot" style="background:#1a5c38"></div><span>Secondary School</span><b>₦8.2M</b></div>
+            <div class="pie-item"><div class="pie-dot" style="background:#1e3a8a"></div><span>Secondary School</span><b>₦8.2M</b></div>
             <div class="pie-item"><div class="pie-dot" style="background:#c8960c"></div><span>Primary School</span><b>₦5.4M</b></div>
             <div class="pie-item"><div class="pie-dot" style="background:#1a3a5c"></div><span>Nursery School</span><b>₦2.9M</b></div>
             <div class="pie-item"><div class="pie-dot" style="background:#b03232"></div><span>Arabic Unit</span><b>₦1.9M</b></div>
@@ -442,7 +442,7 @@
     <div class="container">
       <div class="cards-grid">
         <div class="card"><div class="card-icon" style="background:#fef3cd;font-size:28px">📖</div><h3>Qur'anic Studies</h3><p class="arabic-text">تحفيظ القرآن الكريم وتجويده</p><p style="margin-top:8px;font-size:13px;color:#666">Hifz (memorisation), Tajweed (recitation) and Tafseer (interpretation) from beginner to advanced.</p></div>
-        <div class="card"><div class="card-icon" style="background:#d4f0e2;font-size:28px">✍️</div><h3>Arabic Language</h3><p class="arabic-text">اللغة العربية – قراءة وكتابة ومحادثة</p><p style="margin-top:8px;font-size:13px;color:#666">Reading, writing, grammar and spoken Arabic across Foundation, Intermediate and Advanced levels.</p></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe;font-size:28px">✍️</div><h3>Arabic Language</h3><p class="arabic-text">اللغة العربية – قراءة وكتابة ومحادثة</p><p style="margin-top:8px;font-size:13px;color:#666">Reading, writing, grammar and spoken Arabic across Foundation, Intermediate and Advanced levels.</p></div>
         <div class="card"><div class="card-icon" style="background:#dbeafe;font-size:28px">🕌</div><h3>Islamic Studies</h3><p class="arabic-text">الفقه والعقيدة والسيرة النبوية</p><p style="margin-top:8px;font-size:13px;color:#666">Fiqh, Aqeedah, Seerah (Prophet's biography) and Islamic ethics integrated into the weekly timetable.</p></div>
         <div class="card"><div class="card-icon" style="background:#fde8e8;font-size:28px">📜</div><h3>Bilingual Reports</h3><p class="arabic-text">كشف الدرجات – عربي وإنجليزي</p><p style="margin-top:8px;font-size:13px;color:#666">Arabic Unit students receive bilingual report cards in both English and Arabic, certified by the Unit Head.</p></div>
       </div>
@@ -459,7 +459,7 @@
       <div class="section-title">About Plan Aid Academy</div>
       <p style="font-size:15px;color:#555;line-height:1.8;max-width:760px;margin-bottom:36px">Plan Aid Academy, Jos, is a private co-educational school founded to provide quality, affordable and holistic education to children and youth of Jos, Plateau State. We operate four distinct units — Nursery, Primary, Secondary and Arabic/Islamic Studies — under one administration, ensuring continuity of education from early childhood to senior secondary.</p>
       <div class="cards-grid">
-        <div class="card"><div class="card-icon" style="background:#d4f0e2">🎯</div><h3>Our Mission</h3><p>To equip every student with academic excellence, sound moral values and the practical skills needed to thrive in a modern, diverse world.</p></div>
+        <div class="card"><div class="card-icon" style="background:#dbeafe">🎯</div><h3>Our Mission</h3><p>To equip every student with academic excellence, sound moral values and the practical skills needed to thrive in a modern, diverse world.</p></div>
         <div class="card"><div class="card-icon" style="background:#fef3cd">👁️</div><h3>Our Vision</h3><p>To be the leading institution of learning in Plateau State, producing well-rounded graduates who serve Nigeria and the global community.</p></div>
         <div class="card"><div class="card-icon" style="background:#dbeafe">📍</div><h3>Location</h3><p>Jos, Plateau State, Nigeria. Easily accessible, in a serene environment conducive to learning and holistic development.</p></div>
         <div class="card"><div class="card-icon" style="background:#fde8e8">📞</div><h3>Contact Us</h3><p>Phone: +234 800 000 0000<br/>Email: planaidacademy@email.com<br/>Office Hours: Mon–Fri, 8am–4pm</p></div>
@@ -623,7 +623,7 @@
 
       <div id="ds-reports" class="hidden">
         <div class="cards-grid">
-          <div class="card"><div class="card-icon" style="background:#d4f0e2">📄</div><h3>End-of-Term Report</h3><p>Generate and print end-of-term academic reports for any class or entire unit.</p><span class="card-link">Generate →</span></div>
+          <div class="card"><div class="card-icon" style="background:#dbeafe">📄</div><h3>End-of-Term Report</h3><p>Generate and print end-of-term academic reports for any class or entire unit.</p><span class="card-link">Generate →</span></div>
           <div class="card"><div class="card-icon" style="background:#fef3cd">💰</div><h3>Finance Report</h3><p>Monthly and termly fee collection, outstanding balances and expense summary.</p><span class="card-link">Download PDF →</span></div>
           <div class="card"><div class="card-icon" style="background:#dbeafe">📊</div><h3>Attendance Report</h3><p>Class-by-class attendance statistics across all units for the selected period.</p><span class="card-link">View Report →</span></div>
           <div class="card"><div class="card-icon" style="background:#fde8e8">👩‍🏫</div><h3>Staff Report</h3><p>Staff performance, leave records, qualifications and unit allocation summary.</p><span class="card-link">View Report →</span></div>

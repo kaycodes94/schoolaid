@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -20,7 +20,7 @@
       font-weight: 700;
       font-size: 0.85rem;
     }
-    .grade-A { background: rgba(16,185,129,0.18); color: #10b981; }
+    .grade-A { background: rgba(30,58,138,0.2); color: #1e3a8a; }
     .grade-B { background: rgba(59,130,246,0.18); color: #3b82f6; }
     .grade-C { background: rgba(245,158,11,0.18); color: #f59e0b; }
     .grade-D { background: rgba(239,68,68,0.18); color: #ef4444; }
@@ -176,7 +176,7 @@
           <div class="stat-value" id="avgScore">78.2</div>
           <div class="stat-label">Average Score</div>
         </div>
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">🏆</div>
           <div class="stat-value" id="highestScore">94</div>
           <div class="stat-label">Highest Score</div>
@@ -357,7 +357,7 @@
           <td style="min-width:120px;">
             <div class="result-row-scores">
               <div class="score-bar-wrap">
-                <div class="score-bar" style="width:${pct}%;background:${pct>=75?'#10b981':pct>=55?'#3b82f6':pct>=40?'#f59e0b':'#ef4444'};"></div>
+                <div class="score-bar" style="width:${pct}%;background:${pct>=75?'#1e3a8a':pct>=55?'#3b82f6':pct>=40?'#f59e0b':'#ef4444'};"></div>
               </div>
               <span style="font-size:var(--font-size-xs);color:var(--text-muted);width:30px;">${pct}%</span>
             </div>
@@ -375,7 +375,7 @@
   function updateCharts(results) {
     const labels = results.map(r => r.subject.split(' ')[0]);
     const data = results.map(r => r.total);
-    const colors = data.map(d => d >= 75 ? '#10b981' : d >= 55 ? '#3b82f6' : d >= 40 ? '#f59e0b' : '#ef4444');
+    const colors = data.map(d => d >= 75 ? '#1e3a8a' : d >= 55 ? '#3b82f6' : d >= 40 ? '#f59e0b' : '#ef4444');
 
     if (barChart) {
       barChart.data.labels = labels;
@@ -436,8 +436,8 @@
         datasets: [{
           label: 'Total Score',
           data,
-          backgroundColor: data.map(d => (d >= 75 ? '#10b981' : d >= 55 ? '#3b82f6' : '#f59e0b') + '88'),
-          borderColor: data.map(d => d >= 75 ? '#10b981' : d >= 55 ? '#3b82f6' : '#f59e0b'),
+          backgroundColor: data.map(d => (d >= 75 ? '#1e3a8a' : d >= 55 ? '#3b82f6' : '#f59e0b') + '88'),
+          borderColor: data.map(d => d >= 75 ? '#1e3a8a' : d >= 55 ? '#3b82f6' : '#f59e0b'),
           borderWidth: 2,
           borderRadius: 6,
         }]

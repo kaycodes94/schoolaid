@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -221,7 +221,7 @@
   const SUBJECTS = {
     math:    { name: 'Mathematics',      teacher: 'Mr. Okoro',    room: 'Room 12', color: '#6366f1', bg: 'rgba(99,102,241,0.14)' },
     eng:     { name: 'English Language', teacher: 'Mrs. Thompson', room: 'Room 12', color: '#3b82f6', bg: 'rgba(59,130,246,0.14)' },
-    sci:     { name: 'Basic Science',    teacher: 'Mr. Bello',    room: 'Lab 1',   color: '#10b981', bg: 'rgba(16,185,129,0.14)' },
+    sci:     { name: 'Basic Science',    teacher: 'Mr. Bello',    room: 'Lab 1',   color: '#1e3a8a', bg: 'rgba(30,58,138,0.15)' },
     soc:     { name: 'Social Studies',   teacher: 'Mrs. Adeleke', room: 'Room 12', color: '#f59e0b', bg: 'rgba(245,158,11,0.14)'  },
     civic:   { name: 'Civic Education',  teacher: 'Mr. Danladi',  room: 'Room 12', color: '#8b5cf6', bg: 'rgba(139,92,246,0.14)'  },
     biz:     { name: 'Business Studies', teacher: 'Miss Eze',     room: 'Room 8',  color: '#ec4899', bg: 'rgba(236,72,153,0.14)'  },

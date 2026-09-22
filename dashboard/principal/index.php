@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -310,7 +310,7 @@
   function renderStats(s) {
     const cards = [
       { label: 'Total Students',   value: s.total_students,   icon: '🎓', color: '#3b82f6', bgColor: 'rgba(59,130,246,0.12)' },
-      { label: 'Active Students',  value: s.active_students,  icon: '✅', color: '#10b981', bgColor: 'rgba(16,185,129,0.12)' },
+      { label: 'Active Students',  value: s.active_students,  icon: '✅', color: '#1e3a8a', bgColor: 'rgba(30,58,138,0.15)' },
       { label: 'Pending Students', value: s.pending_students, icon: '⏳', color: '#f59e0b', bgColor: 'rgba(245,158,11,0.12)' },
       { label: 'Teachers',         value: s.total_teachers,   icon: '👨‍🏫', color: '#6366f1', bgColor: 'rgba(99,102,241,0.12)' },
       { label: 'Departments',      value: s.departments,      icon: '🏛️', color: '#8b5cf6', bgColor: 'rgba(139,92,246,0.12)' },
@@ -365,7 +365,7 @@
   function renderStatusChart(s) {
     const data = [s.active_students||0, s.pending_students||0, (s.total_students||0)-(s.active_students||0)-(s.pending_students||0)];
     const labels = ['Active','Pending','Other'];
-    const colors = ['#10b981','#f59e0b','#6366f1'];
+    const colors = ['#1e3a8a','#f59e0b','#6366f1'];
 
     if (statusChart) statusChart.destroy();
     statusChart = new Chart(document.getElementById('statusChart'), {

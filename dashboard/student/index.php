@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -120,7 +120,7 @@
 
       <!-- Stats Grid -->
       <div class="stats-grid stats-grid-3 mb-6">
-        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">📈</div>
           <div class="stat-value">96.8%</div>
           <div class="stat-label">Term Attendance Rate</div>
@@ -246,7 +246,7 @@
           {
             label: 'Exam score',
             data: [52, 58, 48],
-            backgroundColor: '#10b981',
+            backgroundColor: '#1e3a8a',
             borderRadius: 4
           }
         ]
