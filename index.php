@@ -181,6 +181,7 @@
   footer p { line-height: 1.6; margin-bottom: 12px; }
   footer a { color: var(--sky); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
+  #mgmt-portals-toggle:hover { background: rgba(255,255,255,0.12) !important; color: var(--gold); }
   .footer-grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-bottom: 28px; }
   .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 18px; text-align: center; font-size: 11px; opacity: 0.7; max-width: 1080px; margin: 0 auto; }
   
@@ -709,11 +710,16 @@
       <p style="font-size:12px">✉️ <a href="mailto:planaidjos@gmail.com">planaidjos@gmail.com</a></p>
     </div>
     <div>
-      <h4 style="font-size:15px">Management Portals</h4>
-      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('principal')">🎓 Principal Portal</a></p>
-      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('staff')">👩‍🏫 Staff Portal</a></p>
-      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('arabic')">☪️ Arabic Unit Portal</a></p>
-      <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('finance')">💰 Finance Portal</a></p>
+      <h4 id="mgmt-portals-toggle" onclick="toggleManagementPortals()" style="font-size:15px; cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.06); padding:6px 12px; border-radius:6px; transition:all 0.2s ease;">
+        <span>Management Portals</span>
+        <span id="mgmt-portals-arrow" style="font-size:10px; transition:transform 0.3s ease; opacity:0.8;">▼</span>
+      </h4>
+      <div id="mgmt-portals-container" style="display:none; margin-top:10px;">
+        <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('principal')">🎓 Principal Portal</a></p>
+        <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('staff')">👩‍🏫 Staff Portal</a></p>
+        <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('arabic')">☪️ Arabic Unit Portal</a></p>
+        <p style="font-size:12px"><a href="javascript:void(0)" onclick="openPortalLogin('finance')">💰 Finance Portal</a></p>
+      </div>
     </div>
     <div>
       <h4 style="font-size:15px">Quick Links</h4>
@@ -919,7 +925,25 @@ function closePortalLogin() {
   document.getElementById('portalLoginModal').classList.remove('open');
 }
 
+function toggleManagementPortals(forceShow) {
+  const container = document.getElementById('mgmt-portals-container');
+  const arrow = document.getElementById('mgmt-portals-arrow');
+  if (!container) return;
+  
+  const isHidden = container.style.display === 'none' || container.style.display === '';
+  const shouldShow = (forceShow !== undefined) ? forceShow : isHidden;
+  
+  if (shouldShow) {
+    container.style.display = 'block';
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+  } else {
+    container.style.display = 'none';
+    if (arrow) arrow.style.transform = 'rotate(0deg)';
+  }
+}
+
 function scrollToFooterPortals() {
+  toggleManagementPortals(true);
   const footer = document.getElementById('site-footer');
   if (footer) footer.scrollIntoView({ behavior: 'smooth' });
 }
