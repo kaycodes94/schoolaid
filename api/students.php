@@ -223,38 +223,36 @@ function createStudent($db) {
             'status' => 'active'
         ];
     } else {
-        // Manual student creation
-        if (empty($input['first_name']) || empty($input['last_name']) || empty($input['unit_id'])) {
-            ApiResponse::error('First name, last name, and unit are required', 400);
-        }
-
-        // Generate admission number
-        $admissionNo = 'PAA-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-
-        // Ensure unique
-        while ($db->fetch("SELECT id FROM students WHERE admission_no = ?", [$admissionNo])) {
-            $admissionNo = 'PAA-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        }
+        // Generate student_id_number if missing
+        $countRow = $db->fetch("SELECT COUNT(*) as total FROM students");
+        $num = ($countRow['total'] ?? 0) + 1;
+        $studentIdNum = 'PAA-' . date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
+        $rawPassword = !empty($input['password']) ? $input['password'] : Utilities::generateTempPassword(10);
+        $passwordHash = Utilities::hashPassword($rawPassword);
 
         $studentData = [
-            'admission_no' => $admissionNo,
-            'first_name' => Utilities::sanitize($input['first_name']),
-            'last_name' => Utilities::sanitize($input['last_name']),
-            'date_of_birth' => $input['date_of_birth'] ?? null,
-            'gender' => $input['gender'] ?? null,
-            'state_of_origin' => $input['state_of_origin'] ?? null,
-            'religion' => $input['religion'] ?? null,
-            'unit_id' => $input['unit_id'],
-            'current_class' => $input['current_class'] ?? null,
-            'parent_name' => Utilities::sanitize($input['parent_name'] ?? ''),
-            'parent_phone' => $input['parent_phone'] ?? null,
-            'parent_email' => $input['parent_email'] ?? null,
-            'home_address' => Utilities::sanitize($input['home_address'] ?? ''),
-            'previous_school' => $input['previous_school'] ?? null,
-            'class_last_attended' => $input['class_last_attended'] ?? null,
-            'admission_date' => date('Y-m-d'),
-            'application_status' => 'approved',
-            'status' => 'active'
+            'admission_no'         => $admissionNo,
+            'student_id_number'    => $studentIdNum,
+            'username'             => strtolower(Utilities::sanitize($input['first_name']) . '.' . Utilities::sanitize($input['last_name'])),
+            'password_hash'        => $passwordHash,
+            'must_change_password' => 1,
+            'first_name'           => Utilities::sanitize($input['first_name']),
+            'last_name'            => Utilities::sanitize($input['last_name']),
+            'date_of_birth'        => $input['date_of_birth'] ?? null,
+            'gender'               => $input['gender'] ?? null,
+            'state_of_origin'      => $input['state_of_origin'] ?? null,
+            'religion'             => $input['religion'] ?? null,
+            'unit_id'              => $input['unit_id'],
+            'current_class'        => $input['current_class'] ?? $input['class'] ?? null,
+            'parent_name'          => Utilities::sanitize($input['parent_name'] ?? ''),
+            'parent_phone'         => $input['parent_phone'] ?? null,
+            'parent_email'         => $input['parent_email'] ?? null,
+            'home_address'         => Utilities::sanitize($input['home_address'] ?? ''),
+            'previous_school'      => $input['previous_school'] ?? null,
+            'class_last_attended'  => $input['class_last_attended'] ?? null,
+            'admission_date'       => date('Y-m-d'),
+            'application_status'   => 'approved',
+            'status'               => !empty($input['status']) && in_array($input['status'], ['active', 'inactive', 'suspended']) ? $input['status'] : 'active'
         ];
     }
 
@@ -273,19 +271,37 @@ function createStudent($db) {
             ]);
         }
 
-        Utilities::logActivity(
-            "New student created: {$studentData['admission_no']} - {$studentData['first_name']} {$studentData['last_name']}",
+        Utilities::logAudit(
+            $db,
+            'CREATE_STUDENT_ACCOUNT',
+            "Created student record & login account: {$studentData['admission_no']} / {$studentData['student_id_number']} ({$studentData['first_name']} {$studentData['last_name']})",
+            'staff',
             $input['staff_id'] ?? null,
-            $_SERVER['REMOTE_ADDR']
+            'Principal',
+            'students',
+            $studentId
         );
 
         $db->commit();
 
         ApiResponse::success([
+            'id' => $studentId,
             'student_id' => $studentId,
+            'user_id' => $studentData['student_id_number'],
+            'staff_id' => $studentData['student_id_number'],
+            'student_id_number' => $studentData['student_id_number'],
             'admission_no' => $studentData['admission_no'],
-            'name' => $studentData['first_name'] . ' ' . $studentData['last_name']
-        ], 'Student record created successfully', 201);
+            'user_code' => $studentData['student_id_number'],
+            'role' => 'student',
+            'name' => $studentData['first_name'] . ' ' . $studentData['last_name'],
+            'first_name' => $studentData['first_name'],
+            'last_name' => $studentData['last_name'],
+            'email' => $studentData['parent_email'] ?? '',
+            'temporary_password' => $rawPassword ?? '123456',
+            'must_change_password' => true,
+            'status' => $studentData['status'],
+            'login_url' => (isset($_SERVER['HTTP_HOST']) ? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/aidstudent/index.html" : "/aidstudent/index.html")
+        ], 'Student record and login account created successfully', 201);
 
     } catch (Exception $e) {
         $db->rollBack();

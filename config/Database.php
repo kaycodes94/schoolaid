@@ -33,9 +33,46 @@ class Database {
 
         try {
             $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            $this->ensureSchemaReady();
         } catch (PDOException $e) {
             $this->error = $e->getMessage();
             throw new Exception("Database Connection Failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ensure required tables and columns exist
+     */
+    private function ensureSchemaReady() {
+        try {
+            @$this->pdo->exec("ALTER TABLE `staff` ADD COLUMN IF NOT EXISTS `must_change_password` TINYINT(1) DEFAULT 1, ADD COLUMN IF NOT EXISTS `assigned_classes` VARCHAR(255) NULL");
+            @$this->pdo->exec("ALTER TABLE `students` ADD COLUMN IF NOT EXISTS `must_change_password` TINYINT(1) DEFAULT 1, ADD COLUMN IF NOT EXISTS `academic_session` VARCHAR(20) DEFAULT '2025/2026'");
+            @$this->pdo->exec("CREATE TABLE IF NOT EXISTS `password_resets` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `email_or_id` VARCHAR(150) NOT NULL,
+                `user_type` ENUM('staff','student') NOT NULL,
+                `user_id` INT NOT NULL,
+                `token` VARCHAR(255) UNIQUE NOT NULL,
+                `otp_code` VARCHAR(10) NULL,
+                `expires_at` DATETIME NOT NULL,
+                `used` TINYINT(1) DEFAULT 0,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            @$this->pdo->exec("CREATE TABLE IF NOT EXISTS `audit_logs` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `actor_type` ENUM('staff','student','system') NOT NULL,
+                `actor_id` INT NULL,
+                `actor_name` VARCHAR(200) NULL,
+                `action` VARCHAR(100) NOT NULL,
+                `resource_type` VARCHAR(100) NULL,
+                `resource_id` INT NULL,
+                `description` TEXT NOT NULL,
+                `ip_address` VARCHAR(45) NULL,
+                `user_agent` TEXT NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (Exception $e) {
+            // Ignore if mysql user lacks schema modification privileges
         }
     }
 

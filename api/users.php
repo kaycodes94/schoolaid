@@ -138,8 +138,11 @@ function createUserAccount($db, $input, $currentUser) {
     $role      = Utilities::sanitize($input['role']);
     $email     = !empty($input['email']) ? strtolower(trim($input['email'])) : strtolower($firstName . '.' . $lastName . '@paa.edu.ng');
     $phone     = Utilities::sanitize($input['phone'] ?? '');
-    $password  = !empty($input['password']) ? $input['password'] : '123456';
-    $unitId    = !empty($input['unit_id']) ? (int)$input['unit_id'] : null;
+    $status    = !empty($input['status']) && in_array($input['status'], ['active', 'inactive', 'suspended']) ? $input['status'] : 'active';
+    
+    // Generate secure temporary password if not manually provided
+    $rawPassword = !empty($input['password']) ? $input['password'] : Utilities::generateTempPassword(10);
+    $unitId      = !empty($input['unit_id']) ? (int)$input['unit_id'] : null;
 
     // Prevent creating Principal account via user creation form if caller is not Principal
     if (in_array($role, ['principal', 'admin']) && ($currentUser && $currentUser['role'] !== 'principal')) {
@@ -150,12 +153,13 @@ function createUserAccount($db, $input, $currentUser) {
         ApiResponse::error('Invalid user role selected', 422);
     }
 
-    $passwordHash = Utilities::hashPassword($password);
+    $passwordHash = Utilities::hashPassword($rawPassword);
 
     if ($role === 'student') {
         // Handle Student Account Creation
         $customStudentId = !empty($input['student_id']) ? Utilities::sanitize($input['student_id']) : null;
         $className       = !empty($input['class_name']) ? Utilities::sanitize($input['class_name']) : (!empty($input['subject']) ? Utilities::sanitize($input['subject']) : 'JSS 1A');
+        $academicSession = !empty($input['academic_session']) ? Utilities::sanitize($input['academic_session']) : '2025/2026';
         $parentName      = Utilities::sanitize($input['parent_name'] ?? '');
         $parentPhone     = Utilities::sanitize($input['parent_phone'] ?? $phone);
         $parentEmail     = !empty($input['parent_email']) ? strtolower(trim($input['parent_email'])) : $email;
@@ -174,45 +178,68 @@ function createUserAccount($db, $input, $currentUser) {
         $admissionNo  = 'ADM-' . date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
 
         $studentData = [
-            'admission_no'      => $admissionNo,
-            'student_id_number' => $studentIdNum,
-            'email'             => $email,
-            'username'          => strtolower($firstName . '.' . $lastName),
-            'password_hash'     => $passwordHash,
-            'first_name'        => $firstName,
-            'last_name'         => $lastName,
-            'unit_id'           => $unitId ?? 1,
-            'current_class'     => $className,
-            'parent_name'       => $parentName,
-            'parent_email'      => $parentEmail,
-            'parent_phone'      => $parentPhone,
-            'admission_date'    => date('Y-m-d'),
-            'application_status'=> 'approved',
+            'admission_no'         => $admissionNo,
+            'student_id_number'    => $studentIdNum,
+            'email'                => $email,
+            'username'             => strtolower($firstName . '.' . $lastName),
+            'password_hash'        => $passwordHash,
+            'must_change_password' => 1,
+            'first_name'           => $firstName,
+            'last_name'            => $lastName,
+            'unit_id'              => $unitId ?? 1,
+            'current_class'        => $className,
+            'academic_session'     => $academicSession,
+            'parent_name'          => $parentName,
+            'parent_email'         => $parentEmail,
+            'parent_phone'         => $parentPhone,
+            'admission_date'       => date('Y-m-d'),
+            'application_status'   => 'approved',
             'portal_access_status' => 'approved',
-            'status'            => 'active'
+            'status'               => $status
         ];
 
         $id = $db->insert('students', $studentData);
 
-        Utilities::logActivity("Created student account: {$studentIdNum} ({$firstName} {$lastName})", $currentUser['id'] ?? null, $_SERVER['REMOTE_ADDR']);
+        Utilities::logAudit(
+            $db,
+            'CREATE_STUDENT_ACCOUNT',
+            "Principal/Admin created student account: ID {$studentIdNum} ({$firstName} {$lastName}, Class: {$className}, Status: {$status})",
+            'staff',
+            $currentUser['id'] ?? null,
+            $currentUser['name'] ?? 'Principal',
+            'students',
+            $id
+        );
 
         ApiResponse::success([
             'id' => $id,
             'user_id' => $studentIdNum,
+            'username' => $studentIdNum,
             'role' => 'student',
             'name' => "{$firstName} {$lastName}",
-            'email' => $email
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'class_name' => $className,
+            'parent_name' => $parentName,
+            'parent_phone' => $parentPhone,
+            'parent_email' => $parentEmail,
+            'temporary_password' => $rawPassword,
+            'must_change_password' => true,
+            'status' => $status,
+            'login_url' => (isset($_SERVER['HTTP_HOST']) ? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/aidstudent/index.html" : "/aidstudent/index.html")
         ], 'Student account created successfully', 201);
 
     } else {
         // Handle Staff Account Creation (Teacher, Arabic Staff, Finance Staff, etc.)
-        $customStaffId = !empty($input['staff_id']) ? Utilities::sanitize($input['staff_id']) : null;
-        $subject       = Utilities::sanitize($input['subject'] ?? $input['assigned_classes_subjects'] ?? '');
-        $department    = Utilities::sanitize($input['department'] ?? '');
+        $customStaffId   = !empty($input['staff_id']) ? Utilities::sanitize($input['staff_id']) : null;
+        $subject         = Utilities::sanitize($input['subject'] ?? '');
+        $assignedClasses = Utilities::sanitize($input['assigned_classes'] ?? $input['classes'] ?? '');
+        $department      = Utilities::sanitize($input['department'] ?? '');
 
-        // Duplicate email check
-        if (!empty($input['email'])) {
-            $existing = $db->fetch("SELECT id FROM staff WHERE email = ? OR staff_id = ?", [$email, $customStaffId]);
+        // Duplicate email/staff_id check
+        if (!empty($input['email']) || !empty($customStaffId)) {
+            $existing = $db->fetch("SELECT id FROM staff WHERE (email = ? AND email != '') OR (staff_id = ? AND staff_id IS NOT NULL)", [$email, $customStaffId]);
             if ($existing) {
                 ApiResponse::error('A staff member with this email or Staff ID already exists', 409);
             }
@@ -229,86 +256,157 @@ function createUserAccount($db, $input, $currentUser) {
         }
 
         $staffData = [
-            'staff_id'      => $staffId,
-            'first_name'    => $firstName,
-            'last_name'     => $lastName,
-            'email'         => $email,
-            'phone'         => $phone,
-            'password_hash' => $passwordHash,
-            'role'          => $dbRole,
-            'unit_id'       => $unitId,
-            'subject'       => $subject,
-            'qualification' => $department ?: null,
-            'hire_date'     => date('Y-m-d'),
+            'staff_id'             => $staffId,
+            'username'             => strtolower($firstName . '.' . $lastName),
+            'first_name'           => $firstName,
+            'last_name'            => $lastName,
+            'email'                => $email,
+            'phone'                => $phone,
+            'password_hash'        => $passwordHash,
+            'must_change_password' => 1,
+            'role'                 => $dbRole,
+            'unit_id'              => $unitId,
+            'subject'              => $subject,
+            'assigned_classes'     => $assignedClasses,
+            'qualification'        => $department ?: null,
+            'hire_date'            => date('Y-m-d'),
             'portal_access_status' => 'approved',
-            'status'        => 'active'
+            'status'               => $status
         ];
 
         $id = $db->insert('staff', $staffData);
 
-        Utilities::logActivity("Created staff account: {$staffId} ({$firstName} {$lastName}, Role: {$role})", $currentUser['id'] ?? null, $_SERVER['REMOTE_ADDR']);
+        Utilities::logAudit(
+            $db,
+            'CREATE_STAFF_ACCOUNT',
+            "Principal/Admin created staff account: Staff ID {$staffId} ({$firstName} {$lastName}, Role: {$role}, Dept: {$department}, Status: {$status})",
+            'staff',
+            $currentUser['id'] ?? null,
+            $currentUser['name'] ?? 'Principal',
+            'staff',
+            $id
+        );
 
         ApiResponse::success([
             'id' => $id,
             'user_id' => $staffId,
+            'staff_id' => $staffId,
+            'username' => $staffId,
             'role' => $role,
             'name' => "{$firstName} {$lastName}",
-            'email' => $email
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'phone' => $phone,
+            'department' => $department,
+            'subject' => $subject,
+            'assigned_classes' => $assignedClasses,
+            'temporary_password' => $rawPassword,
+            'must_change_password' => true,
+            'status' => $status,
+            'login_url' => (isset($_SERVER['HTTP_HOST']) ? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/aidstudent/index.html" : "/aidstudent/index.html")
         ], 'Staff account created successfully', 201);
     }
 }
 
 /**
- * Toggle user active/inactive status
+ * Update user active, inactive, or suspended status
  */
 function toggleUserStatus($db, $input, $currentUser) {
     $id   = (int)($input['id'] ?? 0);
     $type = $input['user_type'] ?? 'staff';
+    $targetStatus = !empty($input['status']) ? strtolower($input['status']) : null;
 
     if (!$id) {
         ApiResponse::error('User ID is required', 422);
     }
 
     $table = ($type === 'student') ? 'students' : 'staff';
-    $user  = $db->fetch("SELECT id, status FROM {$table} WHERE id = ?", [$id]);
+    $user  = $db->fetch("SELECT id, first_name, last_name, status FROM {$table} WHERE id = ?", [$id]);
 
     if (!$user) {
         ApiResponse::error('User not found', 404);
     }
 
-    $newStatus = ($user['status'] === 'active') ? 'inactive' : 'active';
+    if ($targetStatus && in_array($targetStatus, ['active', 'inactive', 'suspended'])) {
+        $newStatus = $targetStatus;
+    } else {
+        $newStatus = ($user['status'] === 'active') ? 'inactive' : 'active';
+    }
 
     $db->update($table, ['status' => $newStatus], ['id' => $id]);
 
-    Utilities::logActivity("Toggled status for {$type} ID {$id} to {$newStatus}", $currentUser['id'] ?? null, $_SERVER['REMOTE_ADDR']);
+    $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
 
-    ApiResponse::success(['id' => $id, 'status' => $newStatus], "User status updated to {$newStatus}");
+    Utilities::logAudit(
+        $db,
+        'UPDATE_ACCOUNT_STATUS',
+        "Principal/Admin updated status for {$type} ID {$id} ({$fullName}) to '{$newStatus}'",
+        'staff',
+        $currentUser['id'] ?? null,
+        $currentUser['name'] ?? 'Principal',
+        $table,
+        $id
+    );
+
+    ApiResponse::success(['id' => $id, 'status' => $newStatus], "User account status updated to {$newStatus}");
 }
 
 /**
- * Reset user password
+ * Reset user password by Principal/Admin
  */
 function resetUserPassword($db, $input, $currentUser) {
     $id          = (int)($input['id'] ?? 0);
     $type        = $input['user_type'] ?? 'staff';
-    $newPassword = $input['password'] ?? '123456';
+    
+    // Generate secure temporary password if not provided
+    $rawPassword = !empty($input['password']) ? $input['password'] : Utilities::generateTempPassword(10);
 
     if (!$id) {
         ApiResponse::error('User ID is required', 422);
     }
 
-    if (strlen($newPassword) < 6) {
+    if (strlen($rawPassword) < 6) {
         ApiResponse::error('Password must be at least 6 characters long', 422);
     }
 
     $table = ($type === 'student') ? 'students' : 'staff';
-    $hash  = Utilities::hashPassword($newPassword);
+    $user = $db->fetch("SELECT id, first_name, last_name, email, " . ($type === 'student' ? 'student_id_number as user_code' : 'staff_id as user_code') . " FROM {$table} WHERE id = ?", [$id]);
 
-    $db->update($table, ['password_hash' => $hash], ['id' => $id]);
+    if (!$user) {
+        ApiResponse::error('User account not found', 404);
+    }
 
-    Utilities::logActivity("Reset password for {$type} ID {$id}", $currentUser['id'] ?? null, $_SERVER['REMOTE_ADDR']);
+    $hash  = Utilities::hashPassword($rawPassword);
 
-    ApiResponse::success(['id' => $id], 'Password reset successfully');
+    $db->update($table, [
+        'password_hash' => $hash,
+        'must_change_password' => 1
+    ], ['id' => $id]);
+
+    $name = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+    $userCode = $user['user_code'] ?? "ID-{$id}";
+
+    Utilities::logAudit(
+        $db,
+        'RESET_PASSWORD',
+        "Principal/Admin reset password for {$type} {$userCode} ({$name}). Temporary password generated.",
+        'staff',
+        $currentUser['id'] ?? null,
+        $currentUser['name'] ?? 'Principal',
+        $table,
+        $id
+    );
+
+    ApiResponse::success([
+        'id' => $id,
+        'user_type' => $type,
+        'user_code' => $userCode,
+        'name' => $name,
+        'email' => $user['email'] ?? '',
+        'temporary_password' => $rawPassword,
+        'must_change_password' => true
+    ], 'Temporary password generated successfully and must_change_password set to true.');
 }
 
 /**
@@ -330,7 +428,16 @@ function assignUserRole($db, $input, $currentUser) {
 
     $db->update('staff', ['role' => $dbRole], ['id' => $id]);
 
-    Utilities::logActivity("Assigned role {$newRole} to staff ID {$id}", $currentUser['id'] ?? null, $_SERVER['REMOTE_ADDR']);
+    Utilities::logAudit(
+        $db,
+        'ASSIGN_ROLE',
+        "Principal/Admin assigned role {$newRole} to staff ID {$id}",
+        'staff',
+        $currentUser['id'] ?? null,
+        $currentUser['name'] ?? 'Principal',
+        'staff',
+        $id
+    );
 
     ApiResponse::success(['id' => $id, 'role' => $newRole], 'User role updated successfully');
 }

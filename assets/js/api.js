@@ -244,6 +244,19 @@ const API = {
     create: (data) => API.post('api/departments.php?action=create', data),
     update: (id, data) => API.post(`api/departments.php?action=update&id=${id}`, data),
   },
+  users: {
+    list:          (params) => API.get('api/users.php?action=list', params),
+    create:        (data)   => API.post('api/users.php?action=create', data),
+    toggleStatus:  (data)   => API.post('api/users.php?action=toggle_status', data),
+    resetPassword: (data)   => API.post('api/users.php?action=reset_password', data),
+    assignRole:    (data)   => API.post('api/users.php?action=assign_role', data),
+  },
+  auth: {
+    login:               (identifier, password) => API.post('api/auth.php?action=login', { staff_id: identifier, password }),
+    changePassword:      (data)                 => API.post('api/auth.php?action=change_password', data),
+    forgotPassword:      (data)                 => API.post('api/auth.php?action=forgot_password', data),
+    resetForgotPassword: (data)                 => API.post('api/auth.php?action=reset_forgot_password', data),
+  },
   assignments: {
     list:   (params) => API.get('api/assignments.php?action=list', params),
     create: (data) => API.post('api/assignments.php?action=create', data),
@@ -256,6 +269,19 @@ window.API = API;
 
 /** Mock API Handler */
 const MockAPI = {
+  addAuditLog(action, description, actorName = 'Principal') {
+    const logs = JSON.parse(localStorage.getItem('sams_mock_audit') || '[]');
+    logs.unshift({
+      id: logs.length + 1,
+      actor_name: actorName,
+      action: action.toUpperCase(),
+      description: description,
+      ip_address: '127.0.0.1',
+      created_at: new Date().toISOString()
+    });
+    localStorage.setItem('sams_mock_audit', JSON.stringify(logs));
+  },
+
   handle(endpoint, options) {
     const urlParts = endpoint.split('?');
     const path = urlParts[0];
@@ -272,7 +298,9 @@ const MockAPI = {
     }
 
     // Router
-    if (path.includes('api/auth.php')) {
+    if (path.includes('api/users.php')) {
+      return this.users(qs, body);
+    } else if (path.includes('api/auth.php')) {
       return this.auth(qs, body);
     } else if (path.includes('api/dashboard.php')) {
       return this.dashboard();
@@ -301,6 +329,236 @@ const MockAPI = {
     }
 
     return { status: 'error', message: 'Endpoint not found mock' };
+  },
+
+  users(qs, body) {
+    const action = qs.get('action') || 'list';
+    let staffList = JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
+    let studentList = JSON.parse(localStorage.getItem('sams_mock_students') || '[]');
+
+    if (action === 'list') {
+      const roleFilter = qs.get('role');
+      const statusFilter = qs.get('status');
+      
+      let staffMapped = staffList.map(s => ({
+        ...s,
+        user_type: 'staff',
+        name: `${s.first_name} ${s.last_name}`,
+        must_change_password: s.must_change_password !== undefined ? s.must_change_password : false
+      }));
+
+      let studentsMapped = studentList.map(s => ({
+        ...s,
+        staff_id: s.student_id_number || s.admission_no,
+        user_type: 'student',
+        role: 'student',
+        name: `${s.first_name} ${s.last_name}`,
+        subject: s.current_class,
+        must_change_password: s.must_change_password !== undefined ? s.must_change_password : false
+      }));
+
+      if (roleFilter && roleFilter !== 'student') {
+        studentsMapped = [];
+        if (roleFilter !== 'all') {
+          staffMapped = staffMapped.filter(s => s.role === roleFilter);
+        }
+      } else if (roleFilter === 'student') {
+        staffMapped = [];
+      }
+
+      if (statusFilter) {
+        staffMapped = staffMapped.filter(s => s.status === statusFilter);
+        studentsMapped = studentsMapped.filter(s => s.status === statusFilter);
+      }
+
+      return { status: 'success', data: [...staffMapped, ...studentsMapped] };
+    }
+
+    if (action === 'create') {
+      const role = body.role || 'teacher';
+      const first = body.first_name || 'User';
+      const last = body.last_name || 'Account';
+      const email = body.email || `${first.toLowerCase()}.${last.toLowerCase()}@paa.edu.ng`;
+      const tempPass = body.password || (Math.random().toString(36).slice(-6) + 'P@1');
+      const status = body.status || 'active';
+
+      if (role === 'student') {
+        const stdNum = body.student_id || ('PAA-' + new Date().getFullYear() + '-' + String(studentList.length + 1).padStart(4, '0'));
+        const newStudent = {
+          id: studentList.length + 10,
+          admission_no: 'ADM-' + new Date().getFullYear() + '-' + String(studentList.length + 1).padStart(4, '0'),
+          student_id_number: stdNum,
+          first_name: first,
+          last_name: last,
+          email: email,
+          username: `${first.toLowerCase()}.${last.toLowerCase()}`,
+          current_class: body.class_name || 'JSS 1A',
+          parent_name: body.parent_name || '',
+          parent_phone: body.parent_phone || '',
+          parent_email: body.parent_email || email,
+          status: status,
+          must_change_password: true,
+          unit_id: 1,
+          created_at: new Date().toISOString()
+        };
+        studentList.push(newStudent);
+        localStorage.setItem('sams_mock_students', JSON.stringify(studentList));
+        this.addAuditLog('CREATE_STUDENT_ACCOUNT', `Created student account: ${stdNum} (${first} ${last})`);
+
+        return {
+          status: 'success',
+          message: 'Student account created successfully',
+          data: {
+            id: newStudent.id,
+            user_id: stdNum,
+            username: stdNum,
+            role: 'student',
+            name: `${first} ${last}`,
+            first_name: first,
+            last_name: last,
+            email: email,
+            temporary_password: tempPass,
+            must_change_password: true,
+            status: status,
+            login_url: window.location.origin + '/aidstudent/index.html'
+          }
+        };
+      } else {
+        const staffId = body.staff_id || ('PAA-ST-' + String(staffList.length + 1).padStart(3, '0'));
+        const newStaff = {
+          id: staffList.length + 10,
+          staff_id: staffId,
+          first_name: first,
+          last_name: last,
+          email: email,
+          phone: body.phone || '',
+          role: role === 'arabic' ? 'unit_head' : role,
+          unit_id: (role === 'arabic' || role === 'unit_head') ? 4 : null,
+          subject: body.subject || '',
+          assigned_classes: body.assigned_classes || '',
+          qualification: body.department || '',
+          status: status,
+          must_change_password: true,
+          hire_date: new Date().toISOString().split('T')[0]
+        };
+        staffList.push(newStaff);
+        localStorage.setItem('sams_mock_staff', JSON.stringify(staffList));
+        this.addAuditLog('CREATE_STAFF_ACCOUNT', `Created staff account: ${staffId} (${first} ${last}, Role: ${role})`);
+
+        return {
+          status: 'success',
+          message: 'Staff account created successfully',
+          data: {
+            id: newStaff.id,
+            user_id: staffId,
+            staff_id: staffId,
+            username: staffId,
+            role: role,
+            name: `${first} ${last}`,
+            first_name: first,
+            last_name: last,
+            email: email,
+            department: body.department || '',
+            subject: body.subject || '',
+            temporary_password: tempPass,
+            must_change_password: true,
+            status: status,
+            login_url: window.location.origin + '/aidstudent/index.html'
+          }
+        };
+      }
+    }
+
+    if (action === 'toggle_status') {
+      const id = parseInt(body.id);
+      const type = body.user_type || 'staff';
+      const targetStatus = body.status;
+
+      if (type === 'student') {
+        const idx = studentList.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          studentList[idx].status = targetStatus || (studentList[idx].status === 'active' ? 'inactive' : 'active');
+          localStorage.setItem('sams_mock_students', JSON.stringify(studentList));
+          this.addAuditLog('UPDATE_ACCOUNT_STATUS', `Updated student ID ${id} status to ${studentList[idx].status}`);
+          return { status: 'success', data: { id, status: studentList[idx].status } };
+        }
+      } else {
+        const idx = staffList.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          staffList[idx].status = targetStatus || (staffList[idx].status === 'active' ? 'inactive' : 'active');
+          localStorage.setItem('sams_mock_staff', JSON.stringify(staffList));
+          this.addAuditLog('UPDATE_ACCOUNT_STATUS', `Updated staff ID ${id} status to ${staffList[idx].status}`);
+          return { status: 'success', data: { id, status: staffList[idx].status } };
+        }
+      }
+      return { status: 'error', message: 'User not found' };
+    }
+
+    if (action === 'reset_password') {
+      const id = parseInt(body.id);
+      const type = body.user_type || 'staff';
+      const tempPass = body.password || (Math.random().toString(36).slice(-6) + 'P@1');
+
+      if (type === 'student') {
+        const idx = studentList.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          studentList[idx].must_change_password = true;
+          localStorage.setItem('sams_mock_students', JSON.stringify(studentList));
+          const name = `${studentList[idx].first_name} ${studentList[idx].last_name}`;
+          const code = studentList[idx].student_id_number || studentList[idx].admission_no;
+          this.addAuditLog('RESET_PASSWORD', `Reset password for student ${code} (${name})`);
+          return {
+            status: 'success',
+            message: 'Password reset successfully',
+            data: {
+              id,
+              user_type: 'student',
+              user_code: code,
+              name,
+              temporary_password: tempPass,
+              must_change_password: true
+            }
+          };
+        }
+      } else {
+        const idx = staffList.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          staffList[idx].must_change_password = true;
+          localStorage.setItem('sams_mock_staff', JSON.stringify(staffList));
+          const name = `${staffList[idx].first_name} ${staffList[idx].last_name}`;
+          const code = staffList[idx].staff_id;
+          this.addAuditLog('RESET_PASSWORD', `Reset password for staff ${code} (${name})`);
+          return {
+            status: 'success',
+            message: 'Password reset successfully',
+            data: {
+              id,
+              user_type: 'staff',
+              user_code: code,
+              name,
+              temporary_password: tempPass,
+              must_change_password: true
+            }
+          };
+        }
+      }
+      return { status: 'error', message: 'User account not found' };
+    }
+
+    return { status: 'error', message: 'Unsupported users action' };
+  },
+
+  audit(qs) {
+    const logs = JSON.parse(localStorage.getItem('sams_mock_audit') || '[]');
+    return {
+      status: 'success',
+      data: {
+        total: logs.length,
+        limit: 50,
+        offset: 0,
+        data: logs
+      }
+    };
   },
 
   // Auth mock

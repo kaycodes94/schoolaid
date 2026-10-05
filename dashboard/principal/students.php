@@ -594,10 +594,14 @@
       // Call students create API
       const res = await API.post('api/students.php', data);
       if (res && res.status === 'success') {
-        Toast.success('Success', `Student record created with Admission No: ${res.data.admission_no}`);
+        Toast.success('Success', `Student record created with ID: ${res.data.user_id || res.data.admission_no}`);
         Modal.close('addStudentModal');
         document.getElementById('addStudentForm').reset();
         loadStudents();
+
+        if (window.showCredentialsModal) {
+          showCredentialsModal(res.data);
+        }
       } else {
         Toast.error('Failed', res.message || 'Failed to create student record.');
       }

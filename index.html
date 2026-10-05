@@ -232,7 +232,13 @@
     </div>
     <p class="sub">Enter your Student ID or Reg No to access your student portal</p>
     <div class="form-group"><label>Student ID / Reg No</label><input type="text" id="studentUsername" placeholder="e.g. PAA-2023-0047 or PAA-2025-0001" autocomplete="off"/></div>
-    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="studentPassword" placeholder="Enter password or code" autocomplete="new-password"/></div>
+    <div class="form-group">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <label style="margin-bottom:0;">Password / Approval Code</label>
+        <a href="javascript:void(0)" onclick="openForgotPasswordModal('student')" style="font-size:11px;color:var(--green);font-weight:700;text-decoration:none;">Forgot Password?</a>
+      </div>
+      <input type="password" id="studentPassword" placeholder="Enter password or code" autocomplete="new-password"/>
+    </div>
     <button class="btn-submit" onclick="doStudentLogin()">Sign In as Student →</button>
     <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
       Staff or Administrator? <a href="#site-footer" onclick="closeStudentLogin(); scrollToFooterPortals();" style="color:var(--green);font-weight:700;text-decoration:none;">Access Management Portals in Footer ↓</a>
@@ -256,10 +262,51 @@
       <button class="role-tab" id="tab-finance" onclick="setRole(this,'finance')">💰 Finance</button>
     </div>
     <div class="form-group"><label>Staff / User ID</label><input type="text" id="portalUsername" placeholder="e.g. PAA-ST-001 or Staff ID" autocomplete="off"/></div>
-    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="portalPassword" placeholder="Enter password or code" autocomplete="new-password"/></div>
+    <div class="form-group">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <label style="margin-bottom:0;">Password / Approval Code</label>
+        <a href="javascript:void(0)" onclick="openForgotPasswordModal('staff')" style="font-size:11px;color:var(--green);font-weight:700;text-decoration:none;">Forgot Password?</a>
+      </div>
+      <input type="password" id="portalPassword" placeholder="Enter password or code" autocomplete="new-password"/>
+    </div>
     <button class="btn-submit" onclick="doPortalLogin()">Sign In to Portal →</button>
     <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
       Are you a student? <a href="javascript:void(0)" onclick="closePortalLogin(); openStudentLogin();" style="color:var(--green);font-weight:700;text-decoration:none;">Go to Student Login ↑</a>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD RECOVERY MODAL -->
+<div class="modal-overlay" id="forgotPasswordModal">
+  <div class="modal" style="max-width:440px;">
+    <button class="modal-close" onclick="closeForgotPasswordModal()">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-size:24px;">🔑</span>
+      <h2 style="margin-bottom:0;">Account Password Recovery</h2>
+    </div>
+    <p class="sub">Enter your Staff ID, Student ID, or registered Email address to recover your account.</p>
+    
+    <div id="forgotStep1">
+      <div class="form-group">
+        <label>Staff ID / Student ID / Email</label>
+        <input type="text" id="forgotIdentifier" placeholder="e.g. PAA-ST-001 or PAA-2026-0001 or email@paa.edu.ng" autocomplete="off"/>
+      </div>
+      <button class="btn-submit" id="btnRequestRecovery" onclick="submitForgotPasswordRequest()">Request Recovery Code →</button>
+    </div>
+
+    <div id="forgotStep2" style="display:none;">
+      <div class="alert alert-info" style="font-size:12px; margin-bottom:12px;" id="forgotNotice">
+        Password recovery instructions initiated. Enter your 6-digit OTP code below to reset your password.
+      </div>
+      <div class="form-group">
+        <label>OTP Recovery Code / Token</label>
+        <input type="text" id="forgotOtpCode" placeholder="Enter 6-digit code (e.g. 849201)" autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" id="forgotNewPassword" placeholder="Enter new password (min. 6 chars)"/>
+      </div>
+      <button class="btn-submit" id="btnSubmitReset" onclick="submitForgotPasswordReset()">Reset Password &amp; Sign In →</button>
     </div>
   </div>
 </div>
@@ -990,6 +1037,85 @@ function registerGeneratedPortalUser(userObj) {
   saveRegisteredUsers(users);
 }
 
+let currentResetToken = null;
+
+function openForgotPasswordModal(type = 'staff') {
+  closeStudentLogin();
+  closePortalLogin();
+  document.getElementById('forgotIdentifier').value = '';
+  document.getElementById('forgotOtpCode').value = '';
+  document.getElementById('forgotNewPassword').value = '';
+  document.getElementById('forgotStep1').style.display = 'block';
+  document.getElementById('forgotStep2').style.display = 'none';
+  document.getElementById('forgotPasswordModal').classList.add('open');
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').classList.remove('open');
+}
+
+async function submitForgotPasswordRequest() {
+  const idVal = document.getElementById('forgotIdentifier').value.trim();
+  if (!idVal) {
+    alert('Please enter your Staff ID, Student ID, or Email address.');
+    return;
+  }
+  const btn = document.getElementById('btnRequestRecovery');
+  btn.disabled = true;
+
+  try {
+    const res = await API.auth.forgotPassword({ identifier: idVal });
+    if (res && res.status === 'success') {
+      currentResetToken = res.data.token || '';
+      document.getElementById('forgotNotice').textContent = res.message || 'Recovery details processed.';
+      if (res.data.otp_code) {
+        document.getElementById('forgotOtpCode').value = res.data.otp_code;
+      }
+      document.getElementById('forgotStep1').style.display = 'none';
+      document.getElementById('forgotStep2').style.display = 'block';
+    } else {
+      alert((res && res.message) || 'Failed to process recovery request.');
+    }
+  } catch (err) {
+    alert(err.message || 'Error communicating with server.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function submitForgotPasswordReset() {
+  const otp = document.getElementById('forgotOtpCode').value.trim();
+  const pass = document.getElementById('forgotNewPassword').value.trim();
+
+  if (!pass || pass.length < 6) {
+    alert('New password must be at least 6 characters long.');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmitReset');
+  btn.disabled = true;
+
+  try {
+    const res = await API.auth.resetForgotPassword({
+      token: currentResetToken,
+      otp_code: otp,
+      new_password: pass
+    });
+
+    if (res && res.status === 'success') {
+      alert('Password reset successfully! You can now sign in with your new password.');
+      closeForgotPasswordModal();
+      openPortalLogin();
+    } else {
+      alert((res && res.message) || 'Failed to reset password.');
+    }
+  } catch (err) {
+    alert(err.message || 'Error resetting password.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 async function doStudentLogin() {
   const userVal = document.getElementById('studentUsername').value.trim();
   const passVal = document.getElementById('studentPassword').value.trim();
@@ -1014,6 +1140,11 @@ async function doStudentLogin() {
   if (loginRes && loginRes.ok) {
     closeStudentLogin();
     window.location.href = getAppUrl('dashboard/student/index.php');
+    return;
+  }
+
+  if (loginRes && !loginRes.ok && loginRes.message && !loginRes.message.includes('Server connection')) {
+    alert(loginRes.message);
     return;
   }
 
@@ -1065,6 +1196,11 @@ async function doPortalLogin() {
       finance:   'dashboard/finance/index.php',
     };
     window.location.href = getAppUrl(destMap[role] || 'dashboard/principal/index.php');
+    return;
+  }
+
+  if (loginRes && !loginRes.ok && loginRes.message && !loginRes.message.includes('Server connection')) {
+    alert(loginRes.message);
     return;
   }
 

@@ -165,14 +165,34 @@ class Utilities {
     }
 
     public static function hashPassword($password) {
-        return $password;
+        if (empty($password)) return '';
+        return password_hash($password, PASSWORD_BCRYPT);
     }
 
     public static function verifyPassword($password, $hash) {
-        if (empty($hash) || $hash === '123456' || $hash === 'password') return true;
+        if (empty($hash) || empty($password)) return false;
+        if (password_verify($password, $hash)) return true;
+        // Fallback check for legacy plaintext passwords
         if ($password === $hash) return true;
-        if (@password_verify($password, $hash)) return true;
         return false;
+    }
+
+    public static function generateTempPassword($length = 10) {
+        $uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijkmnopqrstuvwxyz';
+        $numbers   = '23456789';
+        $symbols   = '!@#$%';
+        
+        $temp = $uppercase[random_int(0, strlen($uppercase) - 1)] .
+                $lowercase[random_int(0, strlen($lowercase) - 1)] .
+                $numbers[random_int(0, strlen($numbers) - 1)] .
+                $symbols[random_int(0, strlen($symbols) - 1)];
+
+        $all = $uppercase . $lowercase . $numbers . $symbols;
+        for ($i = strlen($temp); $i < $length; $i++) {
+            $temp .= $all[random_int(0, strlen($all) - 1)];
+        }
+        return str_shuffle($temp);
     }
 
     public static function generateToken($length = 32) {
@@ -180,7 +200,7 @@ class Utilities {
     }
 
     public static function sanitize($input) {
-        return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(trim((string)$input), ENT_QUOTES, 'UTF-8');
     }
 
     public static function validateEmail($email) {
@@ -207,12 +227,39 @@ class Utilities {
         return $interval->y;
     }
 
+    public static function logAudit($db, $action, $description, $actorType = 'system', $actorId = null, $actorName = null, $resourceType = null, $resourceId = null) {
+        // Log to file
+        self::logActivity("[$action] $description", $actorId, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
+
+        // Log to database if DB instance available
+        if ($db) {
+            try {
+                $db->query(
+                    "INSERT INTO audit_logs (actor_type, actor_id, actor_name, action, resource_type, resource_id, description, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    [
+                        $actorType,
+                        $actorId,
+                        $actorName ?: 'System',
+                        strtoupper($action),
+                        $resourceType,
+                        $resourceId,
+                        $description,
+                        $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                        $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'
+                    ]
+                );
+            } catch (Exception $e) {
+                // Silently ignore if audit_logs table isn't ready
+            }
+        }
+    }
+
     public static function logActivity($description, $user_id = null, $ip = null) {
         $file = __DIR__ . '/../logs/activity.log';
         if (!is_dir(dirname($file))) {
-            mkdir(dirname($file), 0755, true);
+            @mkdir(dirname($file), 0755, true);
         }
         $log = date('Y-m-d H:i:s') . " | User: {$user_id} | IP: {$ip} | {$description}\n";
-        file_put_contents($file, $log, FILE_APPEND);
+        @file_put_contents($file, $log, FILE_APPEND);
     }
 }

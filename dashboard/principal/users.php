@@ -300,7 +300,7 @@
           </div>
         </div>
 
-        <!-- Contact & Password Fields -->
+        <!-- Account Status & Password Fields -->
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="userEmail">Email Address</label>
@@ -312,15 +312,24 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="userPassword">Temporary Password <span class="required">*</span></label>
-          <input type="text" id="userPassword" class="form-control" value="123456" placeholder="Default: 123456" required>
-          <div class="text-xs text-muted mt-1">User signs in using their Staff ID / Student ID and this temporary password.</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="userStatus">Initial Account Status <span class="required">*</span></label>
+            <select id="userStatus" class="form-control" required>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userPassword">Temporary Password <span class="text-xs text-muted">(Auto-generated if empty)</span></label>
+            <input type="text" id="userPassword" class="form-control" placeholder="Leave empty for auto-generated password">
+          </div>
         </div>
 
         <div class="flex gap-3 justify-end mt-6">
           <button type="button" class="btn btn-secondary" onclick="Modal.close('userModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="saveUserBtn">Create Account</button>
+          <button type="submit" class="btn btn-primary" id="saveUserBtn">Create Account &amp; Generate Slip</button>
         </div>
       </form>
     </div>
@@ -338,14 +347,14 @@
       <form id="resetPassForm" onsubmit="submitPasswordReset(event)">
         <input type="hidden" id="resetUserId">
         <input type="hidden" id="resetUserType">
-        <p class="mb-4 text-sm text-secondary" id="resetUserPrompt">Enter a new password for this user:</p>
+        <p class="mb-4 text-sm text-secondary" id="resetUserPrompt">Enter a new temporary password or leave blank to auto-generate:</p>
         <div class="form-group">
-          <label class="form-label" for="newPassword">New Password</label>
-          <input type="text" id="newPassword" class="form-control" value="123456" required>
+          <label class="form-label" for="newPassword">New Temporary Password</label>
+          <input type="text" id="newPassword" class="form-control" placeholder="Leave empty for auto-generated temp password">
         </div>
         <div class="flex gap-3 justify-end mt-6">
           <button type="button" class="btn btn-secondary" onclick="Modal.close('resetPassModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update Password</button>
+          <button type="submit" class="btn btn-primary">Generate New Credentials</button>
         </div>
       </form>
     </div>
@@ -463,6 +472,10 @@
       if (role === 'finance') roleBadgeClass = 'badge-info';
       if (role === 'student') roleBadgeClass = 'badge-secondary';
 
+      let statusBadgeClass = 'badge-success';
+      if (status === 'inactive') statusBadgeClass = 'badge-warning';
+      if (status === 'suspended') statusBadgeClass = 'badge-danger';
+
       return `
         <tr>
           <td>
@@ -476,12 +489,17 @@
           </td>
           <td><code>${idNum}</code></td>
           <td><span class="badge ${roleBadgeClass}">${formatRole(role)}</span></td>
-          <td>${u.subject || u.qualification || '—'}</td>
-          <td>${Format.badge(status)}</td>
+          <td>${u.subject || u.qualification || u.current_class || '—'}</td>
+          <td>
+            <select class="form-control form-control-sm" style="width:110px; padding:2px 6px; font-size:0.75rem;" onchange="changeUserStatus(${u.id}, '${userType}', '${name}', this.value)" ${role === 'principal' ? 'disabled' : ''}>
+              <option value="active" ${status === 'active' ? 'selected' : ''}>Active</option>
+              <option value="inactive" ${status === 'inactive' ? 'selected' : ''}>Inactive</option>
+              <option value="suspended" ${status === 'suspended' ? 'selected' : ''}>Suspended</option>
+            </select>
+          </td>
           <td class="text-right">
             <div class="flex gap-2 justify-end">
               <button class="btn btn-secondary btn-sm" onclick="openResetPasswordModal(${u.id}, '${userType}', '${name}')">Reset Password</button>
-              ${role !== 'principal' ? `<button class="btn ${status === 'active' ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleUserStatus(${u.id}, '${userType}', '${name}', '${status}')">${status === 'active' ? 'Deactivate' : 'Activate'}</button>` : ''}
             </div>
           </td>
         </tr>
@@ -499,7 +517,8 @@
     const last = document.getElementById('userLast').value.trim();
     const email = document.getElementById('userEmail').value.trim();
     const phone = document.getElementById('userPhone').value.trim();
-    const password = document.getElementById('userPassword').value.trim() || '123456';
+    const status = document.getElementById('userStatus').value;
+    const password = document.getElementById('userPassword').value.trim();
 
     const payload = {
       role,
@@ -507,6 +526,7 @@
       last_name: last,
       email,
       phone,
+      status,
       password
     };
 
@@ -525,10 +545,15 @@
       const res = await API.post('api/users.php?action=create', payload);
 
       if (res && res.status === 'success') {
-        Toast.success('Account Created', `Created ${formatRole(role)} account for ${first} ${last} (${res.data.user_id})`);
+        Toast.success('Account Created', `Created ${formatRole(role)} account for ${first} ${last}`);
         Modal.close('userModal');
         document.getElementById('staffForm').reset();
         loadUsersList();
+
+        // Show Credentials Slip Modal to Principal with print, PDF, email options
+        if (window.showCredentialsModal) {
+          showCredentialsModal(res.data);
+        }
       } else {
         Toast.error('Creation Failed', res.message || 'Could not create account.');
       }
@@ -542,7 +567,8 @@
   function openResetPasswordModal(id, userType, name) {
     document.getElementById('resetUserId').value = id;
     document.getElementById('resetUserType').value = userType;
-    document.getElementById('resetUserPrompt').textContent = `Set a new password for ${name}:`;
+    document.getElementById('resetUserPrompt').textContent = `Generate new temporary password for ${name}:`;
+    document.getElementById('newPassword').value = '';
     Modal.open('resetPassModal');
   }
 
@@ -560,8 +586,14 @@
       });
 
       if (res && res.status === 'success') {
-        Toast.success('Password Reset', 'Password updated successfully.');
+        Toast.success('Password Reset', 'New temporary password generated.');
         Modal.close('resetPassModal');
+        loadUsersList();
+
+        // Show Credential Slip modal to Principal
+        if (window.showCredentialsModal) {
+          showCredentialsModal(res.data);
+        }
       } else {
         Toast.error('Reset Failed', res.message || 'Failed to update password.');
       }
@@ -570,19 +602,20 @@
     }
   }
 
-  function toggleUserStatus(id, userType, name, currentStatus) {
-    const actionText = currentStatus === 'active' ? 'Deactivate' : 'Activate';
-    confirmAction(`Are you sure you want to ${actionText} account for ${name}?`, async () => {
+  function changeUserStatus(id, userType, name, newStatus) {
+    confirmAction(`Are you sure you want to set account status for ${name} to '${newStatus.toUpperCase()}'?`, async () => {
       try {
-        const res = await API.post('api/users.php?action=toggle_status', { id, user_type: userType });
+        const res = await API.post('api/users.php?action=toggle_status', { id, user_type: userType, status: newStatus });
         if (res && res.status === 'success') {
-          Toast.success('Status Updated', `User account is now ${res.data.status}`);
+          Toast.success('Status Updated', `User account status is now '${res.data.status}'`);
           loadUsersList();
         } else {
           Toast.error('Update Failed', res.message || 'Could not update status');
+          loadUsersList();
         }
       } catch (err) {
-        Toast.error('Error', err.message || 'Failed to toggle status.');
+        Toast.error('Error', err.message || 'Failed to update status.');
+        loadUsersList();
       }
     });
   }
