@@ -84,6 +84,12 @@
         Class Timetable
       </a>
 
+      <div class="nav-section-label">Financial Records</div>
+      <a href="fees" class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        My Fees & Receipts
+      </a>
+
       <div class="nav-section-label">Tasks & Memos</div>
       <a href="assignments" class="nav-item">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -212,7 +218,13 @@
       <!-- Results Table -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Detailed Subject Results</h3>
+          <div>
+            <h3 class="card-title">Detailed Subject Results</h3>
+            <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">
+              <span class="badge badge-sm badge-success" style="padding:2px 8px;font-weight:700;">APPROVED & PUBLISHED RESULT</span>
+              Only Principal approved results are published to student records.
+            </div>
+          </div>
           <button class="btn btn-sm btn-outline" onclick="window.print()">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             Print Report
@@ -229,6 +241,7 @@
                 <th>Score Bar</th>
                 <th>Grade</th>
                 <th>Remark</th>
+                <th>Teacher Comment</th>
               </tr>
             </thead>
             <tbody id="resultsTableBody">
@@ -271,34 +284,34 @@
 
   const MOCK_RESULTS = {
     '1st': [
-      { subject: 'Mathematics',     icon: '📐', ca: 36, exam: 56, total: 92 },
-      { subject: 'English Language',icon: '📝', ca: 34, exam: 60, total: 94 },
-      { subject: 'Basic Science',   icon: '🔬', ca: 30, exam: 48, total: 78 },
-      { subject: 'Social Studies',  icon: '🌍', ca: 28, exam: 44, total: 72 },
-      { subject: 'Civic Education', icon: '🏛️', ca: 32, exam: 50, total: 82 },
-      { subject: 'Business Studies',icon: '💼', ca: 25, exam: 40, total: 65 },
-      { subject: 'Computer Studies',icon: '💻', ca: 38, exam: 54, total: 92 },
-      { subject: 'Agricultural Sci',icon: '🌾', ca: 22, exam: 42, total: 64 },
+      { subject: 'Mathematics',     icon: '📐', ca: 36, exam: 56, total: 92, comment: 'Outstanding problem solving and logical analytical skills.' },
+      { subject: 'English Language',icon: '📝', ca: 34, exam: 60, total: 94, comment: 'Exceptional vocabulary and essay structure.' },
+      { subject: 'Basic Science',   icon: '🔬', ca: 30, exam: 48, total: 78, comment: 'Good understanding of scientific principles and lab techniques.' },
+      { subject: 'Social Studies',  icon: '🌍', ca: 28, exam: 44, total: 72, comment: 'Active participation in social discussions and civic awareness.' },
+      { subject: 'Civic Education', icon: '🏛️', ca: 32, exam: 50, total: 82, comment: 'Very diligent and respectful of democratic concepts.' },
+      { subject: 'Business Studies',icon: '💼', ca: 25, exam: 40, total: 65, comment: 'Satisfactory effort. Keep practicing accounting exercises.' },
+      { subject: 'Computer Studies',icon: '💻', ca: 38, exam: 54, total: 92, comment: 'Excellent practical coding and software mastery.' },
+      { subject: 'Agricultural Sci',icon: '🌾', ca: 22, exam: 42, total: 64, comment: 'Fair understanding of crop production cycles.' },
     ],
     '2nd': [
-      { subject: 'Mathematics',     icon: '📐', ca: 38, exam: 58, total: 96 },
-      { subject: 'English Language',icon: '📝', ca: 35, exam: 55, total: 90 },
-      { subject: 'Basic Science',   icon: '🔬', ca: 32, exam: 52, total: 84 },
-      { subject: 'Social Studies',  icon: '🌍', ca: 30, exam: 46, total: 76 },
-      { subject: 'Civic Education', icon: '🏛️', ca: 34, exam: 52, total: 86 },
-      { subject: 'Business Studies',icon: '💼', ca: 27, exam: 45, total: 72 },
-      { subject: 'Computer Studies',icon: '💻', ca: 40, exam: 57, total: 97 },
-      { subject: 'Agricultural Sci',icon: '🌾', ca: 24, exam: 44, total: 68 },
+      { subject: 'Mathematics',     icon: '📐', ca: 38, exam: 58, total: 96, comment: 'Near perfect score! Excellent work in algebra.' },
+      { subject: 'English Language',icon: '📝', ca: 35, exam: 55, total: 90, comment: 'Impressive literary criticism and grammar.' },
+      { subject: 'Basic Science',   icon: '🔬', ca: 32, exam: 52, total: 84, comment: 'Great performance in physics and chemistry modules.' },
+      { subject: 'Social Studies',  icon: '🌍', ca: 30, exam: 46, total: 76, comment: 'Solid understanding of geography and culture.' },
+      { subject: 'Civic Education', icon: '🏛️', ca: 34, exam: 52, total: 86, comment: 'Consistent excellence in citizenship studies.' },
+      { subject: 'Business Studies',icon: '💼', ca: 27, exam: 45, total: 72, comment: 'Good improvement in bookkeeping.' },
+      { subject: 'Computer Studies',icon: '💻', ca: 40, exam: 57, total: 97, comment: 'Top of class in computer hardware and programming.' },
+      { subject: 'Agricultural Sci',icon: '🌾', ca: 24, exam: 44, total: 68, comment: 'Good work on livestock management.' },
     ],
     '3rd': [
-      { subject: 'Mathematics',     icon: '📐', ca: 33, exam: 50, total: 83 },
-      { subject: 'English Language',icon: '📝', ca: 36, exam: 58, total: 94 },
-      { subject: 'Basic Science',   icon: '🔬', ca: 28, exam: 47, total: 75 },
-      { subject: 'Social Studies',  icon: '🌍', ca: 26, exam: 40, total: 66 },
-      { subject: 'Civic Education', icon: '🏛️', ca: 30, exam: 48, total: 78 },
-      { subject: 'Business Studies',icon: '💼', ca: 22, exam: 38, total: 60 },
-      { subject: 'Computer Studies',icon: '💻', ca: 35, exam: 52, total: 87 },
-      { subject: 'Agricultural Sci',icon: '🌾', ca: 20, exam: 40, total: 60 },
+      { subject: 'Mathematics',     icon: '📐', ca: 33, exam: 50, total: 83, comment: 'Strong performance overall.' },
+      { subject: 'English Language',icon: '📝', ca: 36, exam: 58, total: 94, comment: 'Superb comprehension and creative writing.' },
+      { subject: 'Basic Science',   icon: '🔬', ca: 28, exam: 47, total: 75, comment: 'Good progress in biology assignments.' },
+      { subject: 'Social Studies',  icon: '🌍', ca: 26, exam: 40, total: 66, comment: 'Punctual submission of homework.' },
+      { subject: 'Civic Education', icon: '🏛️', ca: 30, exam: 48, total: 78, comment: 'Good grasp of government structures.' },
+      { subject: 'Business Studies',icon: '💼', ca: 22, exam: 38, total: 60, comment: 'Needs more focus on commercial terms.' },
+      { subject: 'Computer Studies',icon: '💻', ca: 35, exam: 52, total: 87, comment: 'Very proficient in web design basics.' },
+      { subject: 'Agricultural Sci',icon: '🌾', ca: 20, exam: 40, total: 60, comment: 'Satisfactory effort.' },
     ],
   };
 
@@ -364,6 +377,7 @@
           </td>
           <td><div class="grade-pill grade-${g}">${g}</div></td>
           <td>${Format.badge(getRemark(g).toLowerCase().replace(' ','_'))}</td>
+          <td><span style="font-size:var(--font-size-xs);color:var(--text-muted);">${r.comment || '—'}</span></td>
         </tr>
       `;
     }).join('');

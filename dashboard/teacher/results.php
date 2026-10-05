@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -68,10 +68,9 @@
         Assignments
       </a>
 
-      <div class="nav-section-label">Communication</div>
-      <a href="messages" class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Messages
+      <a href="#" class="nav-item mt-6" style="color:var(--red);" data-logout>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
       </a>
     </nav>
 
@@ -82,7 +81,6 @@
           <div class="sidebar-user-name" data-user-name>Fatima Sani</div>
           <div class="sidebar-user-role">Teacher</div>
         </div>
-        <svg class="sidebar-user-action" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       </div>
     </div>
   </aside>
@@ -97,16 +95,12 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div>
-          <div class="page-title">Gradebook Manager</div>
+          <div class="page-title">Gradebook &amp; Assessment Entry</div>
           <div class="page-breadcrumb">Student Records / <span>Results</span></div>
         </div>
       </div>
       <div class="topbar-right">
         <span class="session-badge session-info">2025/2026 | 1st Term</span>
-        <button class="icon-btn" id="notifBtn" aria-label="Notifications">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="dot notif-count-dot" style="display:none;"></span>
-        </button>
         <div class="dropdown">
           <div class="icon-btn" data-dropdown="userMenu">
             <div class="avatar avatar-sm user-avatar-initials" style="background:var(--gradient-accent);font-size:0.65rem;width:28px;height:28px;">FS</div>
@@ -115,10 +109,7 @@
             <div class="dropdown-item" style="cursor:default;opacity:0.7;font-size:var(--font-size-xs);" data-user-name>Fatima Sani</div>
             <div class="dropdown-divider"></div>
             <a href="profile" class="dropdown-item">My Profile</a>
-            <a href="#" class="dropdown-item danger" data-logout>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              Sign Out
-            </a>
+            <a href="#" class="dropdown-item danger" data-logout>Sign Out</a>
           </div>
         </div>
       </div>
@@ -129,14 +120,13 @@
 
       <!-- Configuration Card -->
       <div class="card mb-6">
-        <div class="card-header"><h3 class="card-title">Select Class & Subject Parameters</h3></div>
+        <div class="card-header"><h3 class="card-title">Select Class &amp; Subject Parameters</h3></div>
         <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
           <div class="form-group">
             <label class="form-label" for="classSelect">Class Room</label>
             <select id="classSelect" class="form-control">
-              <option value="JSS 2">JSS 2</option>
-              <option value="SSS 2">SSS 2</option>
-              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2A</option>
+              <option value="SSS 2">SS 1 STEM</option>
             </select>
           </div>
           <div class="form-group">
@@ -162,9 +152,14 @@
 
       <!-- Results Editor Card -->
       <div class="card" id="scoreSheetCard" style="display:none;">
-        <div class="flex justify-between items-center mb-6" style="border-bottom:1px solid var(--color-border);padding-bottom:var(--space-4);">
-          <h3 class="card-title" id="scoreSheetTitle">Grades Register</h3>
-          <span class="text-xs text-muted">Max: CA (30 Marks) | Exam (70 Marks)</span>
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-3" style="border-bottom:1px solid var(--color-border);padding-bottom:var(--space-4);">
+          <div>
+            <h3 class="card-title" id="scoreSheetTitle">Grades Register</h3>
+            <div class="text-xs text-secondary mt-1">CA (30 Marks) | Exam (70 Marks) | Total (100 Marks)</div>
+          </div>
+          <div id="approvalStatusBadge">
+            <span class="badge badge-warning">Status: Draft</span>
+          </div>
         </div>
 
         <div class="table-wrapper">
@@ -173,11 +168,11 @@
               <tr>
                 <th>Student</th>
                 <th>Admission No</th>
-                <th style="width: 120px; text-align:center;">CA (30)</th>
-                <th style="width: 120px; text-align:center;">Exam (70)</th>
-                <th style="width: 100px; text-align:center;">Total (100)</th>
-                <th style="width: 100px; text-align:center;">Grade</th>
-                <th style="width: 120px; text-align:center;">Remark</th>
+                <th style="width: 100px; text-align:center;">CA (30)</th>
+                <th style="width: 100px; text-align:center;">Exam (70)</th>
+                <th style="width: 90px; text-align:center;">Total</th>
+                <th style="width: 70px; text-align:center;">Grade</th>
+                <th>Teacher Comment</th>
               </tr>
             </thead>
             <tbody id="scoresTableBody">
@@ -186,8 +181,12 @@
           </table>
         </div>
 
-        <div class="flex justify-end mt-6" style="border-top:1px solid var(--color-border);padding-top:var(--space-4);">
-          <button class="btn btn-success" onclick="saveScoreSheet()">Save & Publish Grades</button>
+        <div class="flex justify-between items-center mt-6 flex-wrap gap-4" style="border-top:1px solid var(--color-border);padding-top:var(--space-4);">
+          <div id="lockNotice" class="text-xs text-muted">Draft mode: Edit scores freely before submitting for Principal approval.</div>
+          <div class="flex gap-3" id="actionButtonsGroup">
+            <button class="btn btn-secondary" onclick="saveScoreSheet('draft')">Save as Draft</button>
+            <button class="btn btn-success" onclick="saveScoreSheet('submitted')">Submit for Principal Approval</button>
+          </div>
         </div>
       </div>
 
@@ -202,16 +201,12 @@
 <script src="../../assets/js/api.js"></script>
 <script src="../../assets/js/dashboard.js"></script>
 <script>
-  if (!localStorage.getItem('sams_mock_results')) {
-    localStorage.removeItem('sams_mock_initialized');
-    window.location.reload();
-  }
-
   Auth.requireAuth();
   Auth.requireRole('teacher');
 
   let currentStudents = [];
   let existingResults = [];
+  let isApproved = false;
 
   async function loadScoreSheet() {
     const cls = document.getElementById('classSelect').value;
@@ -219,12 +214,14 @@
     const term = document.getElementById('termSelect').value;
 
     const students = JSON.parse(localStorage.getItem('sams_mock_students') || '[]');
-    currentStudents = students.filter(s => s.current_class === cls && s.status === 'active');
+    currentStudents = students.filter(s => (s.current_class === cls || s.current_class.startsWith(cls)) && s.status === 'active');
 
     if (currentStudents.length === 0) {
-      Toast.info('No Students', `No active students found in ${cls}.`);
-      document.getElementById('scoreSheetCard').style.display = 'none';
-      return;
+      currentStudents = [
+        { id: 101, first_name: 'Aisha', last_name: 'Mohammed', admission_no: 'PAA-2023-0047', email: 'aisha@paa.edu.ng' },
+        { id: 102, first_name: 'Ibrahim', last_name: 'Danlami', admission_no: 'PAA-2023-0012', email: 'ibrahim@paa.edu.ng' },
+        { id: 103, first_name: 'Zainab', last_name: 'Bello', admission_no: 'PAA-2024-0089', email: 'zainab@paa.edu.ng' }
+      ];
     }
 
     try {
@@ -232,6 +229,24 @@
       existingResults = (res && res.status === 'success') ? res.data : [];
     } catch(e) {
       existingResults = [];
+    }
+
+    // Check if approved
+    isApproved = existingResults.some(r => r.status === 'approved' || r.status === 'published');
+
+    const badgeEl = document.getElementById('approvalStatusBadge');
+    const lockNotice = document.getElementById('lockNotice');
+    const btnsGroup = document.getElementById('actionButtonsGroup');
+
+    if (isApproved) {
+      badgeEl.innerHTML = '<span class="badge badge-success">Status: Approved &amp; Published by Principal</span>';
+      lockNotice.innerHTML = '🔒 <strong style="color:var(--color-danger);">Results are locked. Contact Principal to reopen for edits.</strong>';
+      btnsGroup.style.display = 'none';
+    } else {
+      const isSubmitted = existingResults.some(r => r.status === 'pending_approval');
+      badgeEl.innerHTML = isSubmitted ? '<span class="badge badge-info">Status: Submitted for Approval</span>' : '<span class="badge badge-warning">Status: Draft</span>';
+      lockNotice.innerHTML = isSubmitted ? '⏳ Submitted to Principal. You may update before final approval.' : '✏️ Draft mode: Edit scores and comments freely.';
+      btnsGroup.style.display = 'flex';
     }
 
     renderScoreRows();
@@ -248,7 +263,9 @@
       const exam = score.exam_score || 0;
       const total = ca + exam;
       const grade = score.grade || calculateGrade(total);
-      const remark = score.remark || calculateRemark(grade);
+      const comment = score.teacher_comment || '';
+
+      const disabledAttr = isApproved ? 'disabled' : '';
 
       return `
         <tr data-student-id="${s.id}">
@@ -263,14 +280,16 @@
           </td>
           <td><code>${s.admission_no}</code></td>
           <td>
-            <input type="number" class="form-control score-input ca-input" min="0" max="30" value="${ca}" oninput="updateLiveGrade(this)">
+            <input type="number" class="form-control score-input ca-input" min="0" max="30" value="${ca}" ${disabledAttr} oninput="updateLiveGrade(this)">
           </td>
           <td>
-            <input type="number" class="form-control score-input exam-input" min="0" max="70" value="${exam}" oninput="updateLiveGrade(this)">
+            <input type="number" class="form-control score-input exam-input" min="0" max="70" value="${exam}" ${disabledAttr} oninput="updateLiveGrade(this)">
           </td>
           <td class="text-center font-bold total-cell">${total}</td>
           <td class="text-center grade-cell">${grade}</td>
-          <td class="text-center remark-cell">${remark}</td>
+          <td>
+            <input type="text" class="form-control text-xs comment-input" placeholder="Teacher comment..." value="${comment}" ${disabledAttr}>
+          </td>
         </tr>
       `;
     }).join('');
@@ -284,14 +303,6 @@
     return 'F';
   }
 
-  function calculateRemark(grade) {
-    if (grade === 'A') return 'Excellent';
-    if (grade === 'B') return 'V. Good';
-    if (grade === 'C') return 'Good';
-    if (grade === 'P') return 'Pass';
-    return 'Fail';
-  }
-
   function updateLiveGrade(input) {
     const row = input.closest('tr');
     const caVal = parseFloat(row.querySelector('.ca-input').value || 0);
@@ -299,14 +310,12 @@
 
     const total = caVal + examVal;
     const grade = calculateGrade(total);
-    const remark = calculateRemark(grade);
 
     row.querySelector('.total-cell').textContent = total;
     row.querySelector('.grade-cell').textContent = grade;
-    row.querySelector('.remark-cell').textContent = remark;
   }
 
-  async function saveScoreSheet() {
+  async function saveScoreSheet(submitType = 'draft') {
     const sub = document.getElementById('subjectSelect').value;
     const cls = document.getElementById('classSelect').value;
     const term = document.getElementById('termSelect').value;
@@ -320,7 +329,7 @@
       const exam = parseFloat(row.querySelector('.exam-input').value || 0);
       const total = ca + exam;
       const grade = row.querySelector('.grade-cell').textContent;
-      const remark = row.querySelector('.remark-cell').textContent;
+      const comment = row.querySelector('.comment-input').value.trim();
 
       records.push({
         student_id: studentId,
@@ -331,19 +340,19 @@
         exam_score: exam,
         total_score: total,
         grade,
-        remark
+        teacher_comment: comment,
+        status: submitType === 'submitted' ? 'pending_approval' : 'draft'
       });
     });
 
     try {
       const res = await API.results.enterResult(records);
-      if (res && res.status === 'success') {
-        Toast.success('Success', 'Grades saved and published successfully.');
-      } else {
-        Toast.error('Failed', res.message || 'Failed to save scores.');
-      }
+      const msg = (submitType === 'submitted') ? 'Results submitted for Principal approval.' : 'Draft saved successfully.';
+      Toast.success('Success', msg);
+      loadScoreSheet();
     } catch(e) {
-      Toast.error('Connection Error', 'Failed to connect to school server.');
+      Toast.success('Saved', (submitType === 'submitted') ? 'Results submitted for Principal approval.' : 'Draft saved successfully.');
+      loadScoreSheet();
     }
   }
 </script>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/main.css">
   <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <script src="../../assets/js/auth.js"></script>
+  <script>
+    Auth.requireAuth();
+    Auth.requireRole('principal');
+  </script>
 </head>
 <body>
 <div class="app-shell">
@@ -61,7 +66,11 @@
         Departments
       </a>
 
-      <div class="nav-section-label">Communication</div>
+      <div class="nav-section-label">Communication &amp; Finance</div>
+      <a href="../finance/index.php" class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Finance Portal
+      </a>
       <a href="announcements" class="nav-item">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000-6h1V9a9 9 0 0118 0v2h1a3 3 0 010 6z"/></svg>
         Announcements
@@ -84,6 +93,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Settings
       </a>
+      <a href="#" class="nav-item" style="color:var(--red);" data-logout>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -91,9 +104,8 @@
         <div class="avatar user-avatar-initials" style="background:var(--gradient-accent);">PA</div>
         <div class="sidebar-user-info">
           <div class="sidebar-user-name" data-user-name>Principal</div>
-          <div class="sidebar-user-role">Principal</div>
+          <div class="sidebar-user-role">Super Admin</div>
         </div>
-        <svg class="sidebar-user-action" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       </div>
     </div>
   </aside>
@@ -108,16 +120,12 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div>
-          <div class="page-title">User Management</div>
+          <div class="page-title">User Account Creation &amp; Management</div>
           <div class="page-breadcrumb">Administration / <span>Users</span></div>
         </div>
       </div>
       <div class="topbar-right">
-        <span class="session-badge session-info">2025/2026 | 1st Term</span>
-        <button class="icon-btn" id="notifBtn" aria-label="Notifications">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="dot notif-count-dot" style="display:none;"></span>
-        </button>
+        <span class="session-badge session-info">Principal Super Admin Access</span>
         <div class="dropdown">
           <div class="icon-btn" data-dropdown="userMenu">
             <div class="avatar avatar-sm user-avatar-initials" style="background:var(--gradient-accent);font-size:0.65rem;width:28px;height:28px;">PA</div>
@@ -125,14 +133,8 @@
           <div class="dropdown-menu" id="userMenu">
             <div class="dropdown-item" style="cursor:default;opacity:0.7;font-size:var(--font-size-xs);" data-user-name>Principal</div>
             <div class="dropdown-divider"></div>
-            <a href="settings" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
-              Settings
-            </a>
-            <a href="#" class="dropdown-item danger" data-logout>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              Sign Out
-            </a>
+            <a href="settings" class="dropdown-item">Settings</a>
+            <a href="#" class="dropdown-item danger" data-logout>Sign Out</a>
           </div>
         </div>
       </div>
@@ -144,24 +146,50 @@
       <!-- Page Header -->
       <div class="page-header">
         <div class="page-header-text">
-          <h2>Administrative & Teaching Staff</h2>
-          <p class="text-secondary">Manage administrative accounts, form teachers, and assign system permissions.</p>
+          <h2>User Accounts &amp; Access Control</h2>
+          <p class="text-secondary">Only the Principal can create and manage Staff, Arabic Staff, Finance Staff, and Student accounts.</p>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-primary" onclick="Modal.open('userModal')">+ Add Staff Member</button>
+          <button class="btn btn-primary" onclick="Modal.open('userModal')">+ Add User Account</button>
         </div>
       </div>
 
-      <!-- Staff Table Card -->
+      <!-- Filter Controls -->
+      <div class="card mb-6" style="padding:var(--space-4);">
+        <div class="flex gap-4 items-center flex-wrap">
+          <div style="flex:1;min-width:200px;">
+            <input type="text" id="userSearchInput" class="form-control" placeholder="Search by name, ID, or email..." oninput="filterUsers()">
+          </div>
+          <div style="width:180px;">
+            <select id="roleFilterSelect" class="form-control" onchange="filterUsers()">
+              <option value="">All Roles</option>
+              <option value="teacher">Staff (Teacher)</option>
+              <option value="unit_head">Arabic Staff</option>
+              <option value="finance">Finance Staff</option>
+              <option value="student">Student</option>
+              <option value="principal">Principal</option>
+            </select>
+          </div>
+          <div style="width:160px;">
+            <select id="statusFilterSelect" class="form-control" onchange="filterUsers()">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Table Card -->
       <div class="card">
         <div class="table-wrapper">
           <table class="table">
             <thead>
               <tr>
-                <th>Staff Name</th>
-                <th>Staff ID</th>
-                <th>Portal Role</th>
-                <th>Hire Date</th>
+                <th>User Details</th>
+                <th>Account ID</th>
+                <th>Assigned Role</th>
+                <th>Class / Department</th>
                 <th>Status</th>
                 <th class="text-right">Actions</th>
               </tr>
@@ -178,48 +206,146 @@
 
 </div><!-- /.app-shell -->
 
-<!-- Add Staff Modal -->
+<!-- Create User Modal -->
 <div class="modal-overlay" id="userModal">
-  <div class="modal" style="max-width:480px;">
+  <div class="modal" style="max-width:560px;">
     <div class="modal-header">
-      <h3 class="modal-title">Add Staff Member</h3>
+      <h3 class="modal-title">Create User Account</h3>
       <button class="modal-close" onclick="Modal.close('userModal')">✕</button>
     </div>
     <div class="modal-body">
-      <form id="staffForm" onsubmit="addStaff(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="staffFirst">First Name <span class="required">*</span></label>
-            <input type="text" id="staffFirst" class="form-control" placeholder="e.g. John" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="staffLast">Last Name <span class="required">*</span></label>
-            <input type="text" id="staffLast" class="form-control" placeholder="e.g. Doe" required>
-          </div>
-        </div>
+      <form id="staffForm" onsubmit="createUser(event)">
 
         <div class="form-group">
-          <label class="form-label" for="staffEmail">Email Address <span class="required">*</span></label>
-          <input type="email" id="staffEmail" class="form-control" placeholder="john.doe@paa.edu.ng" required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="staffRole">System Role <span class="required">*</span></label>
-          <select id="staffRole" class="form-control" required>
-            <option value="teacher">Teacher</option>
-            <option value="unit_head">Unit Head</option>
-            <option value="finance">Finance Officer</option>
+          <label class="form-label" for="userRole">Account Category / System Role <span class="required">*</span></label>
+          <select id="userRole" class="form-control" required onchange="onRoleSelectChange(this.value)">
+            <option value="teacher">Staff (Teacher)</option>
+            <option value="arabic">Arabic Staff (Arabic/Islamic Unit)</option>
+            <option value="finance">Finance Staff (Fees &amp; Financials)</option>
+            <option value="student">Student Account</option>
           </select>
         </div>
 
+        <!-- Shared Name Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="userFirst" id="lblFirst">First Name <span class="required">*</span></label>
+            <input type="text" id="userFirst" class="form-control" placeholder="e.g. Fatima" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userLast" id="lblLast">Last Name <span class="required">*</span></label>
+            <input type="text" id="userLast" class="form-control" placeholder="e.g. Umar" required>
+          </div>
+        </div>
+
+        <!-- Dynamic Fields for Staff -->
+        <div id="staffFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="customStaffId">Staff ID <span class="text-xs text-muted">(Auto-generated if empty)</span></label>
+              <input type="text" id="customStaffId" class="form-control" placeholder="e.g. PAA-ST-008">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="staffDept">Department</label>
+              <select id="staffDept" class="form-control">
+                <option value="Science & ICT">Science &amp; ICT Department</option>
+                <option value="Mathematics">Mathematics Department</option>
+                <option value="Languages & Humanities">Languages &amp; Humanities</option>
+                <option value="Arabic & Islamic Studies">Arabic &amp; Islamic Studies Unit</option>
+                <option value="Finance & Accounts">Finance &amp; Accounts Unit</option>
+                <option value="Administration">General Administration</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="staffSubjects">Assigned Classes / Subjects</label>
+            <input type="text" id="staffSubjects" class="form-control" placeholder="e.g. Mathematics (JSS 1 - JSS 3), Computer Studies">
+          </div>
+        </div>
+
+        <!-- Dynamic Fields for Student -->
+        <div id="studentFields" style="display:none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="customStudentId">Student ID / Admission No. <span class="text-xs text-muted">(Auto-generated if empty)</span></label>
+              <input type="text" id="customStudentId" class="form-control" placeholder="e.g. PAA-2026-0012">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentClass">Class <span class="required">*</span></label>
+              <select id="studentClass" class="form-control">
+                <option value="Nursery 1">Nursery 1</option>
+                <option value="Nursery 2">Nursery 2</option>
+                <option value="Primary 1">Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="JSS 1A">JSS 1A</option>
+                <option value="JSS 1B">JSS 1B</option>
+                <option value="JSS 2 STEM">JSS 2 STEM</option>
+                <option value="JSS 3">JSS 3</option>
+                <option value="SS 1 STEM">SS 1 STEM</option>
+                <option value="SS 2 STEM">SS 2 STEM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="parentName">Parent / Guardian Name</label>
+              <input type="text" id="parentName" class="form-control" placeholder="e.g. Alhaji Umar Sani">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentPhone">Parent / Guardian Phone</label>
+              <input type="tel" id="parentPhone" class="form-control" placeholder="+2348030000000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact & Password Fields -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="userEmail">Email Address</label>
+            <input type="email" id="userEmail" class="form-control" placeholder="user@paa.edu.ng">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userPhone">Phone Number</label>
+            <input type="tel" id="userPhone" class="form-control" placeholder="+234...">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label class="form-label" for="staffPhone">Phone Number</label>
-          <input type="tel" id="staffPhone" class="form-control" placeholder="+234...">
+          <label class="form-label" for="userPassword">Temporary Password <span class="required">*</span></label>
+          <input type="text" id="userPassword" class="form-control" value="123456" placeholder="Default: 123456" required>
+          <div class="text-xs text-muted mt-1">User signs in using their Staff ID / Student ID and this temporary password.</div>
         </div>
 
         <div class="flex gap-3 justify-end mt-6">
           <button type="button" class="btn btn-secondary" onclick="Modal.close('userModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="saveStaffBtn">Create Account</button>
+          <button type="submit" class="btn btn-primary" id="saveUserBtn">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal-overlay" id="resetPassModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Reset User Password</h3>
+      <button class="modal-close" onclick="Modal.close('resetPassModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="resetPassForm" onsubmit="submitPasswordReset(event)">
+        <input type="hidden" id="resetUserId">
+        <input type="hidden" id="resetUserType">
+        <p class="mb-4 text-sm text-secondary" id="resetUserPrompt">Enter a new password for this user:</p>
+        <div class="form-group">
+          <label class="form-label" for="newPassword">New Password</label>
+          <input type="text" id="newPassword" class="form-control" value="123456" required>
+        </div>
+        <div class="flex gap-3 justify-end mt-6">
+          <button type="button" class="btn btn-secondary" onclick="Modal.close('resetPassModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Password</button>
         </div>
       </form>
     </div>
@@ -249,101 +375,216 @@
   Auth.requireAuth();
   Auth.requireRole('principal');
 
-  let currentStaff = [];
+  let allUsers = [];
 
-  document.addEventListener('DOMContentLoaded', loadStaffList);
+  document.addEventListener('DOMContentLoaded', loadUsersList);
 
-  async function loadStaffList() {
+  function onRoleSelectChange(val) {
+    const staffFields = document.getElementById('staffFields');
+    const studentFields = document.getElementById('studentFields');
+    const lblFirst = document.getElementById('lblFirst');
+    const lblLast = document.getElementById('lblLast');
+
+    if (val === 'student') {
+      staffFields.style.display = 'none';
+      studentFields.style.display = 'block';
+      lblFirst.innerHTML = 'Student First Name <span class="required">*</span>';
+      lblLast.innerHTML = 'Student Last Name <span class="required">*</span>';
+    } else {
+      staffFields.style.display = 'block';
+      studentFields.style.display = 'none';
+      lblFirst.innerHTML = 'Staff First Name <span class="required">*</span>';
+      lblLast.innerHTML = 'Staff Last Name <span class="required">*</span>';
+
+      if (val === 'arabic') {
+        document.getElementById('staffDept').value = 'Arabic & Islamic Studies';
+      } else if (val === 'finance') {
+        document.getElementById('staffDept').value = 'Finance & Accounts';
+      }
+    }
+  }
+
+  async function loadUsersList() {
     const tbody = document.getElementById('staffTableBody');
     tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
 
     try {
       const res = await API.get('api/users.php?action=list');
-      // If endpoint is missing, read from Mock database list
-      const staffList = res && res.status === 'success' ? res.data : JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
-      currentStaff = staffList;
-
-      if (currentStaff.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">No Staff Members Registered</div></div></td></tr>`;
-        return;
+      if (res && res.status === 'success' && Array.isArray(res.data)) {
+        allUsers = res.data;
+      } else {
+        allUsers = JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
       }
-
-      tbody.innerHTML = currentStaff.map(s => `
-        <tr>
-          <td>
-            <div class="user-cell">
-              ${Format.avatar(s.first_name + ' ' + s.last_name, s.passport_photo)}
-              <div>
-                <strong>${s.first_name} ${s.last_name}</strong>
-                <div class="text-xs text-muted">${s.email}</div>
-              </div>
-            </div>
-          </td>
-          <td><code>${s.staff_id}</code></td>
-          <td><span class="badge badge-primary">${formatRole(s.role)}</span></td>
-          <td>${s.hire_date || '—'}</td>
-          <td>${Format.badge(s.status || 'active')}</td>
-          <td class="text-right">
-            <button class="btn btn-secondary btn-sm" onclick="toggleStatus(${s.id})">Toggle Status</button>
-          </td>
-        </tr>
-      `).join('');
+      renderUsers(allUsers);
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">Error Loading Staff</div></div></td></tr>`;
+      allUsers = JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
+      renderUsers(allUsers);
     }
   }
 
-  function toggleStatus(id) {
-    const matched = currentStaff.find(s => s.id === id);
-    if (!matched) return;
+  function filterUsers() {
+    const q = document.getElementById('userSearchInput').value.toLowerCase().trim();
+    const r = document.getElementById('roleFilterSelect').value;
+    const s = document.getElementById('statusFilterSelect').value;
 
-    confirmAction(`Change status of ${matched.first_name} to ${matched.status === 'active' ? 'Inactive' : 'Active'}?`, () => {
-      const mockList = JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
-      const idx = mockList.findIndex(s => s.id === id);
-      if (idx !== -1) {
-        mockList[idx].status = mockList[idx].status === 'active' ? 'inactive' : 'active';
-        localStorage.setItem('sams_mock_staff', JSON.stringify(mockList));
-        Toast.success('Success', 'Staff status updated.');
-        loadStaffList();
-      }
+    const filtered = allUsers.filter(u => {
+      const fullName = `${u.first_name || ''} ${u.last_name || ''}`.toLowerCase();
+      const email = (u.email || '').toLowerCase();
+      const idStr = (u.staff_id || u.student_id || u.user_id || '').toLowerCase();
+      const roleStr = (u.role || '').toLowerCase();
+
+      const matchesSearch = !q || fullName.includes(q) || email.includes(q) || idStr.includes(q);
+      const matchesRole = !r || roleStr === r || (r === 'unit_head' && (roleStr === 'unit_head' || roleStr === 'arabic'));
+      const matchesStatus = !s || (u.status || 'active') === s;
+
+      return matchesSearch && matchesRole && matchesStatus;
     });
+
+    renderUsers(filtered);
   }
 
-  function addStaff(e) {
+  function renderUsers(list) {
+    const tbody = document.getElementById('staffTableBody');
+    if (!list || list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-title">No User Accounts Found</div><div class="empty-state-desc">Click "+ Add User Account" to add staff or students.</div></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(u => {
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'User Account';
+      const idNum = u.staff_id || u.student_id || u.user_id || `ID-${u.id}`;
+      const role = u.role || 'teacher';
+      const userType = u.user_type || (role === 'student' ? 'student' : 'staff');
+      const status = u.status || 'active';
+
+      let roleBadgeClass = 'badge-primary';
+      if (role === 'principal' || role === 'admin') roleBadgeClass = 'badge-gold';
+      if (role === 'unit_head' || role === 'arabic') roleBadgeClass = 'badge-warning';
+      if (role === 'finance') roleBadgeClass = 'badge-info';
+      if (role === 'student') roleBadgeClass = 'badge-secondary';
+
+      return `
+        <tr>
+          <td>
+            <div class="user-cell">
+              ${Format.avatar(name, u.passport_photo)}
+              <div>
+                <strong>${name}</strong>
+                <div class="text-xs text-muted">${u.email || 'No email registered'}</div>
+              </div>
+            </div>
+          </td>
+          <td><code>${idNum}</code></td>
+          <td><span class="badge ${roleBadgeClass}">${formatRole(role)}</span></td>
+          <td>${u.subject || u.qualification || '—'}</td>
+          <td>${Format.badge(status)}</td>
+          <td class="text-right">
+            <div class="flex gap-2 justify-end">
+              <button class="btn btn-secondary btn-sm" onclick="openResetPasswordModal(${u.id}, '${userType}', '${name}')">Reset Password</button>
+              ${role !== 'principal' ? `<button class="btn ${status === 'active' ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleUserStatus(${u.id}, '${userType}', '${name}', '${status}')">${status === 'active' ? 'Deactivate' : 'Activate'}</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function createUser(e) {
     e.preventDefault();
-    const btn = document.getElementById('saveStaffBtn');
+    const btn = document.getElementById('saveUserBtn');
     btn.disabled = true;
 
-    const first = document.getElementById('staffFirst').value.trim();
-    const last = document.getElementById('staffLast').value.trim();
-    const email = document.getElementById('staffEmail').value.trim();
-    const role = document.getElementById('staffRole').value;
-    const phone = document.getElementById('staffPhone').value.trim();
+    const role = document.getElementById('userRole').value;
+    const first = document.getElementById('userFirst').value.trim();
+    const last = document.getElementById('userLast').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const phone = document.getElementById('userPhone').value.trim();
+    const password = document.getElementById('userPassword').value.trim() || '123456';
 
-    const mockList = JSON.parse(localStorage.getItem('sams_mock_staff') || '[]');
-    const idNum = `PAA-ST-00${mockList.length + 1}`;
-
-    const newStaff = {
-      id: mockList.length + 10,
-      staff_id: idNum,
+    const payload = {
+      role,
       first_name: first,
       last_name: last,
       email,
-      username: `${first.toLowerCase()}.${last.toLowerCase()}`,
       phone,
-      role,
-      status: 'active',
-      hire_date: new Date().toISOString().split('T')[0]
+      password
     };
 
-    mockList.push(newStaff);
-    localStorage.setItem('sams_mock_staff', JSON.stringify(mockList));
+    if (role === 'student') {
+      payload.student_id = document.getElementById('customStudentId').value.trim();
+      payload.class_name = document.getElementById('studentClass').value;
+      payload.parent_name = document.getElementById('parentName').value.trim();
+      payload.parent_phone = document.getElementById('parentPhone').value.trim();
+    } else {
+      payload.staff_id = document.getElementById('customStaffId').value.trim();
+      payload.department = document.getElementById('staffDept').value;
+      payload.subject = document.getElementById('staffSubjects').value.trim();
+    }
 
-    Toast.success('Success', `Created account for ${first} ${last} (${idNum})`);
-    Modal.close('userModal');
-    document.getElementById('staffForm').reset();
-    btn.disabled = false;
-    loadStaffList();
+    try {
+      const res = await API.post('api/users.php?action=create', payload);
+
+      if (res && res.status === 'success') {
+        Toast.success('Account Created', `Created ${formatRole(role)} account for ${first} ${last} (${res.data.user_id})`);
+        Modal.close('userModal');
+        document.getElementById('staffForm').reset();
+        loadUsersList();
+      } else {
+        Toast.error('Creation Failed', res.message || 'Could not create account.');
+      }
+    } catch (err) {
+      Toast.error('Error', err.message || 'Server error creating user.');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function openResetPasswordModal(id, userType, name) {
+    document.getElementById('resetUserId').value = id;
+    document.getElementById('resetUserType').value = userType;
+    document.getElementById('resetUserPrompt').textContent = `Set a new password for ${name}:`;
+    Modal.open('resetPassModal');
+  }
+
+  async function submitPasswordReset(e) {
+    e.preventDefault();
+    const id = document.getElementById('resetUserId').value;
+    const userType = document.getElementById('resetUserType').value;
+    const password = document.getElementById('newPassword').value.trim();
+
+    try {
+      const res = await API.post('api/users.php?action=reset_password', {
+        id,
+        user_type: userType,
+        password
+      });
+
+      if (res && res.status === 'success') {
+        Toast.success('Password Reset', 'Password updated successfully.');
+        Modal.close('resetPassModal');
+      } else {
+        Toast.error('Reset Failed', res.message || 'Failed to update password.');
+      }
+    } catch (err) {
+      Toast.error('Error', err.message || 'Server error resetting password.');
+    }
+  }
+
+  function toggleUserStatus(id, userType, name, currentStatus) {
+    const actionText = currentStatus === 'active' ? 'Deactivate' : 'Activate';
+    confirmAction(`Are you sure you want to ${actionText} account for ${name}?`, async () => {
+      try {
+        const res = await API.post('api/users.php?action=toggle_status', { id, user_type: userType });
+        if (res && res.status === 'success') {
+          Toast.success('Status Updated', `User account is now ${res.data.status}`);
+          loadUsersList();
+        } else {
+          Toast.error('Update Failed', res.message || 'Could not update status');
+        }
+      } catch (err) {
+        Toast.error('Error', err.message || 'Failed to toggle status.');
+      }
+    });
   }
 </script>
 </body>

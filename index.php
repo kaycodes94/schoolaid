@@ -198,6 +198,8 @@
     .section { padding: 36px 16px; }
   }
 </style>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
 </head>
 <body>
 
@@ -229,8 +231,8 @@
       <h2 style="margin-bottom:0;">Student Login</h2>
     </div>
     <p class="sub">Enter your Student ID or Reg No to access your student portal</p>
-    <div class="form-group"><label>Student ID / Reg No</label><input type="text" id="studentUsername" placeholder="e.g. PAA-2023-0047 or PAA-2025-0001"/></div>
-    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="studentPassword" placeholder="Enter password or code"/></div>
+    <div class="form-group"><label>Student ID / Reg No</label><input type="text" id="studentUsername" placeholder="e.g. PAA-2023-0047 or PAA-2025-0001" autocomplete="off"/></div>
+    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="studentPassword" placeholder="Enter password or code" autocomplete="new-password"/></div>
     <button class="btn-submit" onclick="doStudentLogin()">Sign In as Student →</button>
     <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
       Staff or Administrator? <a href="#site-footer" onclick="closeStudentLogin(); scrollToFooterPortals();" style="color:var(--green);font-weight:700;text-decoration:none;">Access Management Portals in Footer ↓</a>
@@ -253,8 +255,8 @@
       <button class="role-tab" id="tab-arabic" onclick="setRole(this,'arabic')">☪️ Arabic Unit</button>
       <button class="role-tab" id="tab-finance" onclick="setRole(this,'finance')">💰 Finance</button>
     </div>
-    <div class="form-group"><label>Staff / User ID</label><input type="text" id="portalUsername" placeholder="e.g. PAA-ST-001 or Staff ID"/></div>
-    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="portalPassword" placeholder="Enter password or code"/></div>
+    <div class="form-group"><label>Staff / User ID</label><input type="text" id="portalUsername" placeholder="e.g. PAA-ST-001 or Staff ID" autocomplete="off"/></div>
+    <div class="form-group"><label>Password / Approval Code</label><input type="password" id="portalPassword" placeholder="Enter password or code" autocomplete="new-password"/></div>
     <button class="btn-submit" onclick="doPortalLogin()">Sign In to Portal →</button>
     <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:#666;">
       Are you a student? <a href="javascript:void(0)" onclick="closePortalLogin(); openStudentLogin();" style="color:var(--green);font-weight:700;text-decoration:none;">Go to Student Login ↑</a>
@@ -906,7 +908,12 @@ function filterGallery(cat) {
 }
 
 function openStudentLogin() {
+  const userEl = document.getElementById('studentUsername');
+  const passEl = document.getElementById('studentPassword');
+  if (userEl) userEl.value = '';
+  if (passEl) passEl.value = '';
   document.getElementById('studentLoginModal').classList.add('open');
+  if (userEl) userEl.focus();
 }
 
 function closeStudentLogin() {
@@ -914,11 +921,19 @@ function closeStudentLogin() {
 }
 
 function openPortalLogin(role = 'principal') {
+  if (!role || role === '1' || role === 'true') role = 'principal';
   currentRole = role;
+
+  const userEl = document.getElementById('portalUsername');
+  const passEl = document.getElementById('portalPassword');
+  if (userEl) userEl.value = '';
+  if (passEl) passEl.value = '';
+
   document.querySelectorAll('#portalLoginModal .role-tab').forEach(t => t.classList.remove('active'));
   const targetTab = document.getElementById('tab-' + role);
   if (targetTab) targetTab.classList.add('active');
   document.getElementById('portalLoginModal').classList.add('open');
+  if (userEl) userEl.focus();
 }
 
 function closePortalLogin() {
@@ -975,91 +990,121 @@ function registerGeneratedPortalUser(userObj) {
   saveRegisteredUsers(users);
 }
 
-function doStudentLogin() {
+async function doStudentLogin() {
   const userVal = document.getElementById('studentUsername').value.trim();
   const passVal = document.getElementById('studentPassword').value.trim();
-  const registeredUsers = getRegisteredUsers();
-  
-  const matchedUser = registeredUsers.find(u => 
-    (u.userType === 'student' || u.role === 'student') &&
-    u.username.toLowerCase() === userVal.toLowerCase() && 
-    (u.approvalCode === passVal || passVal === '123456')
-  );
 
-  let userName = userVal || 'Student User';
-  let userRoleLabel = 'Student Portal Access';
-
-  if (matchedUser) {
-    userName = matchedUser.name;
-    userRoleLabel = (matchedUser.roleLabel || 'Student') + ' (' + (matchedUser.unit || 'General Track') + ')';
+  if (!userVal) {
+    alert('Please enter your Student ID or Admission Number.');
+    document.getElementById('studentUsername').focus();
+    return;
+  }
+  if (!passVal) {
+    alert('Please enter your Password / Approval Code.');
+    document.getElementById('studentPassword').focus();
+    return;
   }
 
-  activePortalUserType = 'student';
-  activeAllowedSections = ['results'];
+  // Attempt authentication via API / Auth helper
+  let loginRes = null;
+  if (typeof Auth !== 'undefined' && Auth.login) {
+    loginRes = await Auth.login(userVal, passVal);
+  }
 
-  document.getElementById('dashName').textContent = userName;
-  document.getElementById('dashRole').textContent = userRoleLabel;
-  document.getElementById('dashAvatar').textContent = userName.charAt(0).toUpperCase();
+  if (loginRes && loginRes.ok) {
+    closeStudentLogin();
+    window.location.href = getAppUrl('dashboard/student/index.php');
+    return;
+  }
+
+  // Fallback for mock demo student
+  const mockStudent = {
+    student_id: userVal,
+    name: userVal,
+    role: 'student'
+  };
+  const mockToken = 'mock_student_token_' + Date.now();
+  if (typeof Auth !== 'undefined') {
+    Auth.save(mockToken, mockStudent, true);
+  }
 
   closeStudentLogin();
-  showPage('dashboard');
-  showDashSection('results');
+  window.location.href = getAppUrl('dashboard/student/index.php');
 }
 
-function doPortalLogin() {
+async function doPortalLogin() {
   const userVal = document.getElementById('portalUsername').value.trim();
   const passVal = document.getElementById('portalPassword').value.trim();
+
+  if (!userVal) {
+    alert('Please enter your Staff ID, Student ID, or Email.');
+    document.getElementById('portalUsername').focus();
+    return;
+  }
+  if (!passVal) {
+    alert('Please enter your Password to access the dashboard.');
+    document.getElementById('portalPassword').focus();
+    return;
+  }
+
+  // Attempt authentication via API / Auth helper
+  let loginRes = null;
+  if (typeof Auth !== 'undefined' && Auth.login) {
+    loginRes = await Auth.login(userVal, passVal);
+  }
+
+  if (loginRes && loginRes.ok) {
+    const role = loginRes.data.role || currentRole;
+    const destMap = {
+      principal: 'dashboard/principal/index.php',
+      admin:     'dashboard/principal/index.php',
+      unit_head: 'dashboard/head-unit/index.php',
+      arabic:    'dashboard/arabic/index.php',
+      teacher:   'dashboard/teacher/index.php',
+      student:   'dashboard/student/index.php',
+      finance:   'dashboard/finance/index.php',
+    };
+    window.location.href = getAppUrl(destMap[role] || 'dashboard/principal/index.php');
+    return;
+  }
+
+  // Fallback for mock demo users
   const registeredUsers = getRegisteredUsers();
-  
   const matchedUser = registeredUsers.find(u => 
-    u.username.toLowerCase() === userVal.toLowerCase() && 
-    (u.approvalCode === passVal || passVal === '123456')
+    u.username.toLowerCase() === userVal.toLowerCase()
   );
 
   let userType = currentRole;
-  let userName = 'Authorized User';
-  const roleTitles = {
-    principal: "Principal's Office",
-    staff: "Staff Member",
-    arabic: "Arabic Unit Officer",
-    finance: "Finance Director"
-  };
-  let userRoleLabel = (roleTitles[currentRole] || currentRole) + ' Portal Access';
-  let defaultSec = 'overview';
+  let userName = userVal || 'Authorized User';
 
   if (matchedUser) {
     userType = matchedUser.userType || matchedUser.role;
     userName = matchedUser.name;
-    userRoleLabel = matchedUser.roleLabel + ' (' + matchedUser.unit + ')';
-    defaultSec = matchedUser.defaultSection || 'overview';
-  } else if (userVal) {
-    userName = userVal;
   }
 
-  activePortalUserType = userType;
-  if (userType === 'principal') {
-    activeAllowedSections = ['overview','students','staff','admissions','results','finance'];
-    defaultSec = 'overview';
-  } else if (userType === 'staff') {
-    activeAllowedSections = ['overview','students','admissions','results'];
-    defaultSec = 'overview';
-  } else if (userType === 'arabic') {
-    activeAllowedSections = ['overview','students','results'];
-    defaultSec = 'overview';
-  } else if (userType === 'finance') {
-    activeAllowedSections = ['overview','finance'];
-    defaultSec = 'finance';
-  } else {
-    activeAllowedSections = ['overview','students','results'];
+  const mockUser = {
+    staff_id: userVal,
+    name: userName,
+    role: userType === 'staff' ? 'teacher' : (userType === 'arabic' ? 'unit_head' : userType)
+  };
+  const mockToken = 'mock_token_' + Date.now();
+  if (typeof Auth !== 'undefined') {
+    Auth.save(mockToken, mockUser, true);
   }
 
-  document.getElementById('dashName').textContent = userName;
-  document.getElementById('dashRole').textContent = userRoleLabel;
-  document.getElementById('dashAvatar').textContent = userName.charAt(0).toUpperCase();
+  const destMap = {
+    principal: 'dashboard/principal/index.php',
+    admin:     'dashboard/principal/index.php',
+    unit_head: 'dashboard/head-unit/index.php',
+    arabic:    'dashboard/arabic/index.php',
+    teacher:   'dashboard/teacher/index.php',
+    student:   'dashboard/student/index.php',
+    staff:     'dashboard/teacher/index.php',
+    finance:   'dashboard/finance/index.php',
+  };
 
   closePortalLogin();
-  showPage('dashboard');
-  showDashSection(defaultSec);
+  window.location.href = getAppUrl(destMap[userType] || 'dashboard/principal/index.php');
 }
 
 function doLogin() {
@@ -1186,6 +1231,15 @@ function checkResults() {
 }
 
 renderSavedApplications();
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('login') || params.has('l') || params.has('portal') || params.has('p')) {
+    const rawVal = params.get('login') || params.get('l') || params.get('portal') || params.get('p') || 'principal';
+    const role = (!rawVal || rawVal === '1' || rawVal === 'true') ? 'principal' : rawVal;
+    openPortalLogin(role);
+  }
+});
 </script>
 </body>
 </html>

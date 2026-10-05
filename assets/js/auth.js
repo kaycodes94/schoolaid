@@ -9,8 +9,14 @@ const BASE_URL = (() => {
   const parts = loc.pathname.split('/');
   const idx = parts.indexOf('aidstudent');
   if (idx !== -1) return loc.origin + parts.slice(0, idx + 1).join('/');
-  return loc.origin;
+  return loc.origin + '/';
 })();
+
+function getAppUrl(path = '') {
+  const cleanPath = String(path).replace(/^\/+/, '');
+  const cleanBase = BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/';
+  return cleanBase + cleanPath;
+}
 
 const Auth = {
   TOKEN_KEY: 'sams_token',
@@ -41,28 +47,36 @@ const Auth = {
   },
 
   /** Redirect if not logged in */
-  requireAuth(redirectTo = '/login') {
-    if (!this.getToken()) {
-      window.location.href = BASE_URL + redirectTo;
+  requireAuth(redirectTo = null) {
+    if (!this.getToken() || !this.getUser()) {
+      const dest = redirectTo || getAppUrl('index.html');
+      window.location.href = dest;
       return false;
     }
     return true;
   },
 
-  /** Require specific role; redirect if wrong */
+  /** Require specific role or super admin; redirect if unauthorized */
   requireRole(expectedRole, redirectTo = null) {
     const user = this.getUser();
     if (!user) { this.requireAuth(); return false; }
 
     const roleMap = {
-      principal: 'dashboard/principal/index',
-      unit_head: 'dashboard/head-unit/index',
-      teacher:   'dashboard/teacher/index',
-      student:   'dashboard/student/index',
+      principal: 'dashboard/principal/index.php',
+      admin:     'dashboard/principal/index.php',
+      unit_head: 'dashboard/head-unit/index.php',
+      arabic:    'dashboard/arabic/index.php',
+      teacher:   'dashboard/teacher/index.php',
+      finance:   'dashboard/finance/index.php',
+      student:   'dashboard/student/index.php',
     };
 
-    if (user.role !== expectedRole) {
-      const dest = redirectTo || (roleMap[user.role] ? BASE_URL + '/' + roleMap[user.role] : BASE_URL + '/login');
+    const rolesAllowed = Array.isArray(expectedRole) ? expectedRole : [expectedRole];
+    // Principal and Admin serve as Super Admin for overall tasks
+    const isSuperAdmin = user.role === 'principal' || user.role === 'admin';
+
+    if (!isSuperAdmin && !rolesAllowed.includes(user.role)) {
+      const dest = redirectTo || (roleMap[user.role] ? getAppUrl(roleMap[user.role]) : getAppUrl('index.html'));
       window.location.href = dest;
       return false;
     }
@@ -103,7 +117,7 @@ const Auth = {
       } catch (_) { /* ignore */ }
     }
     this.clear();
-    window.location.href = BASE_URL + '/login';
+    window.location.href = getAppUrl('index.html');
   },
 
   /** Verify session is still valid */
@@ -115,7 +129,7 @@ const Auth = {
       return data && data.status === 'success';
     } catch {
       try {
-        const res = await fetch(`${BASE_URL}/api/auth.php?action=verify&token=${token}`);
+        const res = await fetch(`${BASE_URL}api/auth.php?action=verify&token=${token}`);
         const data = await res.json();
         return data.status === 'success';
       } catch {
@@ -155,5 +169,6 @@ function formatRole(role) {
 // Expose globally
 window.Auth = Auth;
 window.BASE_URL = BASE_URL;
+window.getAppUrl = getAppUrl;
 window.populateUserInfo = populateUserInfo;
 window.formatRole = formatRole;

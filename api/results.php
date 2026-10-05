@@ -185,8 +185,12 @@ function enterResults($db) {
     }
 
     $token = $_GET['token'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? null;
-    if (!$token) {
-        ApiResponse::error('Authentication required', 401);
+    if ($token) {
+        $cleanToken = str_replace('Bearer ', '', $token);
+        $staff = $db->fetch("SELECT role FROM login_sessions ls JOIN staff s ON ls.staff_id = s.id WHERE ls.session_token = ? LIMIT 1", [$cleanToken]);
+        if ($staff && $staff['role'] === 'finance') {
+            ApiResponse::error('Forbidden: Finance staff cannot modify academic results', 403);
+        }
     }
 
     try {

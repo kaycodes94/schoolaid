@@ -51,6 +51,12 @@
         Class Timetable
       </a>
 
+      <div class="nav-section-label">Financial Records</div>
+      <a href="fees" class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        My Fees & Receipts
+      </a>
+
       <div class="nav-section-label">Tasks & Memos</div>
       <a href="assignments" class="nav-item">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -60,9 +66,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000-6h1V9a9 9 0 0118 0v2h1a3 3 0 010 6z"/></svg>
         Announcements
       </a>
-      <a href="messages" class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Teacher Messages
+      <a href="#" class="nav-item" style="color:var(--red);" data-logout>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
       </a>
     </nav>
 
@@ -106,6 +112,7 @@
             <div class="dropdown-item" style="cursor:default;opacity:0.7;font-size:var(--font-size-xs);" data-user-name>John Dakyen</div>
             <div class="dropdown-divider"></div>
             <a href="profile" class="dropdown-item">My Profile</a>
+            <a href="fees" class="dropdown-item">My Fees & Receipts</a>
             <a href="#" class="dropdown-item danger" data-logout>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Sign Out
@@ -118,22 +125,39 @@
     <!-- Page Content -->
     <div class="page-content">
 
-      <!-- Stats Grid -->
-      <div class="stats-grid stats-grid-3 mb-6">
-        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
+      <!-- Read-only Security Banner -->
+      <div class="card mb-6" style="padding:14px 20px; background:rgba(30,58,138,0.06); border:1px solid rgba(30,58,138,0.15); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:1.2rem;">🔒</span>
+          <div>
+            <div style="font-weight:600; font-size:var(--font-size-sm);">Student Read-Only View</div>
+            <div style="font-size:var(--font-size-xs); color:var(--text-muted);">Attendance registers are officially recorded by your class teacher. Students cannot modify attendance records.</div>
+          </div>
+        </div>
+        <span class="badge badge-sm badge-info">Verified Log</span>
+      </div>
+
+      <!-- Stats Grid (4 Cards: Present Days, Absent Days, Late Days, Attendance Percentage) -->
+      <div class="stats-grid stats-grid-4 mb-6">
+        <div class="stat-card" style="--stat-color:#10b981;--stat-color-bg:rgba(16,185,129,0.12)">
           <div class="stat-icon">✅</div>
-          <div class="stat-value" id="presentDays">30</div>
-          <div class="stat-label">Days Present</div>
+          <div class="stat-value" id="presentDays">31</div>
+          <div class="stat-label">Present Days</div>
         </div>
         <div class="stat-card" style="--stat-color:#ef4444;--stat-color-bg:rgba(239,68,68,0.12)">
           <div class="stat-icon">❌</div>
           <div class="stat-value" id="absentDays">1</div>
-          <div class="stat-label">Days Absent</div>
+          <div class="stat-label">Absent Days</div>
         </div>
-        <div class="stat-card" style="--stat-color:#3b82f6;--stat-color-bg:rgba(59,130,246,0.12)">
+        <div class="stat-card" style="--stat-color:#f59e0b;--stat-color-bg:rgba(245,158,11,0.12)">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="lateDays">1</div>
+          <div class="stat-label">Late Days</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">📈</div>
-          <div class="stat-value">96.8%</div>
-          <div class="stat-label">Overall Attendance Rate</div>
+          <div class="stat-value" id="attendancePct">96.8%</div>
+          <div class="stat-label">Attendance Percentage</div>
         </div>
       </div>
 

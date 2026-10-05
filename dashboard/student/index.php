@@ -8,6 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/main.css">
   <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <script src="../../assets/js/auth.js"></script>
+  <script>
+    Auth.requireAuth();
+    Auth.requireRole('student');
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -51,6 +56,12 @@
         Class Timetable
       </a>
 
+      <div class="nav-section-label">Financial Records</div>
+      <a href="fees" class="nav-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        My Fees & Receipts
+      </a>
+
       <div class="nav-section-label">Tasks & Memos</div>
       <a href="assignments" class="nav-item">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -60,9 +71,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 000-6h1V9a9 9 0 0118 0v2h1a3 3 0 010 6z"/></svg>
         Announcements
       </a>
-      <a href="messages" class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Teacher Messages
+      <a href="#" class="nav-item" style="color:var(--red);" data-logout>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
       </a>
     </nav>
 
@@ -88,7 +99,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div>
-          <div class="page-title">Dashboard</div>
+          <div class="page-title">Student Dashboard</div>
           <div class="page-breadcrumb">Welcome back, <span data-user-name>John Dakyen</span></div>
         </div>
       </div>
@@ -106,6 +117,7 @@
             <div class="dropdown-item" style="cursor:default;opacity:0.7;font-size:var(--font-size-xs);" data-user-name>John Dakyen</div>
             <div class="dropdown-divider"></div>
             <a href="profile" class="dropdown-item">My Profile</a>
+            <a href="fees" class="dropdown-item">My Fees & Receipts</a>
             <a href="#" class="dropdown-item danger" data-logout>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               Sign Out
@@ -118,19 +130,51 @@
     <!-- Page Content -->
     <div class="page-content">
 
-      <!-- Stats Grid -->
-      <div class="stats-grid stats-grid-3 mb-6">
+      <!-- Student Profile Identity Header Card -->
+      <div class="card mb-6" style="padding: 20px; background: linear-gradient(135deg, rgba(30,58,138,0.08) 0%, rgba(99,102,241,0.08) 100%); border: 1px solid rgba(99,102,241,0.2);">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div class="avatar user-avatar-initials" style="width:64px; height:64px; font-size:1.5rem; background:var(--gradient-accent); flex-shrink:0;">JD</div>
+            <div>
+              <div style="font-size:1.25rem; font-weight:700;" data-user-name>John Dakyen</div>
+              <div style="font-size:var(--font-size-xs); color:var(--text-muted); display:flex; gap:12px; margin-top:4px;">
+                <span>ID: <code style="font-weight:700;" id="dashStudentId">STD-2026-0003</code></span>
+                <span>Class: <strong id="dashStudentClass">JSS 3A</strong></span>
+                <span>Status: <span class="badge badge-sm badge-success">Active</span></span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <div style="text-align:right;">
+              <div style="font-size:var(--font-size-xs); color:var(--text-muted);">Current Session</div>
+              <div style="font-weight:700; font-size:var(--font-size-sm);" id="dashSession">2025/2026</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:var(--font-size-xs); color:var(--text-muted);">Current Term</div>
+              <div style="font-weight:700; font-size:var(--font-size-sm);" id="dashTerm">1st Term</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid (4 Cards: Attendance, Academic Summary, Outstanding Fees, Pending Tasks) -->
+      <div class="stats-grid stats-grid-4 mb-6">
         <div class="stat-card" style="--stat-color:#1e3a8a;--stat-color-bg:rgba(30,58,138,0.15)">
           <div class="stat-icon">📈</div>
-          <div class="stat-value">96.8%</div>
+          <div class="stat-value" id="attendanceRate">96.8%</div>
           <div class="stat-label">Term Attendance Rate</div>
         </div>
         <div class="stat-card" style="--stat-color:#6366f1;--stat-color-bg:rgba(99,102,241,0.12)">
           <div class="stat-icon">🌟</div>
-          <div class="stat-value" id="termAverage">B+</div>
-          <div class="stat-label">Current Term Average</div>
+          <div class="stat-value" id="termAverage">B+ (78.2%)</div>
+          <div class="stat-label">Academic Summary</div>
         </div>
         <div class="stat-card" style="--stat-color:#f59e0b;--stat-color-bg:rgba(245,158,11,0.12)">
+          <div class="stat-icon">⚖️</div>
+          <div class="stat-value" id="dashOutstandingFees">₦15,000</div>
+          <div class="stat-label">Outstanding School Fees</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#ef4444;--stat-color-bg:rgba(239,68,68,0.12)">
           <div class="stat-icon">📝</div>
           <div class="stat-value" id="pendingTasks">1</div>
           <div class="stat-label">Pending Assignments</div>
@@ -141,7 +185,7 @@
       <div class="grid gap-6 mb-6" style="grid-template-columns: 1.5fr 1fr;">
         <!-- Scores trend -->
         <div class="card">
-          <div class="card-header"><h3 class="card-title">Subject Continuous Assessment & Exams</h3></div>
+          <div class="card-header"><h3 class="card-title">Subject Continuous Assessment & Exam Scores</h3></div>
           <div class="chart-container" style="height:230px;">
             <canvas id="studentScoresChart"></canvas>
           </div>
@@ -162,13 +206,18 @@
               <tbody>
                 <tr>
                   <td><code>08:30 - 09:30</code></td>
-                  <td><strong>Biology</strong></td>
-                  <td>Fatima Sani</td>
+                  <td><strong>Mathematics</strong></td>
+                  <td>Mr. Okoro</td>
                 </tr>
                 <tr>
-                  <td><code>12:00 - 01:00</code></td>
+                  <td><code>11:00 - 12:00</code></td>
                   <td><strong>Basic Science</strong></td>
-                  <td>Fatima Sani</td>
+                  <td>Mr. Bello</td>
+                </tr>
+                <tr>
+                  <td><code>13:30 - 14:30</code></td>
+                  <td><strong>Computer Studies</strong></td>
+                  <td>Miss Chioma</td>
                 </tr>
               </tbody>
             </table>
@@ -176,14 +225,59 @@
         </div>
       </div>
 
-      <!-- Announcements Board -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Announcements & Notices</h3>
-          <a href="announcements" class="btn btn-secondary btn-sm">View Board →</a>
+      <!-- Announcements & Upcoming Events Grid -->
+      <div class="grid gap-6" style="grid-template-columns: 1fr 1fr;">
+        <!-- Announcements Board -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Announcements</h3>
+            <a href="announcements" class="btn btn-secondary btn-sm">View Board →</a>
+          </div>
+          <div id="announcementsGrid" class="flex flex-col gap-3">
+            <div class="empty-state"><div class="spinner"></div></div>
+          </div>
         </div>
-        <div id="announcementsGrid" class="flex flex-col gap-3">
-          <div class="empty-state"><div class="spinner"></div></div>
+
+        <!-- Upcoming School Events Timeline -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Upcoming School Events</h3>
+            <span class="badge badge-sm badge-info">Term 1 Schedule</span>
+          </div>
+          <div style="padding:var(--space-4); display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:12px; align-items:flex-start; padding-bottom:10px; border-bottom:1px solid var(--border-color);">
+              <div style="background:rgba(99,102,241,0.15); color:var(--accent-primary); border-radius:8px; padding:6px 12px; text-align:center; font-weight:700; line-height:1.2; flex-shrink:0;">
+                <div style="font-size:0.7rem; text-transform:uppercase;">JUN</div>
+                <div style="font-size:1.1rem;">23</div>
+              </div>
+              <div>
+                <div style="font-weight:600; font-size:var(--font-size-sm);">1st Term Examinations Begin</div>
+                <div style="font-size:var(--font-size-xs); color:var(--text-muted);">Main Exam Halls • All Students</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; align-items:flex-start; padding-bottom:10px; border-bottom:1px solid var(--border-color);">
+              <div style="background:rgba(245,158,11,0.15); color:#f59e0b; border-radius:8px; padding:6px 12px; text-align:center; font-weight:700; line-height:1.2; flex-shrink:0;">
+                <div style="font-size:0.7rem; text-transform:uppercase;">JUN</div>
+                <div style="font-size:1.1rem;">30</div>
+              </div>
+              <div>
+                <div style="font-weight:600; font-size:var(--font-size-sm);">2nd Installment Fees Deadline</div>
+                <div style="font-size:var(--font-size-xs); color:var(--text-muted);">School Bursary Office</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              <div style="background:rgba(16,185,129,0.15); color:#10b981; border-radius:8px; padding:6px 12px; text-align:center; font-weight:700; line-height:1.2; flex-shrink:0;">
+                <div style="font-size:0.7rem; text-transform:uppercase;">JUL</div>
+                <div style="font-size:1.1rem;">12</div>
+              </div>
+              <div>
+                <div style="font-weight:600; font-size:var(--font-size-sm);">Annual Cultural Day & Exhibition</div>
+                <div style="font-size:var(--font-size-xs); color:var(--text-muted);">School Multipurpose Hall</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -223,29 +317,31 @@
 
   function loadStudentDashboard() {
     const user = Auth.getUser();
-    const subs = JSON.parse(localStorage.getItem('sams_mock_submissions') || '[]');
-    const studentId = user?.db_student_id || 1;
-
-    // Filter pending tasks
-    const pending = subs.filter(s => String(s.student_id) === String(studentId) && s.status === 'submitted').length;
-    document.getElementById('pendingTasks').textContent = pending;
+    if (user) {
+      document.querySelectorAll('[data-user-name]').forEach(el => {
+        el.textContent = user.name || `${user.first_name || 'John'} ${user.last_name || 'Dakyen'}`;
+      });
+      if (user.staff_id || user.db_student_id) {
+        document.getElementById('dashStudentId').textContent = user.staff_id || `STD-2026-000${user.db_student_id || 3}`;
+      }
+    }
   }
 
   function renderScoresChart() {
     new Chart(document.getElementById('studentScoresChart'), {
       type: 'bar',
       data: {
-        labels: ['Biology', 'Basic Science', 'Mathematics'],
+        labels: ['Mathematics', 'English Language', 'Basic Science', 'Computer Studies', 'Social Studies'],
         datasets: [
           {
-            label: 'Continuous Assessment',
-            data: [12, 14, 13],
+            label: 'Continuous Assessment (40)',
+            data: [36, 34, 30, 38, 28],
             backgroundColor: '#6366f1',
             borderRadius: 4
           },
           {
-            label: 'Exam score',
-            data: [52, 58, 48],
+            label: 'Examination (60)',
+            data: [56, 60, 48, 54, 44],
             backgroundColor: '#1e3a8a',
             borderRadius: 4
           }
@@ -255,7 +351,7 @@
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { max: 100, grid: { color: 'rgba(148,163,184,0.08)' } }
+          y: { max: 60, grid: { color: 'rgba(148,163,184,0.08)' } }
         }
       }
     });
@@ -265,17 +361,28 @@
     const el = document.getElementById('announcementsGrid');
     try {
       const res = await API.announcements.list();
-      if (!res || res.status !== 'success') {
-        el.innerHTML = '<div class="empty-state">No notices posted</div>';
+      if (!res || res.status !== 'success' || !res.data || res.data.length === 0) {
+        // Fallback default notices
+        el.innerHTML = `
+          <div style="border-bottom:1px solid var(--color-border);padding:var(--space-3) var(--space-4);">
+            <div class="flex justify-between items-center mb-1">
+              <strong>1st Term Examination Timetable Released</strong>
+              <span class="text-xs text-muted">1 day ago</span>
+            </div>
+            <p class="text-xs text-secondary">Examinations begin on Monday, 23rd June 2026. Please check timetable.</p>
+          </div>
+          <div style="padding:var(--space-3) var(--space-4);">
+            <div class="flex justify-between items-center mb-1">
+              <strong>Emergency: Power Infrastructure Upgrade</strong>
+              <span class="text-xs text-muted">Today</span>
+            </div>
+            <p class="text-xs text-secondary">School activities suspended tomorrow due to power grid works.</p>
+          </div>
+        `;
         return;
       }
 
       const list = res.data.filter(a => a.target_role === 'all' || a.target_role === 'student').slice(0, 2);
-      if (list.length === 0) {
-        el.innerHTML = '<div class="empty-state">No announcements active.</div>';
-        return;
-      }
-
       el.innerHTML = list.map(a => `
         <div style="border-bottom:1px solid var(--color-border);padding:var(--space-3) var(--space-4);">
           <div class="flex justify-between items-center mb-1">
@@ -286,9 +393,10 @@
         </div>
       `).join('');
     } catch(e) {
-      el.innerHTML = '<div class="empty-state">Failed to connect.</div>';
+      el.innerHTML = '<div class="empty-state">Unable to load announcements.</div>';
     }
   }
 </script>
 </body>
 </html>
+
