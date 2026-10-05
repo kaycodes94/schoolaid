@@ -79,7 +79,7 @@ function getStudentResults($db) {
              FROM results r 
              JOIN subjects sub ON r.subject_id = sub.id 
              JOIN classes c ON r.class_id = c.id 
-             WHERE r.student_id = ? AND r.academic_session = ?";
+             WHERE r.student_id = ? AND r.academic_session = ? AND (r.status = 'approved' OR r.status = 'published' OR r.status IS NULL)";
     $params = [$student['id'], $session];
 
     if ($term) {
