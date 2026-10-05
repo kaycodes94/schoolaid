@@ -26,13 +26,16 @@ $action = $_GET['action'] ?? 'summary';
 try {
     switch ($action) {
         case 'summary':
+            AuthHelper::requireRole(['finance', 'principal', 'admin']);
             getFinanceSummary($db);
             break;
 
         case 'payments':
             if ($method === 'GET') {
+                AuthHelper::requireRole(['finance', 'principal', 'admin']);
                 getPayments($db);
             } elseif ($method === 'POST') {
+                AuthHelper::requireRole(['finance', 'principal', 'admin']);
                 recordPayment($db);
             }
             break;
@@ -42,6 +45,7 @@ try {
             break;
 
         case 'fee_structures':
+            AuthHelper::requireRole(['finance', 'principal', 'admin']);
             if ($method === 'GET') {
                 getFeeStructures($db);
             } elseif ($method === 'POST') {
@@ -52,10 +56,12 @@ try {
             break;
 
         case 'charge':
+            AuthHelper::requireRole(['finance', 'principal', 'admin']);
             addStudentCharge($db);
             break;
 
         case 'discount':
+            AuthHelper::requireRole(['finance', 'principal', 'admin']);
             applyStudentDiscount($db);
             break;
 
@@ -64,6 +70,7 @@ try {
             break;
 
         case 'reports':
+            AuthHelper::requireRole(['finance', 'principal', 'admin']);
             getFinancialReports($db);
             break;
 

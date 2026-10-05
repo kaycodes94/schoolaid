@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../../includes/Helpers.php';
+AuthHelper::requireRole(['unit_head', 'principal', 'admin']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../../includes/Helpers.php';
+AuthHelper::requireRole('student');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

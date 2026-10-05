@@ -41,8 +41,10 @@ try {
                 ApiResponse::error('Invalid action', 400);
         }
     } elseif ($method === 'POST') {
+        AuthHelper::requireRole(['teacher', 'principal', 'admin']);
         enterResults($db);
     } elseif ($method === 'PUT') {
+        AuthHelper::requireRole(['teacher', 'principal', 'admin']);
         updateResults($db);
     }
 } catch (Exception $e) {

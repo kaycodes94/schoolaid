@@ -31,6 +31,8 @@ if (!$token) ApiResponse::error('Authentication required', 401);
 $staff = getAuthStaff($db, $token);
 if (!$staff) ApiResponse::error('Invalid or expired session', 401);
 
+AuthHelper::requireRole(['principal', 'admin']);
+
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? 'list';
 
